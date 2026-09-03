@@ -1,0 +1,4 @@
+{
+  "ok": false,
+  "error": "Нет рабочей сессии amoCRM (cookies). Войдите в https://kuhhospital.amocrm.ru в Yandex/Edge, затем закройте браузер на 5 сек и перезапустите скрипт. last_err=session.json: 401 Unauthorized"
+}

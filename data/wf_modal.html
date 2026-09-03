@@ -1,0 +1,143 @@
+<div class="modal modal-list edit-integration-modal edit-integration-modal__external"><div class="modal-scroller custom-scroll"><div class="modal-body" style="display: block; margin-top: -728px; margin-left: -462px;"><div class="widget-settings js-custom-save-widget  private-integration-settings "><div class="widget-settings__base-space"><div class="widget_main_info"><div class="widget_main_info__top"><div class="widget_settings_block__img edit-integration-modal__img" id="img-wrap-icon"><img src="https://kuhhospital.amocrm.ru/v3/widgets/4b1a3bfc-df9e-4e52-a6ac-c40dab529b31/logo.png" class="edit-integration-modal__img-wrap" alt="widget icon"><label class="edit-integration-modal__upload" for="input-upload-icon"><svg class="svg-icon svg-settings--widgets--img_icon-dims"><use xlink:href="#settings--widgets--img_icon"></use></svg><span class="edit-integration-modal__upload-text">Загрузить</span><span class="edit-integration-modal__upload-size">400х272px</span></label><input name="widget-icon" class="edit-integration-modal__file-input text-input" id="input-upload-icon" type="file" value="" placeholder="" accept="image/gif,image/jpeg,image/pjpeg,image/png" autocomplete="off" style=""></div><div class="widget_settings_block__head"><div class="widget-settings__name ui-title ui-title--l h-text-overflow" title="AI Помощник менеджера">AI Помощник менеджера</div><p class="widget-settings__description">AI разбор звонков и подсказки</p></div></div></div><button type="1" data-uuid="4b1a3bfc-df9e-4e52-a6ac-c40dab529b31" class="button-input    button-cancel js-delete-integration view-integration-modal__delete-integration-buttons" tabindex=""><span class="button-input-inner  "><svg class="svg-icon svg-common--trash-dims"><use xlink:href="#common--trash"></use></svg><span class="button-input-inner__text">Удалить интеграцию</span></span></button></div>
+<div id="makeroi-settings-load-makeroi-8256989-1787817428661" data-name="" class="makeroi-settings-load " style="width: 100%;">
+
+<style>
+#makeroi-settings-load-makeroi-8256989-1787817428661 {
+width: 100%;
+padding: 10px;
+position: relative;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+}
+#makeroi-settings-load-makeroi-8256989-1787817428661 .makeroi-circle-loader {
+width: 100%;
+height: 100%;
+top: 0;
+position: static;
+}
+#makeroi-settings-load-makeroi-8256989-1787817428661 .makeroi-settings-load__messages {
+margin-top: 35px;
+width: 320px;
+color: #575757;
+text-align: center;
+font-weight: 400;
+}
+#makeroi-settings-load-makeroi-8256989-1787817428661 .makeroi-settings-load__loader {
+background: #F0F7FE;
+padding: 25px;
+width: 90px;
+height: 90px;
+border-radius: 50%;
+}
+</style>
+
+<div class="makeroi-settings-load__loader">
+
+<div id="makeroi-circle-loader-makeroi-5940113-1787817428661" data-name="" class="makeroi-circle-loader">
+
+<style>
+#makeroi-circle-loader-makeroi-5940113-1787817428661 {
+width: 58px;
+height: 58px;
+padding: 0;
+-webkit-animation: spin 2s linear infinite;
+-moz-animation: spin 2s linear infinite;
+animation: spin 2s linear infinite;
+}
+#makeroi-circle-loader-makeroi-5940113-1787817428661 svg {
+width: 100%;
+height: 100%;
+}
+@-moz-keyframes spin {
+100% {
+-moz-transform: rotate(360deg);
+}
+}
+@-webkit-keyframes spin {
+100% {
+-webkit-transform: rotate(360deg);
+}
+}
+@keyframes spin {
+100% {
+-webkit-transform: rotate(360deg);
+transform: rotate(360deg);
+}
+}
+</style>
+
+<svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 58 58" fill="none">
+<ellipse cx="28.5949" cy="28.9998" rx="20.9035" ry="21.199" stroke="#1681FF" stroke-opacity="0.25" stroke-width="5.20513"></ellipse>
+<path d="M28.451 7.80144C33.9948 7.76251 39.3268 9.95859 43.274 13.9066C47.2212 17.8545 49.4603 23.231 49.4987 28.8532" stroke="url(#paint0_linear_6318_11675)" stroke-width="5.20513" stroke-linecap="round" stroke-dasharray="1.49 1.49"></path>
+<defs>
+<linearGradient id="paint0_linear_6318_11675" x1="46.6418" y1="39.6987" x2="10.2933" y2="18.7459" gradientUnits="userSpaceOnUse">
+<stop stop-color="#003089"></stop>
+<stop offset="0.755208" stop-color="#003089" stop-opacity="0.01"></stop>
+<stop offset="1" stop-color="#003089" stop-opacity="0"></stop>
+</linearGradient>
+</defs>
+</svg>
+</div>
+
+</div>
+<div class="makeroi-settings-load__messages">Обходим контроль модерации над интеграциями, пожалуйста, подождите...</div>
+
+<script>
+makeROI.getWidget('makeroi_limits').errorHandler.handleWithCall(
+null,
+async function () {
+
+const widget = makeROI.getWidget('makeroi_limits');
+
+const $wrap = $('#makeroi-settings-load-makeroi-8256989-1787817428661');
+const $messageBox = $wrap.find('.makeroi-settings-load__messages');
+const progressBarMessages = widget.storage.data.constants?.progressbar_messages && widget.storage.data.constants.progressbar_messages.length > 0
+? widget.storage.data.constants.progressbar_messages
+: [
+'Собираем пиксели в картинки, пожалуйста, подождите...',
+'Генерируем ошибки, пожалуйста, подождите...',
+'Поддерживаем падающие буквы, пожалуйста, подождите...',
+'Генерируем настройки интеграции, пожалуйста, подождите...',
+'Обходим контроль модерации над интеграциями, пожалуйста, подождите...',
+'Преобразовываем котят в пользователей, пожалуйста, подождите...',
+'Меняем полярность экрана, пожалуйста, подождите...',
+'Проверяем доступность серверов, пожалуйста, подождите...',
+'Обновляем версию интеграции, пожалуйста, подождите...',
+'Отлавливаем ошибки и проблемы, пожалуйста, подождите...',
+'Собираем список рекомендаций, пожалуйста, подождите...',
+'Завариваем чай и включаем музыку для работы, пожалуйста, подождите...',
+];
+const messageLength = progressBarMessages.length;
+let index = 0;
+renderProgressBarMessages(getMixedMessages());
+function renderProgressBarMessages(messages) {
+if ($('#makeroi-settings-load-makeroi-8256989-1787817428661').find('.makeroi-settings-load__messages').length === 0) {
+return;
+}
+if (messageLength === index) {
+index = 0;
+messages = getMixedMessages();
+}
+const message = messages[index];
+$messageBox.html(message);
+index++;
+const randomSec = Math.ceil(Math.random() * 3) * 1000;
+setTimeout(() => {
+renderProgressBarMessages(messages);
+}, 1000 + randomSec);
+}
+function getMixedMessages() {
+return shuffle(progressBarMessages ?? []);
+}
+function shuffle(array) {
+return array.sort(() => Math.random() - 0.5);
+}
+},
+null
+);
+</script>
+
+</div>
+<div class="widget-settings__wrap-desc-space" style="display: none;"><div class="widget-settings__desc-space"><div class="modal-body__caption edit-integration-modal__caption"><span>Редактирование интеграции</span><div class="edit-integration-modal__caption-btns"><button type="1" class="button-input    button-cancel" tabindex=""><span class="button-input-inner  "><span class="button-input-inner__text">Отменить</span></span></button><button type="1" class="button-input   js-save-integration button-input_blue" tabindex="" id="keygen-button"><span class="button-input-inner  "><span class="button-input-inner__text">Сохранить</span></span></button></div></div><div class="edit-integration-modal__redirect-url"><input name="redirect_uri" class="edit-integration-modal__text-input text-input" type="1" value="https://example.com" placeholder="Ссылка для перенаправления" autocomplete="off" style=""><p class="edit-integration-modal__error-notification">Некорректный URL</p></div><div class="edit-integration-modal__redirect-url"><input name="revoke_access_hook_uri" class="edit-integration-modal__text-input text-input" type="1" value="https://example.com" placeholder="Ccылка для хука об отключении (необязательно)" autocomplete="off" style=""><p class="edit-integration-modal__error-notification">Некорректный URL</p></div><div class="edit-integration-modal__checkboxes-acces"><div class="checkboxes_dropdown edit-integration-modal__multiselect js-control-checkboxes_dropdown "><div class="checkboxes_dropdown__list "><div class="checkboxes_dropdown__list__wrapper__inner custom-scroll"><div class="checkboxes_dropdown__item"><label class="control-checkbox checkboxes_dropdown__label js-master-checkbox-wrapper  is-checked"><div class="control-checkbox__body"><input type="checkbox" class="js-form-changes-skip js-master-checkbox" name="" id="cbx_drop_master_503" checked="checked" value="" data-value="" style=""><span class="control-checkbox__helper  control-checkbox__helper_minus"></span></div><div class="control-checkbox__text element__text js-select-all-text checkboxes_dropdown__label_title checkboxes_dropdown__label_title-not_active" title="Выбрать всё">Снять выделение</div></label></div><div class="checkboxes_dropdown__item   " data-value="доступ к данным аккаунта" style=""><label class="control-checkbox checkboxes_dropdown__label  is-checked"><div class="control-checkbox__body"><input type="checkbox" class="js-item-checkbox" name="scopes[]" id="cbx_drop_crm37280" checked="checked" value="crm" data-value="crm" style=""><span class="control-checkbox__helper "></span></div><div class="control-checkbox__text element__text checkboxes_dropdown__label_title" title="Доступ к данным аккаунта">Доступ к данным аккаунта</div></label></div><div class="checkboxes_dropdown__item   " data-value="центр нотификаций" style=""><label class="control-checkbox checkboxes_dropdown__label  is-checked"><div class="control-checkbox__body"><input type="checkbox" class="js-item-checkbox" name="scopes[]" id="cbx_drop_notifications33296" checked="checked" value="notifications" data-value="notifications" style=""><span class="control-checkbox__helper "></span></div><div class="control-checkbox__text element__text checkboxes_dropdown__label_title" title="Центр нотификаций">Центр нотификаций</div></label></div><div class="checkboxes_dropdown__item   " data-value="доступ к файлам" style=""><label class="control-checkbox checkboxes_dropdown__label  "><div class="control-checkbox__body"><input type="checkbox" class="js-item-checkbox" name="scopes[]" id="cbx_drop_files97422" value="files" data-value="files" style=""><span class="control-checkbox__helper "></span></div><div class="control-checkbox__text element__text checkboxes_dropdown__label_title" title="Доступ к файлам">Доступ к файлам</div></label></div><div class="checkboxes_dropdown__item   " data-value="удаление файлов" style=""><label class="control-checkbox checkboxes_dropdown__label  "><div class="control-checkbox__body"><input type="checkbox" class="js-item-checkbox" name="scopes[]" id="cbx_drop_files_delete17589" value="files_delete" data-value="files_delete" style=""><span class="control-checkbox__helper "></span></div><div class="control-checkbox__text element__text checkboxes_dropdown__label_title" title="Удаление файлов">Удаление файлов</div></label></div></div></div><div class="checkboxes_dropdown__title_wrapper "><label class="control-checkbox checkboxes_dropdown__checkbox_master icon-checkbox js-master-checkbox-wrapper  is-checked"><div class="control-checkbox__body"><input type="checkbox" class="js-form-changes-skip js-master-checkbox" name="" checked="checked" value="" data-value="" style=""><span class="control-checkbox__helper  control-checkbox__helper_minus"></span></div></label><span class="checkboxes_dropdown__title-selected"><span class="checkboxes_dropdown__title" data-numeral="" data-title-empty=""><div class="checkboxes_dropdown__title-item" data-title-before="Предоставить доступ: ">Доступ к данным аккаунта</div><div class="checkboxes_dropdown__title-item">Центр нотификаций</div></span></span><span class="checkboxes_dropdown_icon icon-v-ico-2"></span></div></div></div><div class="edit-integration-modal__dupl-control"><label class="control-checkbox edit-integration-modal__is-duplication-control-supported  is-checked"><div class="control-checkbox__body"><input type="checkbox" class="" name="is_duplication_control_supported" checked="checked" value="" data-value="" style=""><span class="control-checkbox__helper "></span></div><div class="control-checkbox__text element__text " title="Контроль дублей">Контроль дублей</div></label></div><div class="edit-integration-modal__multiple_sources-control"><label class="control-checkbox edit-integration-modal__is-multiple-sources-supported  is-checked"><div class="control-checkbox__body"><input type="checkbox" class="" name="is_multiple_sources_supported" checked="checked" value="" data-value="" style=""><span class="control-checkbox__helper "></span></div><div class="control-checkbox__text element__text " title="Множественные источники">Множественные источники</div></label></div><div class="edit-integration-modal__langs-wrapper"><div class="edit-integration-modal__form-lang-block" data-lang="ru"><hr class="edit-integration-modal__block-separator"><div class="edit-integration-modal__select-lang"><div class="control--select edit-integration-modal__lang-select "><ul class="custom-scroll control--select--list  "><li data-value="ru" data-color="" class="control--select--list--item control--select--list--item-selected   " style=""><span class="control--select--list--item-inner" title="Русский">Русский</span></li><li data-value="en" data-color="" class="control--select--list--item    " style="display: none;"><span class="control--select--list--item-inner" title="English">English</span></li></ul><button class="control--select--button    " tabindex="" type="button" data-value="ru" data-before="Language / Язык: "><span class="control--select--button-inner">Русский</span></button><input type="hidden" class="control--select--input " name="language" value="ru" data-prev-value="ru" style=""></div></div><div class="edit-integration-modal__field-name"><input name="name" class="edit-integration-modal__text-input js-validate-name text-input" type="1" value="AI Помощник менеджера" placeholder="Название интеграции" autocomplete="off" style=""><p class="edit-integration-modal__error-notification">Не менее 3 символов</p></div><div class="edit-integration-modal__field-desc"><textarea id="new-integration-description" class="text-input text-input-textarea edit-integration-modal__textarea js-validate-description" tabindex="" name="description" placeholder="Описание" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 76px;">AI разбор звонков и подсказки</textarea><div class="js-text-input-textarea-value" style="display: none;">AI разбор звонков и подсказки</div><p class="edit-integration-modal__error-notification">Не менее 5 символов</p></div></div><div class="edit-integration-modal__form-lang-block" data-lang="en"><hr class="edit-integration-modal__block-separator"><div class="edit-integration-modal__select-lang"><div class="control--select edit-integration-modal__lang-select "><ul class="custom-scroll control--select--list  "><li data-value="ru" data-color="" class="control--select--list--item    " style="display: none;"><span class="control--select--list--item-inner" title="Русский">Русский</span></li><li data-value="en" data-color="" class="control--select--list--item control--select--list--item-selected   " style=""><span class="control--select--list--item-inner" title="English">English</span></li></ul><button class="control--select--button    " tabindex="" type="button" data-value="en" data-before="Language / Язык: "><span class="control--select--button-inner">English</span></button><input type="hidden" class="control--select--input " name="language" value="en" data-prev-value="en" style=""></div></div><div class="edit-integration-modal__field-name"><input name="name" class="edit-integration-modal__text-input js-validate-name text-input" type="1" value="AI Manager Assistant" placeholder="Название интеграции" autocomplete="off" style=""><p class="edit-integration-modal__error-notification">Не менее 3 символов</p></div><div class="edit-integration-modal__field-desc"><textarea id="new-integration-description" class="text-input text-input-textarea edit-integration-modal__textarea js-validate-description" tabindex="" name="description" placeholder="Описание" style="overflow: hidden; overflow-wrap: break-word; resize: none; height: 76px;">AI coach</textarea><div class="js-text-input-textarea-value" style="display: none;">AI coach</div><p class="edit-integration-modal__error-notification">Не менее 5 символов</p></div><a class="edit-integration-modal__delete-lang-button js-integration-delete-lang">Удалить язык</a></div></div></div></div></div></div></div><div class="default-overlay modal-overlay modal-overlay--filled default-overlay-visible" style="transition: none;"><span class="modal-overlay__spinner spinner-icon spinner-icon-abs-center spinner-icon-white" style="display: none;"></span></div></div>

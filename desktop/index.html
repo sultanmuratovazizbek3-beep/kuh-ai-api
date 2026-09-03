@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KUH AI · Медицинский помощник</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">K</div>
+        <div>
+          <div class="brand-title">CRM AI Desk</div>
+          <div class="brand-sub">amoCRM · Bitrix24 · RU/UZ</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-view="dashboard">
+          <span class="ico">◈</span> Обзор / Umumiy
+        </button>
+        <button class="nav-item" data-view="assistant">
+          <span class="ico">✦</span> Помощник / Yordamchi
+        </button>
+        <button class="nav-item" data-view="reports">
+          <span class="ico">▣</span> Отчёты / Hisobotlar
+        </button>
+        <button class="nav-item" data-view="crm">
+          <span class="ico">◎</span> Подключения CRM
+        </button>
+        <button class="nav-item" data-view="settings">
+          <span class="ico">⚙</span> Настройки
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="status-pill" id="api-status">
+          <span class="dot"></span>
+          <span id="api-status-text">Проверка…</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="view-title">Обзор</h1>
+          <p class="muted" id="view-sub">Сводка отдела и активность</p>
+        </div>
+        <div class="top-actions">
+          <button class="btn ghost" id="btn-refresh">Обновить</button>
+          <button class="btn primary" id="btn-collect">Синхронизация</button>
+        </div>
+      </header>
+
+      <!-- DASHBOARD -->
+      <section class="view active" id="view-dashboard">
+        <div class="cards" id="kpi-cards">
+          <div class="card kpi"><div class="kpi-label">Звонки / Qo'ng'iroq</div><div class="kpi-val" id="k-calls">—</div></div>
+          <div class="card kpi"><div class="kpi-label">Чаты / Xabarlar</div><div class="kpi-val" id="k-chats">—</div></div>
+          <div class="card kpi"><div class="kpi-label">Лиды / Lidlar</div><div class="kpi-val" id="k-leads">—</div></div>
+          <div class="card kpi"><div class="kpi-label">Won · Conv</div><div class="kpi-val" id="k-won">—</div></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-h">
+              <h3>Менеджеры / Menejerlar</h3>
+              <span class="badge">24ч</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Имя</th>
+                    <th>Звонки</th>
+                    <th>Won</th>
+                    <th>Conv</th>
+                    <th>Quality</th>
+                  </tr>
+                </thead>
+                <tbody id="mgr-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h">
+              <h3>Свежие сделки / Yangi bitimlar</h3>
+              <span class="badge">live</span>
+            </div>
+            <div class="lead-list" id="lead-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ASSISTANT -->
+      <section class="view" id="view-assistant">
+        <div class="assistant-layout">
+          <div class="card lead-picker">
+            <div class="card-h">
+              <h3>Сделки</h3>
+              <input type="search" id="lead-search" placeholder="Поиск / Qidiruv…" />
+            </div>
+            <div class="lead-list compact" id="assist-leads"></div>
+            <div class="manual-id">
+              <input type="number" id="manual-lead" placeholder="Lead ID" />
+              <button class="btn primary sm" id="btn-load-lead">Открыть</button>
+            </div>
+          </div>
+
+          <div class="assist-main">
+            <div class="card assist-hero" id="assist-empty">
+              <div class="empty-illu">✦</div>
+              <h2>AI-помощник менеджера</h2>
+              <p class="muted">
+                Выберите сделку слева — получите разбор звонка, next steps и готовые фразы
+                <b>на русском и узбекском</b>.
+              </p>
+              <p class="muted small">Панель можно свернуть кнопкой «−», чтобы не мешала.</p>
+            </div>
+
+            <div class="assist-panel hidden" id="assist-panel">
+              <div class="assist-toolbar">
+                <div>
+                  <div class="assist-title" id="a-title">—</div>
+                  <div class="muted small" id="a-meta">—</div>
+                </div>
+                <div class="assist-toolbar-actions">
+                  <button class="btn ghost sm" id="btn-collapse-panel" title="Свернуть">−</button>
+                  <button class="btn ghost sm" id="btn-open-amo">AmoCRM ↗</button>
+                  <button class="btn primary sm" id="btn-analyze">Анализ / Tahlil</button>
+                </div>
+              </div>
+
+              <div id="assist-body">
+                <div class="score-row">
+                  <div class="score-ring" id="a-score">—</div>
+                  <div class="score-info">
+                    <div class="label">Качество диалога</div>
+                    <div class="muted small" id="a-model">—</div>
+                    <div class="chips">
+                      <span class="chip" id="a-svc">—</span>
+                      <span class="chip soft" id="a-stage">—</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="urgent hidden" id="a-urgent">⚠ Red flag — приоритет безопасности (приём / 103)</div>
+
+                <div class="blocks">
+                  <article class="block">
+                    <h4>Суть / Mohiyat</h4>
+                    <p class="pre" id="a-summary">—</p>
+                  </article>
+                  <article class="block">
+                    <h4>Сделать сейчас / Hozir</h4>
+                    <ul id="a-next"></ul>
+                  </article>
+                  <article class="block">
+                    <h4>Фразы пациенту / Bemorga iboralar <span class="hint">клик = копировать</span></h4>
+                    <div id="a-replies"></div>
+                  </article>
+                  <article class="block">
+                    <h4>Вопросы / Savollar</h4>
+                    <ul id="a-questions"></ul>
+                  </article>
+                  <article class="block">
+                    <h4>Возражения / E'tirozlar</h4>
+                    <ul id="a-obj"></ul>
+                  </article>
+                  <article class="block">
+                    <h4>Риски · Не делать</h4>
+                    <ul id="a-risks"></ul>
+                    <ul id="a-donot" class="dim"></ul>
+                  </article>
+                </div>
+              </div>
+
+              <div class="collapsed-bar hidden" id="assist-collapsed">
+                <span>✦ Помощник свёрнут — не мешает работе</span>
+                <button class="btn primary sm" id="btn-expand-panel">Развернуть / Ochish</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- REPORTS -->
+      <section class="view" id="view-reports">
+        <div class="card">
+          <div class="card-h">
+            <h3>Отчёты / Hisobotlar</h3>
+            <div class="row-gap">
+              <button class="btn ghost sm" data-report="day">День</button>
+              <button class="btn ghost sm" data-report="week">Неделя</button>
+              <button class="btn ghost sm" data-report="month">Месяц</button>
+            </div>
+          </div>
+          <p class="muted small">Сохраняются на Desktop → AmoCRM-AI-Reports · в CRM <b>не пишем</b>.</p>
+          <pre class="report-box" id="report-box">Нажмите «День / Неделя / Месяц»</pre>
+        </div>
+      </section>
+
+      <!-- CRM CONNECTIONS -->
+      <section class="view" id="view-crm">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-h">
+              <h3>Профили CRM</h3>
+              <button class="btn ghost sm" id="btn-reload-profiles">Обновить</button>
+            </div>
+            <div id="crm-profiles" class="lead-list compact"></div>
+          </div>
+          <div class="card">
+            <div class="card-h"><h3>Новое подключение / New CRM</h3></div>
+            <label class="field"><span>Тип CRM</span>
+              <select id="crm-provider" class="select">
+                <option value="amocrm">amoCRM / Kommo</option>
+                <option value="bitrix24">Bitrix24</option>
+              </select>
+            </label>
+            <label class="field"><span>Название профиля</span>
+              <input type="text" id="crm-label" placeholder="Клиника / Компания" />
+            </label>
+            <div id="fields-amocrm">
+              <label class="field"><span>Subdomain (без .amocrm.ru)</span>
+                <input type="text" id="crm-subdomain" placeholder="kuhhospital" />
+              </label>
+              <label class="field"><span>Long-lived token / Access token</span>
+                <input type="password" id="crm-token" placeholder="eyJ..." />
+              </label>
+              <label class="field"><span>Client ID (если OAuth)</span>
+                <input type="text" id="crm-client-id" />
+              </label>
+              <label class="field"><span>Client Secret</span>
+                <input type="password" id="crm-client-secret" />
+              </label>
+              <label class="field"><span>Refresh token</span>
+                <input type="password" id="crm-refresh" />
+              </label>
+            </div>
+            <div id="fields-bitrix" class="hidden">
+              <label class="field"><span>Incoming webhook URL</span>
+                <input type="text" id="crm-webhook" placeholder="https://portal.bitrix24.ru/rest/1/xxxx/" />
+              </label>
+            </div>
+            <div class="row-gap" style="margin-top:12px">
+              <button class="btn ghost" id="btn-crm-test">Проверить связь</button>
+              <button class="btn primary" id="btn-crm-save">Сохранить и активировать</button>
+            </div>
+            <p class="muted small" id="crm-test-result" style="margin-top:10px"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="view" id="view-settings">
+        <div class="card narrow">
+          <h3>Настройки</h3>
+          <label class="field">
+            <span>API URL (локальный backend)</span>
+            <input type="text" id="cfg-api" value="http://127.0.0.1:8090" />
+          </label>
+          <p class="muted small">При установке backend стартует вместе с приложением.</p>
+          <button class="btn primary" id="btn-save-cfg">Сохранить</button>
+          <div class="toast" id="toast"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast-global" id="toast-g"></div>
+  <script src="app.js"></script>
+</body>
+</html>

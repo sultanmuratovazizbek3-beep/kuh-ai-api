@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: kuh-ai-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: AMO_SUBDOMAIN
+        sync: false
+      - key: AMO_LONG_LIVED_TOKEN
+        sync: false
+      - key: AMO_CLIENT_ID
+        sync: false
+      - key: AMO_CLIENT_SECRET
+        sync: false
+      - key: AMO_REFRESH_TOKEN
+        sync: false
+      - key: AMO_REDIRECT_URI
+        sync: false
+      - key: XAI_API_KEY
+        sync: false
+      - key: XAI_MODEL
+        sync: false
+      - key: ASSISTANT_API_TOKEN
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
+      - key: TIMEZONE
+        value: Asia/Tashkent
+      - key: WRITE_AMO_CALL_NOTES
+        value: "1"
+      - key: STT_USE_UZ_HF
+        value: "0"

@@ -1,0 +1,19 @@
+﻿{
+    "cookie_session":  "401_need_browser_closed",
+    "has_widget":  false,
+    "entity_type":  "legal_entity",
+    "agent":  "AmoCRM Специалист",
+    "task":  "widget_upload",
+    "agreement":  "not_defined",
+    "needs_azizbek":  "Fill ИП agreement with real data OR close browser 5s after filling so upload script can run; do not create duplicate integration — use AI Помощник менеджера",
+    "blocked_by":  [
+                       "additional_agreement",
+                       "cookie_session"
+                   ],
+    "zip":  "public\\kuh-assistant-widget.zip",
+    "integration_uuid":  "4b1a3bfc-df9e-4e52-a6ac-c40dab529b31",
+    "tz":  "Asia/Tashkent",
+    "api_base":  "https://emerald-gale-med-cube.trycloudflare.com",
+    "ts":  "2026-09-03T16:25:10",
+    "marketplace_touched":  false
+}

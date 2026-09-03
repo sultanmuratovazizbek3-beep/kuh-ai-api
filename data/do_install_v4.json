@@ -1,0 +1,88 @@
+{
+  "ok": false,
+  "steps": [
+    {
+      "clicked_xy": [
+        1180,
+        70
+      ]
+    },
+    {
+      "clicked_xy": [
+        1250,
+        70
+      ]
+    },
+    {
+      "clicked_xy": [
+        1100,
+        70
+      ]
+    },
+    {
+      "clicked_xy": [
+        1300,
+        75
+      ]
+    },
+    {
+      "clicked_xy": [
+        1150,
+        85
+      ]
+    },
+    {
+      "alert_js": {
+        "text": "Покупатели",
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "submit": null
+    }
+  ],
+  "api_base": "https://acute-earrings-diamond-judicial.trycloudflare.com",
+  "scan": [
+    {
+      "tag": "DIV",
+      "text": "На введенный адрес будет отправлен хук при отключении интеграции",
+      "cls": "public-integration-create__redirect-url",
+      "x": 915,
+      "y": 218,
+      "w": 1080,
+      "h": 60,
+      "path": "doc"
+    },
+    {
+      "tag": "SPAN",
+      "text": "На введенный адрес будет отправлен хук при отключении интеграции",
+      "cls": "public-integration-create__redirect-url-text",
+      "x": 920,
+      "y": 231,
+      "w": 1071,
+      "h": 17,
+      "path": "doc"
+    }
+  ],
+  "modal_opts": [],
+  "form_len": 0,
+  "placeholders": [],
+  "names": [],
+  "ids": [],
+  "filled": {},
+  "agreement": {
+    "status": "not_defined",
+    "is_tech_account": false,
+    "is_new_account": true,
+    "entity_type": "legal_entity"
+  },
+  "upload": {
+    "status": 400,
+    "body": "{\"error\":\"You have not filled additional agreement\"}"
+  },
+  "client": {
+    "name": "AI Помощник менеджера",
+    "has_widget": false
+  }
+}

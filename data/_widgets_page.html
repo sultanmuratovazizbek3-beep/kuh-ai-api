@@ -1,0 +1,1384 @@
+<!doctype html>
+<!--[if IE 7]>     <html class="ie lte8"> <![endif]-->
+<!--[if IE 8]>     <html class="ie ie8"> <![endif]-->
+<!--[if IE 9]>     <html class="ie ie9"> <![endif]-->
+<!--[if gt IE 9]>  <html> <![endif]-->
+<!--[if !IE]><!-->
+<html class="ru"> <!--<![endif]-->
+
+<head>
+    <meta name="theme-color" content="#f5f5f5" />
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="apple-mobile-web-app-title" content="amoCRM">
+        <link href="/frontend/images/interface/meta/Icon-76@2x.png" sizes="152x152" rel="apple-touch-icon">
+        <link href="/frontend/images/interface/meta/Icon-72@2x.png" sizes="144x144" rel="apple-touch-icon">
+        <link href="/frontend/images/interface/meta/Icon-60@2x.png" sizes="120x120" rel="apple-touch-icon">
+        <link href="/frontend/images/interface/meta/Icon-76.png" sizes="76x76" rel="apple-touch-icon">
+        <link href="/frontend/images/interface/meta/Icon-72.png" sizes="72x72" rel="apple-touch-icon">
+        <link href="/frontend/images/interface/meta/Icon-60.png" sizes="60x60" rel="apple-touch-icon">
+    <link rel="shortcut icon" type="image/png" href=/favicon.ico>
+
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <script>
+                performance.setResourceTimingBufferSize(Number.MAX_SAFE_INTEGER);
+                (() => {
+            const deviceWidth = window.screen.width;
+            const isMobileSupported = false;
+
+            if (deviceWidth) {
+                const isMobile = deviceWidth <= 640;
+
+                                if (!isMobileSupported && isMobile) {
+                                        const viewportMeta = document.querySelector('meta[name="viewport"]');
+                    if (viewportMeta) {
+                        viewportMeta.setAttribute('content', '');
+                    }
+                }
+            }
+        })();
+    </script>
+
+    <title>amoCRM: kuhhospital</title>
+
+    <script>
+        try {
+            if (
+                0 ||
+                (
+                    1 &&
+                    window.matchMedia('(prefers-color-scheme: dark)').matches
+                )
+            ) {
+                document.documentElement.setAttribute('data-color-scheme', 'dark')
+                document.documentElement.setAttribute('data-crm-ui-kit-theme', 'alternative')
+                document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0f2231')
+            }
+        } catch (_) {}
+    </script>
+
+    <script>
+    (function (window, document) {
+        'use strict';
+
+        var whichTransAnimEvent = function (trans_anim) {
+            var t,
+                el = document.createElement('fakeelement'),
+                events = {
+                    transition: {
+                        transition: 'transitionend',
+                        OTransition: 'oTransitionEnd',
+                        MozTransition: 'transitionend',
+                        msTransitionEnd: 'msTransitionEnd',
+                        WebkitTransition: 'webkitTransitionEnd',
+                    },
+                    animation: {
+                        animation: 'animationend',
+                        OAnimation: 'oAnimationEnd',
+                        MozAnimation: 'animationend',
+                        MSAnimationEnd: 'MSAnimationEnd',
+                        WebkitAnimation: 'webkitAnimationEnd',
+                    },
+                };
+
+            for (t in events[trans_anim]) {
+                if (typeof el.style[t] !== 'undefined') {
+                    return events[trans_anim][t];
+                }
+            }
+        },
+            startup_modules = [],
+            constants = {};
+
+        window.AMOCRM || (window.AMOCRM = {});
+        window.APP = window.AMOCRM;
+        // eslint-disable-next-line no-unused-expressions, no-empty-function
+        window.console || (window.console = {
+            log: function () { }
+        });
+
+        APP.is_phone = false;
+        APP.is_touch_device = !!('ontouchstart' in window);
+        APP.click_event = 'click';
+        APP.wheel_event = APP.is_touch_device ? 'swipe' : 'mousewheel';
+
+        APP.transition_event = whichTransAnimEvent('transition');
+        APP.animation_event = whichTransAnimEvent('animation');
+
+        APP.input_event =
+            'oninput' in document.createElement('INPUT') ? 'input' : 'keyup';
+        APP.bg_color = 'var(--palette-background-default)';
+        APP.first_load = true;
+        APP.element_types = {
+            contacts: 1,
+            leads: 2,
+            companies: 3,
+            todo: 4,
+            notes: 5,
+            tags: 7,
+            catalogs: 10,
+            catalog_elements: 11,
+            customers: 12,
+            transactions: 13,
+            unsorted: 14,
+            contacts_and_companies: 17,
+            amoforms: 19,
+            mail: 16,
+            events: 23,
+            talk: 24,
+            files: 25,
+        };
+
+        APP.getStartupModules = function () {
+            return startup_modules;
+        };
+
+        APP.addStartupModule = function (module) {
+            startup_modules.push(module);
+
+            return true;
+        };
+
+        APP.getBaseEntity = function (entity) {
+            entity = entity || APP.data.current_entity;
+
+            return entity ? entity.toString().split('-').shift() : '';
+        };
+
+        APP.isCard = function () {
+            return !!APP.data.is_card;
+        };
+
+        APP.getWidgetsArea = function () {
+            var entity = APP.data.current_entity || false,
+                card = APP.isCard(),
+                url_splitted = window.location.pathname.split('/');
+
+            switch (true) {
+                //  Для подраздела Сhat Tools раздела чатов подменяем сущность
+                //  url_splitted[1] === 'imbox' - то же что и isImboxSection
+                case url_splitted[1] === 'imbox' && url_splitted[2] === 'tools':
+                    switch (url_splitted[3]) {
+                        case 'settings':
+                        case 'templates-and-bots':
+                            return 'settings-communications';
+
+                        default:
+                            return entity;
+                    }
+
+                case card && entity === 'leads':
+                case card && entity === 'contacts':
+                case card && entity === 'companies':
+                case card && entity === 'customers':
+                    return entity + '_card';
+
+                case entity === 'advanced-settings':
+                case entity === 'advanced-stats':
+                    return entity + ':' + url_splitted[3];
+
+                case entity === 'widget-page':
+                    // eslint-disable-next-line vars-on-top, one-var
+                    var path;
+
+                    if (url_splitted[1] === 'widget_page') {
+                        path =
+                            url_splitted[2] + ':' + url_splitted[3] + ':' + url_splitted[4];
+                    } else {
+                        path =
+                            url_splitted[1] + ':' + url_splitted[3] + ':' + url_splitted[4];
+                    }
+
+                    return entity + ':' + path;
+
+                default:
+                    return entity;
+            }
+        };
+
+        APP.getV3WidgetsArea = function () {
+            var entity = APP.data.current_entity || false,
+                v3_widget_entity = '',
+                url_splitted = window.location.pathname.split('/');
+
+            switch (entity) {
+                case 'leads-pipeline':
+                    v3_widget_entity = 'leads.pipeline';
+                    break;
+                case 'leads':
+                    v3_widget_entity = 'leads.list';
+                    break;
+                case 'customers-pipeline':
+                    v3_widget_entity = 'customers.pipeline';
+                    break;
+                case 'customers':
+                    v3_widget_entity = 'customers.list';
+                    break;
+                case 'catalogs':
+                    v3_widget_entity = 'catalogs.list';
+                    break;
+                case 'todo':
+                    v3_widget_entity = 'todo.calendar';
+                    break;
+                case 'todo-line':
+                    v3_widget_entity = 'todo.list';
+                    break;
+                case 'widgetsSettings':
+                    v3_widget_entity = 'settings.widgets';
+                    break;
+            }
+
+            if (entity === 'contacts') {
+                switch (APP.data.element_type) {
+                    case 'companies':
+                        v3_widget_entity = 'companies.list';
+                        break;
+                    case 'contacts':
+                    default:
+                        v3_widget_entity = 'contacts.list';
+                        break;
+                }
+            }
+
+            if (APP.data.current_card) {
+                switch (entity) {
+                    case 'leads':
+                    case 'contacts':
+                    case 'companies':
+                    case 'customers':
+                        v3_widget_entity = entity + '.card';
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            if (APP.data.current_entity === 'stats') {
+                switch (url_splitted[2]) {
+                    case '':
+                        v3_widget_entity = 'stats.winlose';
+                        break;
+                    case 'consolidated':
+                        v3_widget_entity = 'stats.consolidate';
+                        break;
+                    case 'by_activities':
+                        v3_widget_entity = 'stats.activity';
+                        break;
+                    case 'goals':
+                        v3_widget_entity = 'stats.goals';
+                        break;
+                }
+            }
+
+            if (APP.data.current_entity === 'events') {
+                v3_widget_entity = 'stats.events';
+            }
+
+            if (APP.data.current_entity === 'statsCalls') {
+                v3_widget_entity = 'stats.calls';
+            }
+
+            if (APP.data.current_entity === 'settings-users') {
+                v3_widget_entity = 'settings.users';
+            }
+
+            if (APP.data.current_entity === 'settings') {
+                v3_widget_entity = 'settings.general';
+            }
+
+            if (
+                APP.data.current_entity === 'leads-dp' ||
+                APP.data.current_entity === 'customers-dp'
+            ) {
+                v3_widget_entity = 'dp.settings';
+            }
+
+            if (APP.data.current_entity === 'advanced-settings') {
+                v3_widget_entity = 'widget.advanced_settings';
+            }
+
+            if (APP.data.current_entity === 'advanced-stats') {
+                v3_widget_entity = 'widget.advanced_stats';
+            }
+
+            if (APP.data.current_entity === 'widget-page') {
+                v3_widget_entity = 'widget.widget_page';
+            }
+
+            return v3_widget_entity;
+        };
+
+        APP.setTitle = function (caption) {
+            var account = APP.constant('account');
+
+            if (caption) {
+                document.title =
+                    APP.constant('current_brand') + ': ' + caption + ', ' + account.name;
+            }
+        };
+
+        function isObject(val) {
+            return val && typeof val === 'object' && !Array.isArray(val);
+        }
+
+        const deepMerge = (target, source) => {
+            for (const key in source) {
+                if (Array.isArray(source[key]) && Array.isArray(target[key])) {
+                    target[key] = [...target[key], ...source[key]];
+                } else if (isObject(source[key]) && isObject(target[key])) {
+                    target[key] = deepMerge(target[key], source[key]);
+                } else {
+                    target[key] = source[key];
+                }
+            }
+
+            return target;
+        };
+
+        APP.constant = function (name, value, options) {
+            var i;
+
+            options = options || {};
+
+            if (typeof name === 'object') {
+                for (i in name) {
+                    this.constant(i, name[i], options);
+                }
+
+                return true;
+            }
+
+            if (typeof value !== 'undefined') {
+                if (typeof value === 'string') {
+                    // eslint-disable-next-line no-empty
+                    try {
+                        value = JSON.parse(value);
+                        // eslint-disable-next-line no-empty
+                    } catch (e) { }
+                }
+
+                if (
+                    options.deep &&
+                    typeof value === 'object' &&
+                    value !== null &&
+                    typeof constants[name] === 'object' &&
+                    constants[name] !== null
+                ) {
+                    deepMerge(value, constants[name]);
+                }
+
+                constants[name] = value;
+
+                return true;
+            }
+
+            return constants[name];
+        };
+
+        APP.lang = {};
+
+        APP.addLang = function (lang_obj) {
+            this.lang = this.extend(lang_obj, this.lang);
+        };
+
+        APP.extend = function(source, dest, options) {
+            var i;
+
+            if (!dest || typeof dest !== 'object') {
+                dest = {};
+            }
+
+            var preserveNullsInObjects = Boolean(options && options.preserveNullsInObjects);
+
+            for (i in source) {
+                if (source.hasOwnProperty(i)) {
+                    if (typeof source[i] === 'object' && !Array.isArray(source[i])) {
+                        dest[i] =
+                            (dest[i] == null && !preserveNullsInObjects) || typeof dest[i] !== 'object' ? {} : dest[i];
+
+                        APP.extend(source[i], dest[i]);
+                    } else {
+                        dest[i] = source[i]; // primitive value can be copied over
+                    }
+                }
+            }
+
+            return dest;
+        };
+
+        APP.refreshNotifications = function (notifications_array) {
+            this.notifications.set_list(notifications_array);
+        };
+
+        APP.data = {
+            current_entity: APP.constant('current_entity'),
+        };
+
+        let _wasPageInactive = document.hidden;
+        let errors = [];
+
+        let handleVisibilityChange = null;
+        let pageVisibilityIntervalId = 0;
+        let stopTrackingPageVisibilityRequestedAt = null;
+        let delayForStoppingTrackingPageVisibility = null;
+
+        if ('onvisibilitychange' in document) {
+            handleVisibilityChange = () => {
+                if (document.hidden) {
+                    _wasPageInactive = document.hidden
+                }
+            };
+
+            document.addEventListener("visibilitychange", handleVisibilityChange);
+        } else {
+            if (!_wasPageInactive) {
+                pageVisibilityIntervalId = setInterval(() => {
+                    _wasPageInactive = _wasPageInactive || document.hidden;
+
+                    if (
+                        _wasPageInactive ||
+                        (delayForStoppingTrackingPageVisibility &&
+                            performance.now() - stopTrackingPageVisibilityRequestedAt >
+                            delayForStoppingTrackingPageVisibility)
+                    ) {
+                        clearInterval(pageVisibilityIntervalId);
+                    }
+                }, 10);
+                            }
+        }
+
+        APP.constant('metrics', {});
+
+        APP.metrics = {
+            set(options) {
+                const {
+                    type,
+                    name,
+                    value
+                } = options;
+
+                const prevMetrics = APP.constant('metrics')[type];
+
+                if (prevMetrics && prevMetrics[name]) {
+                    return false;
+                }
+
+                const newMetrics = {
+                    ...prevMetrics,
+                    [name]: value
+                };
+
+                APP.constant('metrics')[type] = newMetrics
+
+                return newMetrics
+            },
+
+            getTimeFromStart() {
+                return performance.now();
+            },
+
+            get(type) {
+                return APP.constant('metrics')[type];
+            },
+
+            remove(type) {
+                return delete APP.constant('metrics')[type];
+            },
+
+            get wasPageInactiveDuringPageLoad() {
+                return _wasPageInactive;
+            },
+
+            stopTrackingPageVisibility(delay) {
+                if (handleVisibilityChange) {
+                    document.removeEventListener('visibilitychange', handleVisibilityChange);
+
+                    return;
+                }
+
+                if (delay) {
+                    delayForStoppingTrackingPageVisibility = delay;
+                    stopTrackingPageVisibilityRequestedAt = performance.now();
+
+                    return;
+                }
+
+                clearInterval(pageVisibilityIntervalId);
+            },
+
+            get errors() {
+                return errors;
+            },
+
+            logError(error) {
+                errors.push(error);
+            }
+        }
+
+        APP.constant('metricTracker', {});
+        let customTimes = {};
+        let pageType = ''
+
+        APP.metricTracker = {
+            set(options) {
+                const {
+                    type,
+                    name,
+                    value,
+                    group,
+                    kind = 'flat',
+                } = options;
+
+                const metricsRoot = APP.constant('metricTracker');
+
+                if (!metricsRoot[type]) {
+                    metricsRoot[type] = {};
+                }
+
+                if (!metricsRoot[type][group]) {
+                    metricsRoot[type][group] = {
+                        flatMetrics: {},
+                        metricSpans: {},
+                    };
+                }
+
+                const groupNode = metricsRoot[type][group];
+
+                if (!groupNode.flatMetrics) {
+                    groupNode.flatMetrics = {};
+                }
+
+                if (!groupNode.metricSpans) {
+                    groupNode.metricSpans = {};
+                }
+
+                if (kind === 'span') {
+                    if (groupNode.metricSpans[name]) {
+                        return false;
+                    }
+
+                    groupNode.metricSpans[name] = value;
+
+                    return metricsRoot[type];
+                }
+
+                if (groupNode.flatMetrics[name]) {
+                    return false;
+                }
+
+                groupNode.flatMetrics[name] = value;
+
+                return metricsRoot[type];
+            },
+
+            getTimeFromStart() {
+                return performance.now();
+            },
+
+            setCustomTime(type = pageType) {
+                customTimes[type] = performance.now();
+            },
+
+            updateType(type) {
+                pageType = type;
+            },
+
+            getTimeSinceCustomTime(type = pageType) {
+                const start = customTimes[type];
+
+                if (!start) {
+                    console.warn(`Custom time for "${type}" was not set.`);
+                    return null;
+                }
+
+                return performance.now() - start;
+            },
+
+            getCustomTime(type = pageType) {
+                return customTimes[type] || 0;
+            },
+
+            getCurrentTime(isNavigation, type = pageType) {
+                if (isNavigation) {
+                    return this.getTimeSinceCustomTime(type);
+                }
+
+                return this.getTimeFromStart();
+            },
+
+            get(type) {
+                return APP.constant('metricTracker')[type];
+            },
+
+            remove(type) {
+                customTimes = {};
+                return delete APP.constant('metricTracker')[type];
+            },
+
+            get wasPageInactiveDuringPageLoad() {
+                return _wasPageInactive;
+            },
+
+            stopTrackingPageVisibility(delay) {
+                if (handleVisibilityChange) {
+                    document.removeEventListener('visibilitychange', handleVisibilityChange);
+
+                    return;
+                }
+
+                if (delay) {
+                    delayForStoppingTrackingPageVisibility = delay;
+                    stopTrackingPageVisibilityRequestedAt = performance.now();
+
+                    return;
+                }
+
+                clearInterval(pageVisibilityIntervalId);
+            },
+
+            get errors() {
+                return errors;
+            },
+
+            logError(error) {
+                errors.push(error);
+            }
+        }
+
+        let requests = {};
+
+        APP.FREM = {
+            add(key, request) {
+                if (requests) {
+                    requests[key] = request;
+                }
+            },
+            get(key) {
+                if (requests) {
+                    const value = requests[key];
+
+                    delete requests[key];
+
+                    return value;
+                }
+            },
+            destroy() {
+                requests = null;
+                APP.FREM = null;
+            },
+        };
+    })(this, document);
+</script>
+
+    
+        <script>
+                        const handleConstantLoad = function(scriptEl) {
+                const timingEntry = performance.getEntriesByName(scriptEl.src)[0];
+
+                let constantEntries = APP.constant('constant_entries');
+
+                if (!constantEntries) {
+                    constantEntries = [];
+
+                    APP.constant('constant_entries', constantEntries);
+                }
+
+                if (timingEntry) {
+                    constantEntries.push(timingEntry);
+                }
+            };
+        </script>
+
+                                    <link rel="preload" href="/frontend/constants/v2/account" as="script" />
+                        <script defer src="/frontend/constants/v2/account" fetchpriority="high" onload="handleConstantLoad(this)"></script>
+                                    <link rel="preload" href="/frontend/constants/v2/custom-fields-and-types" as="script" />
+                        <script defer src="/frontend/constants/v2/custom-fields-and-types" fetchpriority="high" onload="handleConstantLoad(this)"></script>
+                                    <link rel="preload" href="/frontend/constants/v2/ephemeral" as="script" />
+                        <script defer src="/frontend/constants/v2/ephemeral" fetchpriority="high" onload="handleConstantLoad(this)"></script>
+                                    <link rel="preload" href="/frontend/constants/v2/platform" as="script" />
+                        <script defer src="/frontend/constants/v2/platform" fetchpriority="high" onload="handleConstantLoad(this)"></script>
+                                    <link rel="preload" href="/frontend/constants/v2/rights" as="script" />
+                        <script defer src="/frontend/constants/v2/rights" fetchpriority="high" onload="handleConstantLoad(this)"></script>
+                                    <link rel="preload" href="/frontend/constants/v2/user" as="script" />
+                        <script defer src="/frontend/constants/v2/user" fetchpriority="high" onload="handleConstantLoad(this)"></script>
+        
+        
+        
+    <link rel="preload" href="https://statix.amocrm.ru/frontend/build/system.b38846b3c6.js" as="script" />
+    <script defer src="https://statix.amocrm.ru/frontend/build/system.b38846b3c6.js"></script>
+
+    <link rel="preload" href="https://statix.amocrm.ru/frontend/build/67501.73452d3681f14640.css" as="style" />
+<link rel="stylesheet" href="https://statix.amocrm.ru/frontend/build/67501.73452d3681f14640.css" />
+<link rel="preload" href="https://statix.amocrm.ru/frontend/build/31089.caf1a03db423c3c8.css" as="style" />
+<link rel="stylesheet" href="https://statix.amocrm.ru/frontend/build/31089.caf1a03db423c3c8.css" />
+<link rel="preload" href="https://statix.amocrm.ru/frontend/build/runtime.c58ce8d7c7062ddf.js" as="script" />
+<script defer src="https://statix.amocrm.ru/frontend/build/runtime.c58ce8d7c7062ddf.js"></script>
+<link rel="preload" href="https://statix.amocrm.ru/frontend/build/60502.72c94566029ea628.js" as="script" />
+<script defer src="https://statix.amocrm.ru/frontend/build/60502.72c94566029ea628.js"></script>
+<link rel="preload" href="https://statix.amocrm.ru/frontend/build/96895.ebba32d2e569e21c.js" as="script" />
+<script defer src="https://statix.amocrm.ru/frontend/build/96895.ebba32d2e569e21c.js"></script>
+<link rel="preload" href="https://statix.amocrm.ru/frontend/build/12694.ba71cca843538b19.js" as="script" />
+<script defer src="https://statix.amocrm.ru/frontend/build/12694.ba71cca843538b19.js"></script>
+<link rel="preload" href="https://statix.amocrm.ru/frontend/build/39098.7d381ff3d31fe9dc.js" as="script" />
+<script defer src="https://statix.amocrm.ru/frontend/build/39098.7d381ff3d31fe9dc.js"></script>
+<link rel="preload" href="https://statix.amocrm.ru/frontend/build/41261.ab087cfa2544e21b.js" as="script" />
+<script defer src="https://statix.amocrm.ru/frontend/build/41261.ab087cfa2544e21b.js"></script>
+<link rel="preload" href="https://statix.amocrm.ru/frontend/build/app.39840e19553bddab.js" as="script" />
+<script defer src="https://statix.amocrm.ru/frontend/build/app.39840e19553bddab.js"></script>
+
+    <link rel="stylesheet" href="https://statix.amocrm.ru/frontend/build/common.098ba4c762cde533.css" media="print" onload="this.media='all'">
+
+    <link rel="stylesheet" href="https://statix.amocrm.ru/frontend/build/settings.ff2e91493c6977ed.css" as="style" /><link rel="stylesheet" href="https://statix.amocrm.ru/frontend/build/amo_market.40ea7ba3039e7062.css" as="style" /><link rel="stylesheet" href="https://statix.amocrm.ru/frontend/build/23234.c82f7e000203751c.css" as="style" /><link rel="stylesheet" href="https://statix.amocrm.ru/frontend/build/62859.61caf7e27a249626.css" as="style" /><link rel="stylesheet" href="https://statix.amocrm.ru/frontend/build/9116.86976643e37920c8.css" as="style" /><link rel="stylesheet" href="https://statix.amocrm.ru/frontend/build/53948.8dc97adf46451c43.css" as="style" /><link rel="preload" href="https://statix.amocrm.ru/frontend/build/base_langs-ru.1cf89c40c0e4b521.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/base_langs-ru.1cf89c40c0e4b521.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/common.d0f691c50ac7a91e.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/common.d0f691c50ac7a91e.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/39775.decf6a71e412827d.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/39775.decf6a71e412827d.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/68356.3e12bb35b5216d89.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/68356.3e12bb35b5216d89.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/82912.5e0cb81d22081d23.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/82912.5e0cb81d22081d23.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/70111.71f368bae3f9a930.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/70111.71f368bae3f9a930.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/89749.75155a9472f24245.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/89749.75155a9472f24245.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/29660.5d71ac58fe14fedd.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/29660.5d71ac58fe14fedd.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/22644.491ae95effd83f62.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/22644.491ae95effd83f62.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/19670.ecb3f855bffbbff8.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/19670.ecb3f855bffbbff8.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/30713.4aa87a1fcfff4bf9.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/30713.4aa87a1fcfff4bf9.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/7434.520774ae7e771786.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/7434.520774ae7e771786.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/16299.bda7d6cf61122e88.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/16299.bda7d6cf61122e88.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/41396.7acb6d9ed508a5ea.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/41396.7acb6d9ed508a5ea.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/4946.da5d6176d47cc044.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/4946.da5d6176d47cc044.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/1369.6739b4c4180c81a1.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/1369.6739b4c4180c81a1.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/11418.6c6e3b1eaace3f9e.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/11418.6c6e3b1eaace3f9e.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/3468.be872b3d5dcce0ea.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/3468.be872b3d5dcce0ea.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/83533.7df1ac7a772a7dc1.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/83533.7df1ac7a772a7dc1.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/96999.c0b701cb8bea3968.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/96999.c0b701cb8bea3968.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/84067.b65553d4222d1faa.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/84067.b65553d4222d1faa.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/21985.fed5b314282f09fc.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/21985.fed5b314282f09fc.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/31003.8ba976f43581f16c.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/31003.8ba976f43581f16c.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/23426.40c86cd0a5b4c184.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/23426.40c86cd0a5b4c184.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/56516.a1deadbb56884e80.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/56516.a1deadbb56884e80.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/13285.cdd61e002c401506.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/13285.cdd61e002c401506.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/52392.1c62317c13f55971.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/52392.1c62317c13f55971.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/56328.a58180d50fbbf8da.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/56328.a58180d50fbbf8da.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/63883.909e3c3fad0ef0fc.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/63883.909e3c3fad0ef0fc.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/51446.b6d998a635caa6ea.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/51446.b6d998a635caa6ea.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/10173.687c8e6ea9c39996.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/10173.687c8e6ea9c39996.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/10410.9663345f22e395f7.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/10410.9663345f22e395f7.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/61715.e932bd7aa676d199.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/61715.e932bd7aa676d199.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/61179.5c2fa5772067a021.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/61179.5c2fa5772067a021.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/64819.ba88bf71493810c7.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/64819.ba88bf71493810c7.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/49586.2e6ab710f163e69d.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/49586.2e6ab710f163e69d.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/15097.2aa127fcdee1e657.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/15097.2aa127fcdee1e657.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/68270.b9cba6e97832a036.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/68270.b9cba6e97832a036.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/65276.6a3f6991559a832e.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/65276.6a3f6991559a832e.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/51287.859e58109d7b1a4d.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/51287.859e58109d7b1a4d.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/57677.05006cefa02477c2.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/57677.05006cefa02477c2.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/61565.31d999159f96e965.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/61565.31d999159f96e965.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/71631.694b1be967731309.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/71631.694b1be967731309.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/33624.82dcbdd5424c0e76.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/33624.82dcbdd5424c0e76.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/56687.2b4c9827623d3100.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/56687.2b4c9827623d3100.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/20054.bdb0867d92d600b7.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/20054.bdb0867d92d600b7.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/54158.38fa190b84829d2e.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/54158.38fa190b84829d2e.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/89339.13108d040a3565f8.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/89339.13108d040a3565f8.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/18279.da6a003d6b599676.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/18279.da6a003d6b599676.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/59742.a8e2aa9ee3449b1c.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/59742.a8e2aa9ee3449b1c.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/54342.55f7053ad7aba2f6.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/54342.55f7053ad7aba2f6.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/3045.defb301a87982148.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/3045.defb301a87982148.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/93821.fee239df908b51b5.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/93821.fee239df908b51b5.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/60471.80d2529316a76796.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/60471.80d2529316a76796.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/56371.06d32e06e305d0d5.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/56371.06d32e06e305d0d5.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/29816.94df62b7ab697ce0.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/29816.94df62b7ab697ce0.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/62859.53d43d330860adc0.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/62859.53d43d330860adc0.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/87139.6fc0ad72673139ef.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/87139.6fc0ad72673139ef.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/74892.802ee9bbfba7aef9.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/74892.802ee9bbfba7aef9.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/90118.da900697af62a84c.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/90118.da900697af62a84c.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/90644.f6a51a95859b86e0.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/90644.f6a51a95859b86e0.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/46201.3515803956483051.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/46201.3515803956483051.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/38354.58e6634f403f3d10.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/38354.58e6634f403f3d10.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/43699.db070aba5d3ae2af.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/43699.db070aba5d3ae2af.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/75941.27a0437f1121a4bf.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/75941.27a0437f1121a4bf.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/3768.4c1b2c5dfc7b0e06.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/3768.4c1b2c5dfc7b0e06.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/23387.440329d478286b56.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/23387.440329d478286b56.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/79887.58f1400fed704d6e.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/79887.58f1400fed704d6e.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/53693.b8f71ed230c5b2a6.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/53693.b8f71ed230c5b2a6.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/74668.1ef76b2b36bda626.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/74668.1ef76b2b36bda626.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/76229.1d314bd04f4e76fd.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/76229.1d314bd04f4e76fd.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/9733.896291e28732c5aa.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/9733.896291e28732c5aa.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/53948.1e5692ed0deb219c.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/53948.1e5692ed0deb219c.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/7300.f8bd2f7b5920dc0d.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/7300.f8bd2f7b5920dc0d.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/28481.3e3a70d05959bfc9.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/28481.3e3a70d05959bfc9.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/33996.0b8733b286755468.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/33996.0b8733b286755468.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/60481.96019550ee594b08.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/60481.96019550ee594b08.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/47123.e6491cf5f6e67865.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/47123.e6491cf5f6e67865.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/40781.0875bd8817e9a4d5.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/40781.0875bd8817e9a4d5.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/22804.7d3a9167aef0cf91.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/22804.7d3a9167aef0cf91.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/62336.b9d12dfa4751e8db.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/62336.b9d12dfa4751e8db.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/94394.017bcc65a45142e2.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/94394.017bcc65a45142e2.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/72490.4daccb11e8b4f686.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/72490.4daccb11e8b4f686.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/51167.69d25e7d530f8ff8.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/51167.69d25e7d530f8ff8.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/70915.0e1ee057b0daa343.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/70915.0e1ee057b0daa343.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/75333.ea74d8f937e2a63d.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/75333.ea74d8f937e2a63d.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/33242.9ecfcffbf352f92f.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/33242.9ecfcffbf352f92f.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/33324.708833033e8b1890.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/33324.708833033e8b1890.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/93500.7cb19a22bd303888.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/93500.7cb19a22bd303888.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/29256.ea892ee3d206ba78.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/29256.ea892ee3d206ba78.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/91240.27dbd07bc74c340a.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/91240.27dbd07bc74c340a.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/80678.e00049033433d371.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/80678.e00049033433d371.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/26366.518070c95ea0a662.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/26366.518070c95ea0a662.js" defer></script><link rel="preload" href="https://statix.amocrm.ru/frontend/build/66375.eb5fbbe08b7c621b.js" as="script" /><script src="https://statix.amocrm.ru/frontend/build/66375.eb5fbbe08b7c621b.js" defer></script>
+    <script>
+        APP.constant('show_welcome_back',0);APP.constant('show_welcome_form',0);APP.constant('widgets_off',0);APP.constant('safe_mode',0);APP.constant('widgets_cache_version',{"companies_card":"302426af70af94c7f960073f8fa1c7bba405f958","contacts_card":"33620ef2a3c3a808c194e3cb8c011bd6a71752ee","leads_card":"9c1f76d99670e8509962caa6f9abfd0e3c3382d8","customers_card":"9dde5e2bd3e5688fb18ba64babb61205c553078f","contacts":"f82bf4cbee6cf7ebdacccb903db502f84af2ab45","leads":"237a17f6b9e030fd2a33e3cc919ac53a93b66fe2","customers":"c9f678116e16320b49ef2b059fad841ced842ebf","dashboard":"b7823afbc1da9c8a36abbbbc5e5f12006f7db392","todo":"53583e32d0b1cdf442eed9d7c2e7f8eff40abdaa","todo-line":"e7d2817d2673982b6ad08b878e8dca1844a8a282","todo-calendar":"f13a94d1fb68ba240e620acbd01d78587e14ee2a","widgetsSettings":"040e5c2a6fc9d96526b012566d77bb0d67df1d2d","info":"c29d0c5171aa18e0089a4ba73632f336d4be49c3","card_sdk":"855d8779c6fd8d1c27dab6da5c4894847e0c40fd","leads-dp":"bed2466e5bd12e6e0ffa4ea23a937179029e85a4","customers-dp":"d1617694759989333b374fb3ac735406ecf0245d","lead_sources":"c02ecee1c7330379ce1b5e9d6eb70ca05aac04f6","advanced-settings":"61d83e585be01834eed4fc95fb0a72220a7656c7","catalogs":"88c87033b3f42753bd506d2dbd2e2f0aee93368c","salesbot_designer":"bb6ccb7f523bcf979bfe09fa01b921e89c8a7875","widget-page":"c267021c31ffae84fff8b238bbff37571daa9e78","crm_template":"98153371d90d1114028fdee302f775a5f8e4ff9c","catalog_card":"a3db089822e90fc7624aee04f31ee04c6aa63f2e","amoforms":"34cd852fdb150cc09f69371664ce24a05900fce7","crm_plugin":"9d587b2f7bcc4b2b9552922a1c37311b92d989c2","advanced-stats":"cb04df823118f399425cacd88d2972f4b9de1e12","ai_agent":"ed3af33ed5efe70c9b62110df680fe459fcc4668","amma":"2e5932729030b6e62ba035c8a93e6ae2f5981969"},{deep:!0});APP.constant('displayed_count_by_area',{"widgetsSettings":9,"advanced-settings":3,"contacts_card":2,"leads_card":2,"companies_card":1,"customers_card":1,"contacts":1,"leads":1,"customers":1,"todo":1,"digital_pipeline":2,"salesbot_designer":2},{deep:!0});    </script>
+
+            <script>
+            var amo_social_button = {
+                    visitor_id: 12711778,
+                    id: 43,
+                    hash: "180d801fc99e113cf4812e027736941215e91e49dbf2d2034eb4fe7b91a05c90"
+                },
+                crm_plugin = amo_social_button,
+                onPageLoadInsertPixel = function() {
+                    var pixel_script = document.createElement('script');
+
+                    pixel_script.type = 'text/javascript';
+                    pixel_script.id = 'amo_pixel_identifier_js';
+                    pixel_script.async = 'async';
+                    pixel_script.src = 'https://gso.amocrm.ru/pixel/js/pixel_indentifier.js';
+
+                    if (document.head) {
+                        document.head.appendChild(pixel_script);
+                    }
+
+                    document.removeEventListener('page:fully:loaded', onPageLoadInsertPixel);
+                };
+
+            document.addEventListener('page:fully:loaded', onPageLoadInsertPixel)
+        </script>
+    </head>
+
+  <div class="beta-message">
+    <p>
+      Вы используете устаревший браузер. Для использования всех возможностей сайта, загрузите и установите обновления для вашего устройства.    </p>
+          <div>
+            <a href="http://www.google.com/chrome/" target="_blank"><span class="beta-mesage__icon" style="background-position: 0px 0px"></span>
+                </a>
+          </div>
+          <div>
+            <a href="http://www.apple.com/safari/" target="_blank"><span class="beta-mesage__icon" style="background-position: -24px -24px"></span>
+                </a>
+          </div>
+          <div>
+            <a href="http://www.opera.com/" target="_blank"><span class="beta-mesage__icon" style="background-position: 0px -24px"></span>
+                </a>
+          </div>
+          <div>
+            <a href="http://www.mozilla-europe.org/" target="_blank"><span class="beta-mesage__icon" style="background-position: -24px 0px"></span>
+                </a>
+          </div>
+  </div>
+
+<body class="old_browser">
+    
+
+
+  <style id="left-menu-width">
+    
+    
+    
+    :root {
+      --left-menu-width: 65px;
+    }
+  </style>
+
+<div class="left-menu" id="left_menu" >
+      <div class='nav__top__wrapper'>
+              <div class="nav__top__userbar_useraccounts" data-page-agent-ignore="true">
+          <ul class="nav__top__userbar_useraccounts__list custom-scroll">
+
+                          <li class="nav__top__userbar_useraccounts__item nav__top__userbar_useraccounts__item--current">
+
+                                  <span class="nav__top__userbar_useraccounts__item_inner">
+                    kuhhospital
+                  </span>
+                              </li>
+                          <li class="nav__top__userbar_useraccounts__item ">
+
+                                  <a class="nav__top__userbar_useraccounts__item_link nav__top__userbar_useraccounts__item_inner js-system-link" tabindex="-1" href="https://samcrmkiutuz.amocrm.ru">
+                    KIUT Samarqand
+
+                    <span class="icon icon-arrow-right"></span>
+                  </a>
+                              </li>
+                          <li class="nav__top__userbar_useraccounts__item ">
+
+                                  <a class="nav__top__userbar_useraccounts__item_link nav__top__userbar_useraccounts__item_inner js-system-link" tabindex="-1" href="https://kiutcrm.amocrm.ru">
+                    KIUT Namangan
+
+                    <span class="icon icon-arrow-right"></span>
+                  </a>
+                              </li>
+                          <li class="nav__top__userbar_useraccounts__item ">
+
+                                  <a class="nav__top__userbar_useraccounts__item_link nav__top__userbar_useraccounts__item_inner js-system-link" tabindex="-1" href="https://sultanmuratovazizbek3.amocrm.ru">
+                    Bussines Fix
+
+                    <span class="icon icon-arrow-right"></span>
+                  </a>
+                              </li>
+                          <li class="nav__top__userbar_useraccounts__item ">
+
+                                  <a class="nav__top__userbar_useraccounts__item_link nav__top__userbar_useraccounts__item_inner js-system-link" tabindex="-1" href="https://unitedliftcrm.amocrm.ru">
+                    unitedliftcrm
+
+                    <span class="icon icon-arrow-right"></span>
+                  </a>
+                              </li>
+                      </ul>
+        </div>
+      
+      
+<div class='project_info'>
+  <div class='project_info-body'>
+    <span class='project_info-body-logo'></span>
+    <span class='project_info-body-copyright'>
+      &#169  2026  Все права защищены | <a href='https://www.amocrm.ru/oferta/' target='_blank'>Условия использования</a>
+    </span>
+    <span class='project_info-body-support'>
+      <a href='/settings/support/' class="js-support">
+            <button type="button"  class="button-input    plug-users_groups-body-button" tabindex=""  >
+              <span class="button-input-inner  ">          
+          
+          
+                      <span class="button-input-inner__text">
+                              Обратиться за поддержкой
+                                        </span>
+          
+                  </span>          </button>
+
+      </a>
+    </span>
+  </div>
+</div>
+    </div>
+
+    <div class="left-menu__themes-switcher js-themes-switcher" id="themes-switcher"></div>
+
+    
+    <div class="default-overlay left-menu-overlay" id="left-menu-overlay"></div>
+
+    <div class="nav__top">
+      <div class="nav__top__userpic__holder">
+        <div class="js-avatar-wrapper nav__top__userpic__wrapper">
+          
+
+<div class="js-avatar-snv-tooltip"></div>
+
+
+<div class="n-avatar js-left-avatar"   id="12711778"  style="background-image: url('/v3/users/d9ce9458-5a87-11f0-8a70-00163eab58da/avatar/?1787813306'), url(&#039;/frontend/images/interface/avatars/9.jpeg&#039;)">
+  </div>
+        </div>
+      </div>
+      <div class="nav__top__userbar">
+        <div class="nav__top__userbar__userinfo js-manage-profile">
+          <div class="nav__top__userbar__userinfo__username">
+            Bfix
+          </div>
+
+                    <span class="nav__top__userbar__profile__text nav__top__userbar__grey-link" style="display: flex;">
+                          Ваш номер клиента
+                        &nbsp;
+            <span class="nav__top__userbar__profile__account-id js-account-id">
+              31612974
+
+              <span class="nav__top__userbar__profile__account-id-copy js-copy-account-id" data-copied="Скопировано" data-clipboard-text="31612974">
+                <svg class="svg-icon svg-common--copy-dims"><use xlink:href="#common--copy"></use></svg>
+              </span>
+            </span>
+          </span>
+        </div>
+
+        <a class="nav__top__userbar__profile js-manage-profile" href="/settings/profile/">
+          <span class="nav__top__userbar-icon"><span class="icon icon-pencil2 h-abs-position-center"></span></span>
+          <span class="nav__top__userbar__profile__text nav__top__userbar__grey-link">
+            профиль
+          </span>
+        </a>
+
+        <div class="nav__top__userbar__logout js-logout">
+          <span class="nav__top__userbar-icon"><span class="icon icon-off h-abs-position-center"></span></span>
+          <a href="/?logout=yes" class="nav__top__userbar__logout__text nav__top__userbar__grey-link js-system-link">
+            выйти
+          </a>
+        </div>
+      </div>
+    </div>
+
+          <div class="nav__menu-scroller" data-entity="selected" id="nav_menu_up"></div>
+
+      <div class="nav__menu-scroll-hide">
+        <div class="nav__menu-wrapper">
+          <div class="nav__menu" id="nav_menu">
+            
+      <div class="nav__menu__item  nav__menu__item-ru-dashboard"  data-entity="dashboard">
+        <a class="nav__menu__item__link" href="/dashboard/">
+          <div class="nav__menu__item__icon  icon-dash ">
+            
+            <span class="js-notifications_counter nav__notifications__counter"  style="display: none" >
+              
+            </span>
+
+                      </div>
+
+          <div class="nav__menu__item__title">Рабочий стол</div>
+        </a>
+      </div>
+                
+      <div class="nav__menu__item  "  data-entity="leads">
+        <a class="nav__menu__item__link" href="/leads/">
+          <div class="nav__menu__item__icon  icon-leads ">
+            
+            <span class="js-notifications_counter nav__notifications__counter"  style="display: none" >
+              
+            </span>
+
+                      </div>
+
+          <div class="nav__menu__item__title">Сделки</div>
+        </a>
+      </div>
+                                                                
+      <div class="nav__menu__item  "  data-entity="chats">
+        <a class="nav__menu__item__link" href="/imbox/">
+          <div class="nav__menu__item__icon  icon-notifications ">
+            
+            <span class="js-notifications_counter nav__notifications__counter"  style="display: none" >
+              
+            </span>
+
+                      </div>
+
+          <div class="nav__menu__item__title">imBox</div>
+        </a>
+      </div>
+                
+      <div class="nav__menu__item  hidden"  data-entity="customers">
+        <a class="nav__menu__item__link" href="/customers/">
+          <div class="nav__menu__item__icon  icon-customers ">
+            
+            <span class="js-notifications_counter nav__notifications__counter"  style="display: none" >
+              
+            </span>
+
+                      </div>
+
+          <div class="nav__menu__item__title">Покупатели</div>
+        </a>
+      </div>
+                
+      <div class="nav__menu__item  "  data-entity="todo">
+        <a class="nav__menu__item__link" href="/todo/">
+          <div class="nav__menu__item__icon  icon-calendar2 ">
+            
+            <span class="js-notifications_counter nav__notifications__counter"  style="display: none" >
+              
+            </span>
+
+                      </div>
+
+          <div class="nav__menu__item__title">Задачи</div>
+        </a>
+      </div>
+                      
+      <div class="nav__menu__item  "  data-entity="catalogs">
+        <a class="nav__menu__item__link" href="/contacts/">
+          <div class="nav__menu__item__icon  icon-catalogs ">
+            
+            <span class="js-notifications_counter nav__notifications__counter"  style="display: none" >
+              
+            </span>
+
+                      </div>
+
+          <div class="nav__menu__item__title">Списки</div>
+        </a>
+      </div>
+                                                            
+      <div class="nav__menu__item  nav__menu__item__icon-integration"  data-widget-code="amo_wazzup" data-widget-item="amo_wazzup.amo_wazzup"  data-entity="widget-page">
+        <a class="nav__menu__item__link" href="/widget_page/amo_wazzup/amo_wazzup">
+          <div class="nav__menu__item__icon ">
+                                                      <img class="nav__menu__item__icon-integration__img js-theme-supported-icon" src="/widgets/amo_wazzup/112/images/logo_left.png" data-icon-light="/widgets/amo_wazzup/112/images/logo_left.png" data-icon-dark="/widgets/amo_wazzup/112/images/logo_left.png" alt="Wazzup">
+            
+            <span class="js-notifications_counter nav__notifications__counter"  style="display: none" >
+              
+            </span>
+
+                      </div>
+
+          <div class="nav__menu__item__title">Wazzup</div>
+        </a>
+      </div>
+                
+      <div class="nav__menu__item  "  data-entity="stats">
+        <a class="nav__menu__item__link" href="/stats/">
+          <div class="nav__menu__item__icon  icon-stats ">
+            
+            <span class="js-notifications_counter nav__notifications__counter"  style="display: none" >
+              
+            </span>
+
+                      </div>
+
+          <div class="nav__menu__item__title">Аналитика</div>
+        </a>
+      </div>
+                
+      <div class="nav__menu__item  nav__menu__item-selected  "  data-entity="amo-market">
+        <a class="nav__menu__item__link" href="/amo-market/">
+          <div class="nav__menu__item__icon  icon-amo-market ">
+            
+            <span class="js-notifications_counter nav__notifications__counter"  style="display: none" >
+              
+            </span>
+
+                          <div class="nav__top__userpic__loader stopped" id="page_change_progress">
+                <span class="spinner-icon"></span>
+              </div>
+                      </div>
+
+          <div class="nav__menu__item__title">amoМаркет</div>
+        </a>
+      </div>
+                
+      <div class="nav__menu__item  "  data-entity="settings">
+        <a class="nav__menu__item__link" href="/settings/new_version/">
+          <div class="nav__menu__item__icon  icon-settings ">
+            
+            <span class="js-notifications_counter nav__notifications__counter"  style="display: none" >
+              
+            </span>
+
+                      </div>
+
+          <div class="nav__menu__item__title">Настройки</div>
+        </a>
+      </div>
+      </div>
+        </div>
+      </div>
+
+      <div class="nav__menu-scroller nav__menu-scroller-down" data-entity="selected" id="nav_menu_down"></div>
+    
+    <div class="nav__notifications">
+      <span class="nav__notifications__icon icon-notifications-bell">
+        <div class='nav__notifications__flashlight'>
+          <div></div>
+          <div></div>
+        </div>
+        <span class="inbox-counter hidden"></span>
+      </span>
+    </div>
+
+      </div>
+
+  <div class="left-menu-fake"></div>
+
+  <div id="popups_wrapper"></div>
+  <div id="popups_inbox">
+    <div class="popup-inbox"></div>
+  </div>
+
+  <div id="offline_container"></div>
+
+  <script>
+        APP.metricTracker.set({
+      type: 'LEFT_MENU',
+      name: 'fcp',
+      group: 'fcp',
+      value: Math.ceil(APP.metricTracker.getCurrentTime()),
+    });
+  </script>
+<div class="inbox-holder inbox-holder_hidden " id="notification-wrapper"  style="display: none;" >
+  <div class="inbox-wrapper">
+    <div class="aside aside-inbox " id="notification-aside">
+      
+      <div class="aside__inner">
+                  
+          
+          
+          <div class="search-container-wrapper "> 
+  
+  <form class="search-container " onsubmit="return false">
+    <div class="search-options" id="search-options">
+      <div class="list-top-search__preset" id="search_filter_preset"></div>
+      <div class="search-options-wrapper">
+        <div class="search-options-wrapper__list"></div>
+      </div>
+    </div>
+
+    <div class="button__filter ">
+      <input type="text" class="search-container__input js-inbox-search" autocomplete="off"  placeholder="Найти" />
+
+                    
+      <svg class="aside-top-search__icon svg-icon svg-common--filter-search-dims">
+        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#common--filter-search"></use>
+      </svg>
+    </div>
+
+    <span class="js-search-inbox-clear aside-clear-button hidden">
+      <span class="icon icon-inline icon-search-cancel"></span>
+    </span>
+
+    
+              
+    
+    
+              
+    
+    
+    
+    
+    <div class="counter-container">
+          </div>
+
+          <div class="search-more">
+          <div class="button-input-wrapper search-more__button-wrapper">
+    <button type="button"  class="button-input  button-input-with-menu  search-more__button" tabindex=""  title="Button_more">
+              <span class="button-input-inner  search-more__inner-icon">          
+          <svg class="svg-icon svg-controls--button-more-dims"><use xlink:href="#controls--button-more"></use></svg>
+          
+          
+                  </span>          </button>
+
+	    <ul class="button-input__context-menu ">
+      <li class="button-input__context-menu__item  element__ js-inbox-mute" id=""  >
+              <div class="button-input__context-menu__item__inner">
+          
+                      
+  <span class="button-input__context-menu__item__icon-container">
+    
+    
+              
+          <svg class="button-input__context-menu__item__icon svg-icon svg-common--mute-dims ">
+        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#common--mute"></use>
+      </svg>
+      </span>
+
+
+<span class="button-input__context-menu__item__text ">
+      Включить звук
+  </span>
+                  </div>
+          </li>
+      <li class="button-input__context-menu__item  element__ js-inbox-multiactions" id=""  >
+              <div class="button-input__context-menu__item__inner">
+          
+                      
+  <span class="button-input__context-menu__item__icon-container">
+    
+    
+              
+          <svg class="button-input__context-menu__item__icon svg-icon svg-common--multiactions-dims ">
+        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#common--multiactions"></use>
+      </svg>
+      </span>
+
+
+<span class="button-input__context-menu__item__text ">
+      Массовые действия
+  </span>
+                  </div>
+          </li>
+      <li class="button-input__context-menu__item  element__ search-more__item-header" id=""  >
+              <div class="button-input__context-menu__item__inner">
+          
+                      
+
+
+<span class="button-input__context-menu__item__text ">
+      Сортировка
+  </span>
+                  </div>
+          </li>
+      <li class="button-input__context-menu__item  element__ js-read-sort js_toggle_sort" id="" data-sort-by="unread_first" data-sort-type="false" >
+              <div class="button-input__context-menu__item__inner">
+          
+                      
+
+
+<span class="button-input__context-menu__item__text ">
+      Сначала новые
+  </span>
+    <svg class="button-input__context-menu__item__icon svg-icon svg-common--sort-check-dims svg-icon__context">
+    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#common--sort-check"></use>
+  </svg>
+                  </div>
+          </li>
+      <li class="button-input__context-menu__item  element__ js-read-sort js_toggle_sort" id="" data-sort-by="unread_first" data-sort-type="true" >
+              <div class="button-input__context-menu__item__inner">
+          
+                      
+
+
+<span class="button-input__context-menu__item__text ">
+      Cначала непрочитанные
+  </span>
+    <svg class="button-input__context-menu__item__icon svg-icon svg-common--sort-check-dims svg-icon__context">
+    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#common--sort-check"></use>
+  </svg>
+                  </div>
+          </li>
+      <li class="button-input__context-menu__item  element__ js-read-sort js_toggle_sort" id="" data-sort-by="starred_first" data-sort-type="true" >
+              <div class="button-input__context-menu__item__inner">
+          
+                      
+
+
+<span class="button-input__context-menu__item__text ">
+      Избранные
+  </span>
+    <svg class="button-input__context-menu__item__icon svg-icon svg-common--sort-check-dims svg-icon__context">
+    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#common--sort-check"></use>
+  </svg>
+                  </div>
+          </li>
+  </ul>
+	</div>
+      </div>
+      </form>
+
+  <div class="inbox-filter__container"></div>
+  <div class="inbox-filter__overlay"></div>
+</div>
+        
+                  <div id="inbox-container" class="inbox-list custom-scroll">
+            <span class="inbox__spiner ">
+              <div class="notification__item notification-inner notification__item-plug">
+  <div class="notification-chat__non-select">
+      <div class="notification__item-avatar notifications__animation__loader"></div>
+  </div>
+  <div class="notification-inner__container_text notification-inner__container_text-plug">
+    <div class="notification-inner__info_message">
+      <span class="notification__item-plug-line notifications__animation__loader notifications__animation__loader-delay" style="width: 54%"></span>
+    </div>
+    <div class="notification-inner__info_message">
+      <span class="notification__item-plug-line notifications__animation__loader notifications__animation__loader-delay" style="width: 74%"></span>
+    </div>
+  </div>
+</div>
+<div class="notification__item notification-inner notification__item-plug">
+  <div class="notification-chat__non-select">
+      <div class="notification__item-avatar notifications__animation__loader"></div>
+  </div>
+  <div class="notification-inner__container_text notification-inner__container_text-plug">
+    <div class="notification-inner__info_message">
+      <span class="notification__item-plug-line notifications__animation__loader notifications__animation__loader-delay" style="width: 31%"></span>
+    </div>
+    <div class="notification-inner__info_message">
+      <span class="notification__item-plug-line notifications__animation__loader notifications__animation__loader-delay" style="width: 78%"></span>
+    </div>
+  </div>
+</div>
+<div class="notification__item notification-inner notification__item-plug">
+  <div class="notification-chat__non-select">
+      <div class="notification__item-avatar notifications__animation__loader"></div>
+  </div>
+  <div class="notification-inner__container_text notification-inner__container_text-plug">
+    <div class="notification-inner__info_message">
+      <span class="notification__item-plug-line notifications__animation__loader notifications__animation__loader-delay" style="width: 36%"></span>
+    </div>
+    <div class="notification-inner__info_message">
+      <span class="notification__item-plug-line notifications__animation__loader notifications__animation__loader-delay" style="width: 68%"></span>
+    </div>
+  </div>
+</div>
+            </span>
+          </div>
+        
+                  <div class="button-scroll"></div>
+              </div>
+
+          </div>
+
+    <div class="notification__item notification-inner loading">
+      <span class="spinner-icon"></span>
+    </div>
+  </div>
+
+      <div class="inbox-direct-chat-container"></div>
+  </div>
+    <div id="app">
+        <div id="page">
+            <div id="page_holder">
+                  
+
+<div class="amo-market amo-market-page ">
+  
+  <div id="react"></div>
+</div>
+<script>AMOCRM.addLang({"Open":"\u041e\u0442\u043a\u0440\u044b\u0442\u044c","Expired (amoMarket)":"\u0418\u0441\u0442\u0435\u043a\u043b\u0430","amoCRM picks":"\u0412\u044b\u0431\u043e\u0440 amoCRM","Show all (look at)":"\u0421\u043c\u043e\u0442\u0440\u0435\u0442\u044c \u0432\u0441\u0435","Disconnected (integration)":"\u041e\u0442\u043a\u043b\u044e\u0447\u0435\u043d\u043e","Your account is customized, and you have the ability to use private integrations.":"\u0412\u0430\u0448 \u0430\u043a\u043a\u0430\u0443\u043d\u0442 \u043a\u0430\u0441\u0442\u043e\u043c\u0438\u0437\u0438\u0440\u043e\u0432\u0430\u043d \u0438 \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u043f\u0440\u0438\u0432\u0430\u0442\u043d\u044b\u0445 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0439 \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u0430.","Unlike integrations in our marketplace, private integrations have not been tested by the amoCRM team.":"\u0412 \u043e\u0442\u043b\u0438\u0447\u0438\u0435 \u043e\u0442 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0439 \u0438\u0437 \u043d\u0430\u0448\u0435\u0433\u043e \u043c\u0430\u0440\u043a\u0435\u0442\u043f\u043b\u0435\u0439\u0441\u0430, \u043c\u044b \u043d\u0435 \u043c\u043e\u0434\u0435\u0440\u0438\u0440\u0443\u0435\u043c \u0438 \u043d\u0435 \u0442\u0435\u0441\u0442\u0438\u0440\u0443\u0435\u043c \u043f\u043e\u0434\u043e\u0431\u043d\u044b\u0435 \u0440\u0435\u0448\u0435\u043d\u0438\u044f.","Use them at your own risk \u2014 private integrations can greatly affect the interface and display of data, making it impossible to provide support for your account.":"\u0422\u0430\u043a\u0438\u0435 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438 \u043c\u043e\u0433\u0443\u0442 \u0441\u0438\u043b\u044c\u043d\u043e \u0432\u043b\u0438\u044f\u0442\u044c \u043d\u0430 \u043f\u043e\u0432\u0435\u0434\u0435\u043d\u0438\u0435 \u0438\u043d\u0442\u0435\u0440\u0444\u0435\u0439\u0441\u043e\u0432 \u0438 \u043e\u0442\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0435 \u0434\u0430\u043d\u043d\u044b\u0445, \u0447\u0442\u043e \u0434\u0435\u043b\u0430\u0435\u0442 \u043d\u0435\u0432\u043e\u0437\u043c\u043e\u0436\u043d\u044b\u043c \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0443 \u043f\u043e \u0432\u043e\u043f\u0440\u043e\u0441\u0430\u043c \u0441\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u043e\u0439 \u0440\u0430\u0431\u043e\u0442\u044b \u0430\u043a\u043a\u0430\u0443\u043d\u0442\u0430.","title":"\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438","dp_title":"Digital Pipeline","all_addons":"\u0412\u0441\u0435 \u0432\u0438\u0434\u0436\u0435\u0442\u044b","addons":"\u0418\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","crm_template_addons":"\u041e\u0442\u0440\u0430\u0441\u043b\u0435\u0432\u044b\u0435 \u0440\u0435\u0448\u0435\u043d\u0438\u044f","Multiple sources":"\u041c\u043d\u043e\u0436\u0435\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0435 \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u0438","Duplication control":"\u041a\u043e\u043d\u0442\u0440\u043e\u043b\u044c \u0434\u0443\u0431\u043b\u0435\u0439","messaging_apps_addons":"\u0421\u0435\u0440\u0432\u0438\u0441\u044b \u0434\u043b\u044f \u043e\u0431\u0449\u0435\u043d\u0438\u044f","create_addon":"\u0421\u043e\u0437\u0434\u0430\u0442\u044c \u0432\u0438\u0434\u0436\u0435\u0442","own_integrations_addons":"\u041f\u0440\u0438\u0432\u0430\u0442\u043d\u044b\u0435 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","my_submissions_addons":"\u0421\u043e\u0431\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0435 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","widget_power_on":"\u0412\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0432\u0438\u0434\u0436\u0435\u0442","widget_power_off":"\u041e\u0442\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0432\u0438\u0434\u0436\u0435\u0442","widget_your_rate":"\u0412\u0430\u0448\u0430 \u043e\u0446\u0435\u043d\u043a\u0430","reviews":"\u041e\u0442\u0437\u044b\u0432\u044b","show_more":"\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u0435\u0449\u0435","widget_install":"\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c","widget_status_installed":"\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d","widget_status_install":"\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c","widget_status_more":"\u041f\u043e\u0434\u0440\u043e\u0431\u043d\u0435\u0435","widget_status_error":"\u041e\u0448\u0438\u0431\u043a\u0430","widget_save_error":"\u041f\u043e\u043b\u0435 \"#FIELD#\" \u043d\u0435 \u043c\u043e\u0436\u0435\u0442 \u0431\u044b\u0442\u044c \u043f\u0443\u0441\u0442\u044b\u043c","top_search_input_placeholder":"\u041f\u043e\u0438\u0441\u043a","widgets_not_found":"\u041d\u0438 \u043e\u0434\u043d\u043e\u0433\u043e \u0432\u0438\u0434\u0436\u0435\u0442\u0430 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e","sip_user":"SIP \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c","password":"\u041f\u0430\u0440\u043e\u043b\u044c","note":"\u0421\u043e\u0432\u0435\u0440\u0448\u0430\u0439\u0442\u0435 \u0438 \u043f\u0440\u0438\u043d\u0438\u043c\u0430\u0439\u0442\u0435 \u0437\u0432\u043e\u043d\u043a\u0438 \u043f\u0440\u044f\u043c\u043e \u0432 \u0438\u043d\u0442\u0435\u0440\u0444\u0435\u0439\u0441\u0435 amoCRM, \u043f\u0440\u044f\u043c\u043e \u0432 \u0431\u0440\u0430\u0443\u0437\u0435\u0440\u0435 \u0441 \u043f\u043e\u043c\u043e\u0449\u044c\u044e \u0432\u0438\u0434\u0436\u0435\u0442\u0430 Voximplant \u0432 \u0440\u0430\u0441\u0448\u0438\u0440\u0435\u043d\u043d\u043e\u043c \u0442\u0430\u0440\u0438\u0444\u043d\u043e\u043c \u043f\u043b\u0430\u043d\u0435.","advancedPlan":"\u0420\u0430\u0441\u0448\u0438\u0440\u0435\u043d\u043d\u044b\u0439","upgrade":"\u041f\u0435\u0440\u0435\u0439\u0442\u0438 \u043d\u0430 \u201c\u0420\u0430\u0441\u0448\u0438\u0440\u0435\u043d\u043d\u044b\u0439\u201d","plan.advanced":"\u0420\u0430\u0441\u0448\u0438\u0440\u0435\u043d\u043d\u044b\u0439","plan.pro":"Pro","upgrade.advanced":"\u041f\u0435\u0440\u0435\u0439\u0442\u0438 \u043d\u0430 \u201c\u0420\u0430\u0441\u0448\u0438\u0440\u0435\u043d\u043d\u044b\u0439\u201d","upgrade.pro":"\u041f\u0435\u0440\u0435\u0439\u0442\u0438 \u043d\u0430 \u201cPro\u201d","developers_url":"https:\/\/www.amocrm.ru\/developers\/content\/integrations\/intro\/","attention_message":"\u041e\u0442 \u043e\u0434\u043d\u043e\u0433\u043e \u0430\u043a\u043a\u0430\u0443\u043d\u0442\u0430 \u0432\u044b \u043c\u043e\u0436\u0435\u0442\u0435 \u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0442\u043e\u043b\u044c\u043a\u043e \u043e\u0434\u043d\u0443 \u043e\u0446\u0435\u043d\u043a\u0443","placeholder":"\u041e\u0441\u0442\u0430\u0432\u044c\u0442\u0435 \u043e\u0442\u0437\u044b\u0432 \u0438\u043b\u0438 \u043e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u0438\u0434\u0436\u0435\u0442, \u043d\u0430\u0436\u0430\u0432 \u043d\u0430 \u043a\u043d\u043e\u043f\u043a\u0443 &quot;\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c&quot;","crm":"\u0414\u043e\u0441\u0442\u0443\u043f \u043a \u0434\u0430\u043d\u043d\u044b\u043c \u0430\u043a\u043a\u0430\u0443\u043d\u0442\u0430 \u0432 \u0441\u043e\u043e\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0438\u0438 \u0441 \u043f\u0440\u0430\u0432\u0430\u043c\u0438 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f","Access to account data":"\u0414\u043e\u0441\u0442\u0443\u043f \u043a \u0434\u0430\u043d\u043d\u044b\u043c \u0430\u043a\u043a\u0430\u0443\u043d\u0442\u0430","Access to files":"\u0414\u043e\u0441\u0442\u0443\u043f \u043a \u0444\u0430\u0439\u043b\u0430\u043c","Deleting files":"\u0423\u0434\u0430\u043b\u0435\u043d\u0438\u0435 \u0444\u0430\u0439\u043b\u043e\u0432","User creation":"\u0414\u043e\u0431\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u0439","User activation":"\u0410\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u044f \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u0439","User deactivation":"\u0414\u0435\u0430\u043a\u0442\u0438\u0432\u0430\u0446\u0438\u044f \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u0439","Amma":"\u0410\u043c\u043c\u0430","Notifications":"\u0426\u0435\u043d\u0442\u0440 \u043d\u043e\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u0439","notifications":"\u0426\u0435\u043d\u0442\u0440 \u043d\u043e\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u0439","Sending to external chats":"\u041e\u0442\u043f\u0440\u0430\u0432\u043a\u0430 \u0432\u043e \u0432\u043d\u0435\u0448\u043d\u0438\u0435 \u0447\u0430\u0442\u044b","External chat history":"\u0418\u0441\u0442\u043e\u0440\u0438\u044f \u0432\u043d\u0435\u0448\u043d\u0438\u0445 \u0447\u0430\u0442\u043e\u0432","Save changes?":"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u044f?","Add new hook":"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c webhook","Choose actions":"\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f","actions":"\u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f","action, actions, actions":"\u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435, \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f, \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0439, \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f","Input destination":"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0430\u0434\u0440\u0435\u0441 \u043d\u0430\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f","Hooks description":"\u0412\u044b \u043c\u043e\u0436\u0435\u0442\u0435 \u043e\u043f\u043e\u0432\u0435\u0449\u0430\u0442\u044c \u0441\u0442\u043e\u0440\u043e\u043d\u043d\u0438\u0435 \u043f\u0440\u0438\u043b\u043e\u0436\u0435\u043d\u0438\u044f \u043e \u0441\u043e\u0431\u044b\u0442\u0438\u044f\u0445, \u043f\u0440\u043e\u0438\u0437\u043e\u0448\u0435\u0434\u0448\u0438\u0445 \u0432 amoCRM, \u043f\u043e\u0441\u0440\u0435\u0434\u0441\u0442\u0432\u043e\u043c \u043e\u0442\u043f\u0440\u0430\u0432\u043a\u0438 \u0443\u0432\u0435\u0434\u043e\u043c\u043b\u0435\u043d\u0438\u0439. \u0414\u043b\u044f \u044d\u0442\u043e\u0433\u043e \u043f\u0440\u043e\u0441\u0442\u043e \u0443\u043a\u0430\u0436\u0438\u0442\u0435 URL, \u043d\u0430 \u043a\u043e\u0442\u043e\u0440\u044b\u0439 \u0412\u0430\u043c \u0431\u0443\u0434\u0435\u0442 \u043e\u0442\u043f\u0440\u0430\u0432\u043b\u0435\u043d <a href=\"https:\/\/www.amocrm.ru\/developers\/content\/api\/webhooks\" target=\"_blank\" title=\"\u043f\u0435\u0440\u0435\u0439\u0442\u0438 \u043d\u0430 \u0441\u0430\u0439\u0442 \u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u0447\u0438\u043a\u043e\u0432\">WebHook<\/a>.","Turn on":"\u0412\u043a\u043b\u044e\u0447\u0438\u0442\u044c","Webhook disabled":"Webhook \u043e\u0442\u043a\u043b\u044e\u0447\u0435\u043d \u0438\u0437-\u0437\u0430 \u043d\u0435\u0432\u0430\u043b\u0438\u0434\u043d\u043e\u0433\u043e \u043e\u0442\u043a\u043b\u0438\u043a\u0430","Edit integration":"\u0420\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","Create integration":"\u0421\u043e\u0437\u0434\u0430\u0442\u044c \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044e","Save":"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c","Cancel":"\u041e\u0442\u043c\u0435\u043d\u0438\u0442\u044c","Integration name":"\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","User will be redirected to this page after giving access to amoCRM":"\u041f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0431\u0443\u0434\u0435\u0442 \u043f\u0435\u0440\u0435\u043d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d \u043f\u043e \u0434\u0430\u043d\u043d\u043e\u0439 \u0441\u0441\u044b\u043b\u043a\u0435 \u043f\u043e\u0441\u043b\u0435 \u043f\u0440\u0435\u0434\u043e\u0441\u0442\u0430\u0432\u043b\u0435\u043d\u0438\u044f \u0434\u043e\u0441\u0442\u0443\u043f\u043e\u0432 \u043a amoCRM","Webhook will be sent to this uri after access to amoCRM is revoked":"\u041d\u0430 \u0432\u0432\u0435\u0434\u0435\u043d\u043d\u044b\u0439 \u0430\u0434\u0440\u0435\u0441 \u0431\u0443\u0434\u0435\u0442 \u043e\u0442\u043f\u0440\u0430\u0432\u043b\u0435\u043d \u0445\u0443\u043a \u043f\u0440\u0438 \u043e\u0442\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u0438 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","Payment URL description":"\u041d\u0430 \u0441\u0441\u044b\u043b\u043a\u0443 \u0431\u0443\u0434\u0443\u0442 \u043f\u0435\u0440\u0435\u043d\u0430\u043f\u0440\u0430\u0432\u043b\u044f\u0442\u044c\u0441\u044f \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0438 \u0434\u043b\u044f \u043e\u043f\u043b\u0430\u0442\u044b \u0441\u0447\u0451\u0442\u0430, \u043e\u043d\u0430 \u0434\u043e\u043b\u0436\u043d\u0430 \u0441\u043e\u0434\u0435\u0440\u0436\u0430\u0442\u044c \u043c\u0430\u0441\u043a\u0443 \":account_id\" and \":invoice_id\". \u0414\u043b\u044f \u043f\u043e\u043b\u0443\u0447\u0435\u043d\u0438\u044f \u0441\u043f\u043e\u0441\u043e\u0431\u0430 \u043e\u043f\u043b\u0430\u0442\u0430 - \u0432\u044b \u043c\u043e\u0436\u0435\u0442\u0435 \u0443\u043a\u0430\u0437\u0430\u0442\u044c \u043c\u0430\u0441\u043a\u0443 \":payment_method_code\".","Not more than %s symbols":"\u041d\u0435 \u0431\u043e\u043b\u0435\u0435 %s \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432","version":"\u0412\u0435\u0440\u0441\u0438\u044f","Published on":"\u041e\u043f\u0443\u0431\u043b\u0438\u043a\u043e\u0432\u0430\u043d\u043e","Verified":"\u041f\u0440\u043e\u0432\u0435\u0440\u0435\u043d\u043e","Rejected":"\u041e\u0442\u043a\u043b\u043e\u043d\u0435\u043d\u043e","Cabinet number amoSTART":"\u041d\u043e\u043c\u0435\u0440 \u043a\u0430\u0431\u0438\u043d\u0435\u0442\u0430 amoSTART","Whats new (for moderator)":"\u0427\u0442\u043e \u043d\u043e\u0432\u043e\u0433\u043e (\u0434\u043b\u044f \u043c\u043e\u0434\u0435\u0440\u0430\u0442\u043e\u0440\u0430)","Submitted for review on":"\u041d\u0430 \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0435","Widget archive":"\u0410\u0440\u0445\u0438\u0432 \u0432\u0438\u0434\u0436\u0435\u0442\u0430","integration View":"\u041f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0435\u0442\u044c","Publish":"\u041e\u043f\u0443\u0431\u043b\u0438\u043a\u043e\u0432\u0430\u0442\u044c","Short title":"\u041a\u0440\u0430\u0442\u043a\u043e\u0435 \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u0435","View before installation":"\u0412\u0438\u0434 \u0434\u043e \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0438","Integration Gallery":"\u0413\u0430\u043b\u0435\u0440\u0435\u044f \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","Integration Description":"\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","Description after installation":"\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043f\u043e\u0441\u043b\u0435 \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0438","Add Version":"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432\u0435\u0440\u0441\u0438\u044e","Request review":"\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c \u043d\u0430 \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0443","Logo":"\u041b\u043e\u0433\u043e\u0442\u0438\u043f","Whats new":"\u0427\u0442\u043e \u043d\u043e\u0432\u043e\u0433\u043e","Logo after installation":"\u041b\u043e\u0433\u043e\u0442\u0438\u043f \u043f\u043e\u0441\u043b\u0435 \u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0438","Download widget archive":"\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0430\u0440\u0445\u0438\u0432 \u0432\u0438\u0434\u0436\u0435\u0442\u0430","Short description for the integration page":"\u041a\u0440\u0430\u0442\u043a\u043e\u0435 \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u0434\u043b\u044f \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u044b \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0439","Email Support":"E-mail \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0438 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","Link to integration support site":"\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0441\u0430\u0439\u0442-\u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0438 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","Integration Owner":"\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0442\u043e\u0440\u0430","Privacy policy":"\u041f\u043e\u043b\u0438\u0442\u0438\u043a\u0430 \u043a\u043e\u043d\u0444\u0438\u0434\u0435\u043d\u0446\u0438\u0430\u043b\u044c\u043d\u043e\u0441\u0442\u0438","Privacy policy link":"\u0421\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u043f\u043e\u043b\u0438\u0442\u0438\u043a\u0443 \u043a\u043e\u043d\u0444\u0438\u0434\u0435\u043d\u0446\u0438\u0430\u043b\u044c\u043d\u043e\u0441\u0442\u0438","Current host":"\u0422\u0435\u043a\u0443\u0449\u0438\u0439 \u0445\u043e\u0441\u0442","Login of the current user, authorized user":"\u041b\u043e\u0433\u0438\u043d \u0442\u0435\u043a\u0443\u0449\u0435\u0433\u043e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f, \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u043e\u0432\u0430\u043d\u043d\u043e\u0433\u043e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f","id of the current account in the system":"id \u0442\u0435\u043a\u0443\u0449\u0435\u0433\u043e \u0430\u043a\u043a\u0430\u0443\u043d\u0442\u0430 \u0432 \u0441\u0438\u0441\u0442\u0435\u043c\u0435","id of the current user in the system":"id \u0442\u0435\u043a\u0443\u0449\u0435\u0433\u043e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f \u0432 \u0441\u0438\u0441\u0442\u0435\u043c\u0435","top level domain (com | ru)":"\u0434\u043e\u043c\u0435\u043d \u0432\u0435\u0440\u0445\u043d\u0435\u0433\u043e \u0443\u0440\u043e\u0432\u043d\u044f (com|ru)","Account subdomain":"\u0421\u0443\u0431\u0434\u043e\u043c\u0435\u043d \u0430\u043a\u043a\u0430\u0443\u043d\u0442\u0430","Delete Version":"\u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0432\u0435\u0440\u0441\u0438\u044e","View":"\u041f\u043e\u0441\u043c\u043e\u0442\u0440\u0435\u0442\u044c","Delete (salesbot)":"\u0423\u0434\u0430\u043b\u0438\u0442\u044c","Replace (salesbot)":"\u0417\u0430\u043c\u0435\u043d\u0438\u0442\u044c","Invalid file type":"\u041d\u0435\u0432\u0435\u0440\u043d\u044b\u0439 \u0442\u0438\u043f \u0444\u0430\u0439\u043b\u0430","Integration Support":"\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","Acceptable file formats:":"\u0414\u043e\u043f\u0443\u0441\u0442\u0438\u043c\u044b\u0435 \u0444\u043e\u0440\u043c\u0430\u0442\u044b \u0444\u0430\u0439\u043b\u043e\u0432:","The file could not be uploaded":"\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0444\u0430\u0439\u043b","Proprietary integrations":"\u0421\u043e\u0431\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0435 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","Drop your files here":"\u041f\u0435\u0440\u0435\u0442\u0430\u0449\u0438\u0442\u0435 \u0432\u0430\u0448\u0438 \u0444\u0430\u0439\u043b\u044b \u0441\u044e\u0434\u0430","Creating your own integrations will expand your ability to use amoCRM. You will be able to fine-tune the operation of the system to the needs of your business.":"\u0421\u043e\u0437\u0434\u0430\u043d\u0438\u0435 \u0441\u043e\u0431\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0445 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0439 \u0440\u0430\u0441\u0448\u0438\u0440\u0438\u0442 \u0432\u0430\u0448\u0438 \u0432\u043e\u0437\u043c\u043e\u0436\u043d\u043e\u0441\u0442\u0438 \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u043d\u0438\u044f \u0441\u0438\u0441\u0442\u0435\u043c\u044b amoCRM. \u0412\u044b \u0441\u043c\u043e\u0436\u0435\u0442\u0435 \u043c\u0430\u043a\u0441\u0438\u043c\u0430\u043b\u044c\u043d\u043e \u043f\u043e\u0434\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u0440\u0430\u0431\u043e\u0442\u0443 \u0441\u0438\u0441\u0442\u0435\u043c\u044b \u043f\u043e\u0434 \u043f\u043e\u0442\u0440\u0435\u0431\u043d\u043e\u0441\u0442\u0438 \u0432\u0430\u0448\u0435\u0433\u043e \u0431\u0438\u0437\u043d\u0435\u0441\u0430.","At least 3 characters":"\u041d\u0435 \u043c\u0435\u043d\u0435\u0435 3 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432","At least 5 characters":"\u041d\u0435 \u043c\u0435\u043d\u0435\u0435 5 \u0441\u0438\u043c\u0432\u043e\u043b\u043e\u0432","Redirect URL":"\u0421\u0441\u044b\u043b\u043a\u0430 \u0434\u043b\u044f \u043f\u0435\u0440\u0435\u043d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f","Deauthorization notification webhook (optional)":"Cc\u044b\u043b\u043a\u0430 \u0434\u043b\u044f \u0445\u0443\u043a\u0430 \u043e\u0431 \u043e\u0442\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u0438 (\u043d\u0435\u043e\u0431\u044f\u0437\u0430\u0442\u0435\u043b\u044c\u043d\u043e)","Payment URL":"\u0412\u0435\u0431\u0445\u0443\u043a \u0434\u043b\u044f \u0444\u043e\u0440\u043c\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f \u0441\u0441\u044b\u043b\u043a\u0438 \u043d\u0430 \u043e\u043f\u043b\u0430\u0442\u0443","Invalid URL":"\u041d\u0435\u043a\u043e\u0440\u0440\u0435\u043a\u0442\u043d\u044b\u0439 URL","Grant access":"\u041f\u0440\u0435\u0434\u043e\u0441\u0442\u0430\u0432\u0438\u0442\u044c \u0434\u043e\u0441\u0442\u0443\u043f","Provide web-site URL":"\u0423\u043a\u0430\u0436\u0438\u0442\u0435 URL \u0441\u0430\u0439\u0442\u0430 - https:\/\/yoursite.com","Description":"\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435","Integration icon":"\u0418\u043a\u043e\u043d\u043a\u0430 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","Upload":"\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c","Upload new":"\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u043d\u043e\u0432\u044b\u0439","Upload integration":"\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044e","Archive with user code":"\u0410\u0440\u0445\u0438\u0432 \u0441 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c\u0441\u043a\u0438\u043c \u043a\u043e\u0434\u043e\u043c","Web Hooks":"Web Hooks","Add hook":"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c webhook","Edit":"\u0420\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c","Field name":"\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u043f\u043e\u043b\u044f","Access granted":"\u041f\u0440\u0435\u0434\u043e\u0441\u0442\u0430\u0432\u043b\u0435\u043d \u0434\u043e\u0441\u0442\u0443\u043f","Copy":"\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c","Secret key":"\u0421\u0435\u043a\u0440\u0435\u0442\u043d\u044b\u0439 \u043a\u043b\u044e\u0447","Long-lived token":"\u0414\u043e\u043b\u0433\u043e\u0441\u0440\u043e\u0447\u043d\u044b\u0439 \u0442\u043e\u043a\u0435\u043d","Generate long-lived token":"\u0421\u0433\u0435\u043d\u0435\u0440\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0442\u043e\u043a\u0435\u043d","Select expiration date":"\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0434\u0430\u0442\u0443 \u0438\u0441\u0442\u0435\u0447\u0435\u043d\u0438\u044f","Select the expiration date for the long-lived token, between 1 day and 5 years.":"\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0434\u0430\u0442\u0443 \u0438\u0441\u0442\u0435\u0447\u0435\u043d\u0438\u044f \u0434\u043b\u044f \u0434\u043e\u043b\u0433\u043e\u0441\u0440\u043e\u0447\u043d\u043e\u0433\u043e \u0442\u043e\u043a\u0435\u043d\u0430. \u0421\u0440\u043e\u043a \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f \u0442\u043e\u043a\u0435\u043d\u0430 \u043c\u043e\u0436\u0435\u0442 \u0431\u044b\u0442\u044c \u043e\u0442 1 \u0434\u043d\u044f \u0434\u043e 5 \u043b\u0435\u0442.","Make sure to save your token - you won\u2019t be able to access it again.":"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u0435 \u0442\u043e\u043a\u0435\u043d \u043f\u043e\u0441\u043b\u0435 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f. \u0412\u044b \u0431\u043e\u043b\u044c\u0448\u0435 \u043d\u0435 \u0441\u043c\u043e\u0436\u0435\u0442\u0435 \u043f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u043a \u043d\u0435\u043c\u0443 \u0434\u043e\u0441\u0442\u0443\u043f.","Integration ID":"ID \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","Regenerate":"\u041f\u0435\u0440\u0435\u0433\u0435\u043d\u0435\u0440\u0438\u0440\u043e\u0432\u0430\u0442\u044c","Delete":"\u0423\u0434\u0430\u043b\u0438\u0442\u044c","Auth code (available for 20 mins)":"\u041a\u043e\u0434 \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u0430\u0446\u0438\u0438 (\u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u0435\u043d 20 \u043c\u0438\u043d\u0443\u0442)","Own integrations":"\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043d\u044b\u0435 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","amoCRM set up progress: 0 of 4":"\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0430 amoCRM: \u0448\u0430\u0433 <span class=\"value\">0<\/span> \u0438\u0437 <span>5<\/span>","Developer portal":"\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0430\u0446\u0438\u044f","Installed":"\u0423\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043e","Key generated":"\u041a\u043b\u044e\u0447 \u0441\u0433\u0435\u043d\u0435\u0440\u0438\u0440\u043e\u0432\u0430\u043d","Integration section description":"C\u043e\u0437\u0434\u0430\u043d\u0438\u0435 \u0441\u043e\u0431\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0445 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0439 \u043f\u043e\u0437\u0432\u043e\u043b\u044f\u0435\u0442 \u0432\u0430\u043c \u043d\u0435 \u0442\u043e\u043b\u044c\u043a\u043e \u043d\u0430\u0441\u0442\u0440\u0430\u0438\u0432\u0430\u0442\u044c amoCRM \u043f\u043e\u0434 \u0441\u0432\u043e\u0438 \u043f\u043e\u0442\u0440\u0435\u0431\u043d\u043e\u0441\u0442\u0438, \u043d\u043e \u0438 \u0441\u043e\u0437\u0434\u0430\u0432\u0430\u0442\u044c \u0432\u0441\u0435\u0432\u043e\u0437\u043c\u043e\u0436\u043d\u044b\u0435 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438 \u0441 \u0434\u0440\u0443\u0433\u0438\u043c\u0438 \u0441\u0438\u0441\u0442\u0435\u043c\u0430\u043c\u0438.","integration_power_on":"\u0412\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044e","integration_power_off":"\u041e\u0442\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044e","Confirm integration delete":"\u041f\u043e\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u0435 \u0443\u0434\u0430\u043b\u0435\u043d\u0438\u0435 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438","Webhooks limit exceeded":"\u041f\u0440\u0435\u0432\u044b\u0448\u0435\u043d \u043b\u0438\u043c\u0438\u0442 \u043f\u043e \u043a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u0443 \u0432\u0435\u0431\u0445\u0443\u043a\u043e\u0432","advanced":"\u0440\u0430\u0441\u0448\u0438\u0440\u0435\u043d\u043d\u044b\u0439","Upgrade to advanced plan":"\u041f\u0435\u0440\u0435\u0439\u0442\u0438 \u043d\u0430 \u201c\u0420\u0430\u0441\u0448\u0438\u0440\u0435\u043d\u043d\u044b\u0439\u201d","Are you sure you want to change the view window in \u00ab%s\u00bb catalog?":"\u0412\u044b \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u0437\u0430\u043c\u0435\u043d\u0438\u0442\u044c \u043e\u043a\u043d\u043e \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0430 \u0432 \u043a\u0430\u0442\u0430\u043b\u043e\u0433\u0435 \u00ab%s\u00bb?","Keys and scopes":"\u041a\u043b\u044e\u0447\u0438 \u0438 \u0434\u043e\u0441\u0442\u0443\u043f\u044b","Add language":"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u044f\u0437\u044b\u043a","Delete language":"\u0423\u0434\u0430\u043b\u0438\u0442\u044c \u044f\u0437\u044b\u043a","Language":"Language \/ \u042f\u0437\u044b\u043a","Not configured":"\u041d\u0435 \u043d\u0430\u0441\u0442\u0440\u043e\u0435\u043d\u043e","Delete Source":"\u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a","Revoke access":"\u041e\u0442\u043e\u0437\u0432\u0430\u0442\u044c \u0434\u043e\u0441\u0442\u0443\u043f","This tab logs the users who have granted integration access to this account. If you want to to remove a user's ability to send requests to the account on behalf of this integration, you can revoke access.":"\u041d\u0430 \u044d\u0442\u043e\u0439 \u0432\u043a\u043b\u0430\u0434\u043a\u0435 \u043e\u0442\u043e\u0431\u0440\u0430\u0436\u0430\u0435\u0442\u0441\u044f \u043a\u0442\u043e \u0438 \u043a\u043e\u0433\u0434\u0430 \u0432\u044b\u0434\u0430\u043b \u0434\u043e\u0441\u0442\u0443\u043f \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438 \u043a \u044d\u0442\u043e\u043c\u0443 \u0430\u043a\u043a\u0430\u0443\u043d\u0442\u0443. \u0415\u0441\u043b\u0438 \u0432\u044b \u0445\u043e\u0442\u0438\u0442\u0435, \u0447\u0442\u043e\u0431\u044b \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u043d\u0435 \u043c\u043e\u0433 \u0431\u043e\u043b\u044c\u0448\u0435 \u043e\u0442\u043f\u0440\u0430\u0432\u043b\u044f\u0442\u044c \u043d\u0438\u043a\u0430\u043a\u0438\u0435 \u0437\u0430\u043f\u0440\u043e\u0441\u044b \u0432 \u0430\u043a\u043a\u0430\u0443\u043d\u0442 \u043e\u0442 \u0438\u043c\u0435\u043d\u0438 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438, \u0432\u044b \u043c\u043e\u0436\u0435\u0442\u0435 \u043e\u0442\u043e\u0437\u0432\u0430\u0442\u044c \u0443 \u043d\u0435\u0433\u043e \u0434\u043e\u0441\u0442\u0443\u043f.","If access is revoked from all users, the integration will stop working.":"\u0415\u0441\u043b\u0438 \u043e\u0442\u043e\u0437\u0432\u0430\u0442\u044c \u0432\u0441\u0435 \u0432\u044b\u0434\u0430\u043d\u043d\u044b\u0435 \u0434\u043e\u0441\u0442\u0443\u043f\u044b, \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044f \u043f\u0435\u0440\u0435\u0441\u0442\u0430\u043d\u0435\u0442 \u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c.","Access granted:":"\u0414\u043e\u0441\u0442\u0443\u043f \u0432\u044b\u0434\u0430\u043d:","Admin access granted:":"\u041f\u043e\u043b\u043d\u044b\u0439 \u0434\u043e\u0441\u0442\u0443\u043f \u043a \u0430\u043a\u043a\u0430\u0443\u043d\u0442\u0443 \u0432\u044b\u0434\u0430\u043d:","This app is installed, but no one has given it access yet.":"\u041d\u0435\u0442 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u0439, \u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u043f\u0440\u0435\u0434\u043e\u0441\u0442\u0430\u0432\u0438\u043b\u0438 \u0434\u043e\u0441\u0442\u0443\u043f \u0434\u0430\u043d\u043d\u043e\u043c\u0443 \u043f\u0440\u0438\u043b\u043e\u0436\u0435\u043d\u0438\u044e.","Are you sure you want to revoke access?":"\u0412\u044b \u0443\u0432\u0435\u0440\u0435\u043d\u044b, \u0447\u0442\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u043e\u0442\u043e\u0437\u0432\u0430\u0442\u044c \u0434\u043e\u0441\u0442\u0443\u043f?","Yes":"\u0414\u0430","No":"\u041d\u0435\u0442","Unpaid account":"\u041f\u043e\u0436\u0430\u043b\u0443\u0439\u0441\u0442\u0430, \u043e\u043f\u043b\u0430\u0442\u0438\u0442\u0435 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f","page":{"fbform":{"form":"\u0424\u043e\u0440\u043c\u0430 Facebook","form_page":"\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443 \u0441 \u0444\u043e\u0440\u043c\u043e\u0439 Facebook","select_form":"\u0412\u044b\u0431\u0440\u0430\u0442\u044c \u0444\u043e\u0440\u043c\u0443 Facebook","form_delete":"\u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0444\u043e\u0440\u043c\u0443","form_delete_confirm":"\u0412\u044b \u0443\u0432\u0435\u0440\u0435\u043d\u044b, \u0447\u0442\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u0443\u0434\u0430\u043b\u0438\u0442\u044c \u0444\u043e\u0440\u043c\u0443?","form_delete_success":"\u0424\u043e\u0440\u043c\u0430 \u0431\u044b\u043b\u0430 \u0443\u0441\u043f\u0435\u0448\u043d\u043e \u0443\u0434\u0430\u043b\u0435\u043d\u0430","amocrm_fields":"\u041f\u043e\u043b\u044f amoCRM","lead":"\u0421\u0434\u0435\u043b\u043a\u0430","contact":"\u041a\u043e\u043d\u0442\u0430\u043a\u0442","company":"\u041a\u043e\u043c\u043f\u0430\u043d\u0438\u044f","select":"\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u043f\u043e\u043b\u0435","all_forms_added":"\u0412\u0441\u0435 \u0444\u043e\u0440\u043c\u044b \u0434\u043e\u0431\u0430\u0432\u043b\u0435\u043d\u044b","note":"\u041f\u0440\u0438\u043c\u0435\u0447\u0430\u043d\u0438\u0435","lead_statuses":"\u0421\u0442\u0430\u0442\u0443\u0441 \u0441\u0434\u0435\u043b\u043a\u0438","add_tags":"\u0414\u043e\u0431\u0430\u0432\u043b\u044f\u0442\u044c \u0442\u0435\u0433\u0438","settings":"\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0430 \u0444\u043e\u0440\u043c\u044b","fields":"\u0421\u043e\u043e\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0438\u0435 \u043f\u043e\u043b\u0435\u0439","user_select":"\u041e\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0439","form_name":"\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0444\u043e\u0440\u043c\u044b","logout_warning":"\u041f\u0440\u0438 \u0432\u044b\u0445\u043e\u0434\u0435 \u0438\u0437 \u0430\u043a\u043a\u0430\u0443\u043d\u0442\u0430 \u0432\u0441\u0435 \u043d\u0430\u0441\u0442\u0440\u043e\u0435\u043d\u043d\u044b\u0435 Facebook Lead Ads \u0432 amoCRM \u0431\u0443\u0434\u0443\u0442 \u0443\u0434\u0430\u043b\u0435\u043d\u044b. \u041f\u0440\u043e\u0434\u043e\u043b\u0436\u0438\u0442\u044c?"},"vkform":{"form":"\u0424\u043e\u0440\u043c\u0430 VK","form_page":"\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443 \u0441 \u0444\u043e\u0440\u043c\u043e\u0439 VK","select_form":"\u0412\u044b\u0431\u0440\u0430\u0442\u044c \u0444\u043e\u0440\u043c\u0443 VK","amocrm_fields":"\u041f\u043e\u043b\u044f amoCRM","fields":"\u0421\u043e\u043e\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0438\u0435 \u043f\u043e\u043b\u0435\u0439","form_name":"\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u0444\u043e\u0440\u043c\u044b","settings":"\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0430 \u0444\u043e\u0440\u043c\u044b"}},"error,errors,errors,errors":"\u043e\u0448\u0438\u0431\u043a\u0430,\u043e\u0448\u0438\u0431\u043a\u0438,\u043e\u0448\u0438\u0431\u043e\u043a,\u043e\u0448\u0438\u0431\u043a\u0438","warning,warnings,warnings,warnings":"\u043f\u0440\u0435\u0434\u0443\u043f\u0440\u0435\u0436\u0434\u0435\u043d\u0438\u0435,\u043f\u0440\u0435\u0434\u0443\u043f\u0440\u0435\u0436\u0434\u0435\u043d\u0438\u044f,\u043f\u0440\u0435\u0434\u0443\u043f\u0440\u0435\u0436\u0434\u0435\u043d\u0438\u0439,\u043f\u0440\u0435\u0434\u0443\u043f\u0440\u0435\u0436\u0434\u0435\u043d\u0438\u044f","Can't validate archive, continuing loading...":"\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c \u0430\u0440\u0445\u0438\u0432, \u043f\u0440\u043e\u0434\u043e\u043b\u0436\u0430\u0435\u043c \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0443...","It's private integration. It can cause problems with account and security of data.":"\u042d\u0442\u043e \u043f\u0440\u0438\u0432\u0430\u0442\u043d\u0430\u044f \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044f. \u041e\u043d\u0430 \u043c\u043e\u0436\u0435\u0442 \u0432\u044b\u0437\u0432\u0430\u0442\u044c \u043f\u0440\u043e\u0431\u043b\u0435\u043c\u044b \u0441 \u0430\u043a\u043a\u0430\u0443\u043d\u0442\u043e\u043c \u0438 \u0441\u043e\u0437\u0434\u0430\u0442\u044c \u0443\u0433\u0440\u043e\u0437\u044b \u0431\u0435\u0437\u043e\u043f\u0430\u0441\u043d\u043e\u0441\u0442\u0438 \u0434\u0430\u043d\u043d\u044b\u0445.","sort":{"default":"\u041f\u043e \u0443\u043c\u043e\u043b\u0447\u0430\u043d\u0438\u044e","trending":"\u0410\u043a\u0442\u0443\u0430\u043b\u044c\u043d\u044b\u0435","popular":"\u0421\u0430\u043c\u044b\u0435 \u043f\u043e\u043f\u0443\u043b\u044f\u0440\u043d\u044b\u0435","newest":"\u0421\u043d\u0430\u0447\u0430\u043b\u0430 \u043d\u043e\u0432\u044b\u0435"},"Sold through the marketplace":"\u041f\u0440\u043e\u0434\u0430\u0435\u0442\u0441\u044f \u0447\u0435\u0440\u0435\u0437 \u043c\u0430\u0440\u043a\u0435\u0442\u043f\u043b\u0435\u0439\u0441","When enabled, the integration will be available to customers after purchase.":"\u041f\u0440\u0438 \u0432\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u0438 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044f \u0431\u0443\u0434\u0435\u0442 \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u0430 \u043a\u043b\u0438\u0435\u043d\u0442\u0430\u043c \u043f\u043e\u0441\u043b\u0435 \u043f\u043e\u043a\u0443\u043f\u043a\u0438.","Are you sure you want to turn off selling of integration ?":"\u0412\u044b \u0443\u0432\u0435\u0440\u0435\u043d\u044b, \u0447\u0442\u043e \u0445\u043e\u0442\u0438\u0442\u0435 \u043e\u0442\u043a\u043b\u044e\u0447\u0438\u0442\u044c \u043f\u0440\u043e\u0434\u0430\u0436\u0443 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438 ?","lang_code_ru":"\u0420\u0443\u0441\u0441\u043a\u0438\u0439","lang_code_en":"English"})</script><script>AMOCRM.constant('csrf_token', "def502003d93e6384757ae2e492efa5f844f98d9a089b00233b1017e55fb1a52bf40ec55aec14623a208ea9e16c1705424cb8b2ece056ae6d35466035684435dfe294b0e67f86436ecf7c4283793d31865a76edb8279ac92ffef3f9ce2ce4fef886c3ba175dd4404fcdf813d8b50ad92df32fbdba740b575ded89d97386fd9c936769a17e3c59d0c3c80fe8635402926285798ec47a40200c3bcef89e6cf836bf6a4261df8d97cd666c48d08fefdf1abaeda9068462f2fb4cd5c322d19ef71107e16db19269bd4932d3292595c4cbf9cf7f6ccbcdb15bdbf4abf1baec3744ce3c673a79a2aad281d3d3749e8c5dc0d6a956fbe6f7968a94232fed848c7a1b4ae5d1b233e1fe69a789b55aa");</script><script>AMOCRM.constant('widget_server', "https://widgets.amocrm.ru");</script><script>AMOCRM.constant('archives_checker_server', "https://inspector.amocrm.ru");</script><script>AMOCRM.constant('available_langs', ["ru","en"]);</script><script>AMOCRM.constant('can_review', 1);</script><script>AMOCRM.constant('widgets', {"user_rank":"master","webhooks_paid":true,"own_widgets_create_paid":true,"webhooks_count":2,"csrf_token":"def502003d93e6384757ae2e492efa5f844f98d9a089b00233b1017e55fb1a52bf40ec55aec14623a208ea9e16c1705424cb8b2ece056ae6d35466035684435dfe294b0e67f86436ecf7c4283793d31865a76edb8279ac92ffef3f9ce2ce4fef886c3ba175dd4404fcdf813d8b50ad92df32fbdba740b575ded89d97386fd9c936769a17e3c59d0c3c80fe8635402926285798ec47a40200c3bcef89e6cf836bf6a4261df8d97cd666c48d08fefdf1abaeda9068462f2fb4cd5c322d19ef71107e16db19269bd4932d3292595c4cbf9cf7f6ccbcdb15bdbf4abf1baec3744ce3c673a79a2aad281d3d3749e8c5dc0d6a956fbe6f7968a94232fed848c7a1b4ae5d1b233e1fe69a789b55aa","is_technical_account":false,"is_crm_template_create_available":false,"can_review":1,"widgets_categories":{"10":{"id":10,"code":"chats_and_messengers","name":"Чаты и мессенджеры","lang":"ru","marketplace_version":2,"is_hidden":false,"description":null,"is_only_search":false},"11":{"id":11,"code":"telephony","name":"Телефония","lang":"ru","marketplace_version":2,"is_hidden":false,"description":null,"is_only_search":false},"12":{"id":12,"code":"email_and_sms","name":"Email и SMS рассылки","lang":"ru","marketplace_version":2,"is_hidden":false,"description":null,"is_only_search":false},"22":{"id":22,"code":"website_integrations","name":"Интеграция с веб-сайтом","lang":"ru","marketplace_version":2,"is_hidden":false,"description":null,"is_only_search":false},"18":{"id":18,"code":"tasks","name":"Управление задачами","lang":"ru","marketplace_version":2,"is_hidden":false,"description":null,"is_only_search":false},"13":{"id":13,"code":"invoices","name":"Счета и эквайринги","lang":"ru","marketplace_version":2,"is_hidden":false,"description":null,"is_only_search":false},"15":{"id":15,"code":"documents","name":"Работа с документами","lang":"ru","marketplace_version":2,"is_hidden":false,"description":null,"is_only_search":false},"17":{"id":17,"code":"bots","name":"Автоматизация и боты","lang":"ru","marketplace_version":2,"is_hidden":false,"description":null,"is_only_search":false},"20":{"id":20,"code":"interface_and_usability","name":"Интерфейс и юзабилити","lang":"ru","marketplace_version":2,"is_hidden":false,"description":null,"is_only_search":false},"19":{"id":19,"code":"access_control","name":"Разграничение доступа","lang":"ru","marketplace_version":2,"is_hidden":false,"description":null,"is_only_search":false},"24":{"id":24,"code":"duplicates","name":"Дубли","lang":"ru","marketplace_version":2,"is_hidden":false,"description":null,"is_only_search":false},"14":{"id":14,"code":"analytics","name":"Аналитика","lang":"ru","marketplace_version":2,"is_hidden":false,"description":null,"is_only_search":false},"21":{"id":21,"code":"industry_integrations","name":"Отраслевые интеграции","lang":"ru","marketplace_version":2,"is_hidden":false,"description":null,"is_only_search":false},"16":{"id":16,"code":"retail","name":"Розница","lang":"ru","marketplace_version":2,"is_hidden":false,"description":null,"is_only_search":false},"23":{"id":23,"code":"useful_services","name":"Полезные сервисы","lang":"ru","marketplace_version":2,"is_hidden":false,"description":null,"is_only_search":false}},"aside_toggleable":true,"is_additional_agreement_performed":false,"filter":{"params":{"menu":{"amo_market":{"label":"Маркетплейс","link":"\/amo-market\/","selected":true},"application":{"label":"Мое приложение","link":"\/amo-market\/application\/","selected":false},"placements":{"label":"Рекламное размещение","link":"\/amo-market\/ads-manager\/","selected":false},"sales":{"label":"Мои продажи","link":"\/amo-market\/sales\/","selected":false}},"tech_account":false},"settings_filter":true},"entity":"widget","lang":{"Open":"Открыть","Expired (amoMarket)":"Истекла","amoCRM picks":"Выбор amoCRM","Show all (look at)":"Смотреть все","Disconnected (integration)":"Отключено","Your account is customized, and you have the ability to use private integrations.":"Ваш аккаунт кастомизирован и загрузка приватных интеграций доступна.","Unlike integrations in our marketplace, private integrations have not been tested by the amoCRM team.":"В отличие от интеграций из нашего маркетплейса, мы не модерируем и не тестируем подобные решения.","Use them at your own risk — private integrations can greatly affect the interface and display of data, making it impossible to provide support for your account.":"Такие интеграции могут сильно влиять на поведение интерфейсов и отображение данных, что делает невозможным поддержку по вопросам стандартной работы аккаунта.","title":"Настройки","dp_title":"Digital Pipeline","all_addons":"Все виджеты","addons":"Интеграции","crm_template_addons":"Отраслевые решения","Multiple sources":"Множественные источники","Duplication control":"Контроль дублей","messaging_apps_addons":"Сервисы для общения","create_addon":"Создать виджет","own_integrations_addons":"Приватные интеграции","my_submissions_addons":"Собственные интеграции","widget_power_on":"Включить виджет","widget_power_off":"Отключить виджет","widget_your_rate":"Ваша оценка","reviews":"Отзывы","show_more":"Показать еще","widget_install":"Установить","widget_status_installed":"Установлен","widget_status_install":"Установить","widget_status_more":"Подробнее","widget_status_error":"Ошибка","widget_save_error":"Поле \"#FIELD#\" не может быть пустым","top_search_input_placeholder":"Поиск","widgets_not_found":"Ни одного виджета не найдено","sip_user":"SIP пользователь","password":"Пароль","note":"Совершайте и принимайте звонки прямо в интерфейсе amoCRM, прямо в браузере с помощью виджета Voximplant в расширенном тарифном плане.","advancedPlan":"Расширенный","upgrade":"Перейти на “Расширенный”","plan.advanced":"Расширенный","plan.pro":"Pro","upgrade.advanced":"Перейти на “Расширенный”","upgrade.pro":"Перейти на “Pro”","developers_url":"https:\/\/www.amocrm.ru\/developers\/content\/integrations\/intro\/","attention_message":"От одного аккаунта вы можете добавить только одну оценку","placeholder":"Оставьте отзыв или оцените виджет, нажав на кнопку &quot;Добавить&quot;","crm":"Доступ к данным аккаунта в соответствии с правами пользователя","Access to account data":"Доступ к данным аккаунта","Access to files":"Доступ к файлам","Deleting files":"Удаление файлов","User creation":"Добавление пользователей","User activation":"Активация пользователей","User deactivation":"Деактивация пользователей","Amma":"Амма","Notifications":"Центр нотификаций","notifications":"Центр нотификаций","Sending to external chats":"Отправка во внешние чаты","External chat history":"История внешних чатов","Save changes?":"Сохранить изменения?","Add new hook":"Добавить webhook","Choose actions":"Выберите действия","actions":"действия","action, actions, actions":"действие, действия, действий, действия","Input destination":"Введите адрес назначения","Hooks description":"Вы можете оповещать сторонние приложения о событиях, произошедших в amoCRM, посредством отправки уведомлений. Для этого просто укажите URL, на который Вам будет отправлен <a href=\"https:\/\/www.amocrm.ru\/developers\/content\/api\/webhooks\" target=\"_blank\" title=\"перейти на сайт разработчиков\">WebHook<\/a>.","Turn on":"Включить","Webhook disabled":"Webhook отключен из-за невалидного отклика","Edit integration":"Редактирование интеграции","Create integration":"Создать интеграцию","Save":"Сохранить","Cancel":"Отменить","Integration name":"Название интеграции","User will be redirected to this page after giving access to amoCRM":"Пользователь будет перенаправлен по данной ссылке после предоставления доступов к amoCRM","Webhook will be sent to this uri after access to amoCRM is revoked":"На введенный адрес будет отправлен хук при отключении интеграции","Payment URL description":"На ссылку будут перенаправляться пользователи для оплаты счёта, она должна содержать маску \":account_id\" and \":invoice_id\". Для получения способа оплата - вы можете указать маску \":payment_method_code\".","Not more than %s symbols":"Не более %s символов","version":"Версия","Published on":"Опубликовано","Verified":"Проверено","Rejected":"Отклонено","Cabinet number amoSTART":"Номер кабинета amoSTART","Whats new (for moderator)":"Что нового (для модератора)","Submitted for review on":"На проверке","Widget archive":"Архив виджета","integration View":"Просмотреть","Publish":"Опубликовать","Short title":"Краткое название","View before installation":"Вид до установки","Integration Gallery":"Галерея интеграции","Integration Description":"Описание интеграции","Description after installation":"Описание после установки","Add Version":"Добавить версию","Request review":"Отправить на проверку","Logo":"Логотип","Whats new":"Что нового","Logo after installation":"Логотип после установки","Download widget archive":"Загрузить архив виджета","Short description for the integration page":"Краткое описание для страницы интеграций","Email Support":"E-mail поддержки интеграции","Link to integration support site":"Ссылка на сайт-поддержки интеграции","Integration Owner":"Название интегратора","Privacy policy":"Политика конфиденциальности","Privacy policy link":"Ссылка на политику конфиденциальности","Current host":"Текущий хост","Login of the current user, authorized user":"Логин текущего пользователя, авторизованного пользователя","id of the current account in the system":"id текущего аккаунта в системе","id of the current user in the system":"id текущего пользователя в системе","top level domain (com | ru)":"домен верхнего уровня (com|ru)","Account subdomain":"Субдомен аккаунта","Delete Version":"Удалить версию","View":"Посмотреть","Delete (salesbot)":"Удалить","Replace (salesbot)":"Заменить","Invalid file type":"Неверный тип файла","Integration Support":"Поддержка интеграции","Acceptable file formats:":"Допустимые форматы файлов:","The file could not be uploaded":"Не удалось загрузить файл","Proprietary integrations":"Собственные интеграции","Drop your files here":"Перетащите ваши файлы сюда","Creating your own integrations will expand your ability to use amoCRM. You will be able to fine-tune the operation of the system to the needs of your business.":"Создание собственных интеграций расширит ваши возможности использования системы amoCRM. Вы сможете максимально подстроить работу системы под потребности вашего бизнеса.","At least 3 characters":"Не менее 3 символов","At least 5 characters":"Не менее 5 символов","Redirect URL":"Ссылка для перенаправления","Deauthorization notification webhook (optional)":"Ccылка для хука об отключении (необязательно)","Payment URL":"Вебхук для формирования ссылки на оплату","Invalid URL":"Некорректный URL","Grant access":"Предоставить доступ","Provide web-site URL":"Укажите URL сайта - https:\/\/yoursite.com","Description":"Описание","Integration icon":"Иконка интеграции","Upload":"Загрузить","Upload new":"Загрузить новый","Upload integration":"Загрузить интеграцию","Archive with user code":"Архив с пользовательским кодом","Web Hooks":"Web Hooks","Add hook":"Добавить webhook","Edit":"Редактировать","Field name":"Название поля","Access granted":"Предоставлен доступ","Copy":"Копировать","Secret key":"Секретный ключ","Long-lived token":"Долгосрочный токен","Generate long-lived token":"Сгенерировать токен","Select expiration date":"Выберите дату истечения","Select the expiration date for the long-lived token, between 1 day and 5 years.":"Выберите дату истечения для долгосрочного токена. Срок действия токена может быть от 1 дня до 5 лет.","Make sure to save your token - you won’t be able to access it again.":"Сохраните токен после создания. Вы больше не сможете получить к нему доступ.","Integration ID":"ID интеграции","Regenerate":"Перегенерировать","Delete":"Удалить","Auth code (available for 20 mins)":"Код авторизации (действителен 20 минут)","Own integrations":"Установленные интеграции","amoCRM set up progress: 0 of 4":"Настройка amoCRM: шаг <span class=\"value\">0<\/span> из <span>5<\/span>","Developer portal":"Документация","Installed":"Установлено","Key generated":"Ключ сгенерирован","Integration section description":"Cоздание собственных интеграций позволяет вам не только настраивать amoCRM под свои потребности, но и создавать всевозможные интеграции с другими системами.","integration_power_on":"Включить интеграцию","integration_power_off":"Отключить интеграцию","Confirm integration delete":"Подтвердите удаление интеграции","Webhooks limit exceeded":"Превышен лимит по количеству вебхуков","advanced":"расширенный","Upgrade to advanced plan":"Перейти на “Расширенный”","Are you sure you want to change the view window in «%s» catalog?":"Вы действительно хотите заменить окно просмотра в каталоге «%s»?","Keys and scopes":"Ключи и доступы","Add language":"Добавить язык","Delete language":"Удалить язык","Language":"Language \/ Язык","Not configured":"Не настроено","Delete Source":"Удалить источник","Revoke access":"Отозвать доступ","This tab logs the users who have granted integration access to this account. If you want to to remove a user's ability to send requests to the account on behalf of this integration, you can revoke access.":"На этой вкладке отображается кто и когда выдал доступ интеграции к этому аккаунту. Если вы хотите, чтобы пользователь не мог больше отправлять никакие запросы в аккаунт от имени интеграции, вы можете отозвать у него доступ.","If access is revoked from all users, the integration will stop working.":"Если отозвать все выданные доступы, интеграция перестанет работать.","Access granted:":"Доступ выдан:","Admin access granted:":"Полный доступ к аккаунту выдан:","This app is installed, but no one has given it access yet.":"Нет пользователей, которые предоставили доступ данному приложению.","Are you sure you want to revoke access?":"Вы уверены, что хотите отозвать доступ?","Yes":"Да","No":"Нет","Unpaid account":"Пожалуйста, оплатите пользователя","page":{"fbform":{"form":"Форма Facebook","form_page":"Выберите страницу с формой Facebook","select_form":"Выбрать форму Facebook","form_delete":"Удалить форму","form_delete_confirm":"Вы уверены, что хотите удалить форму?","form_delete_success":"Форма была успешно удалена","amocrm_fields":"Поля amoCRM","lead":"Сделка","contact":"Контакт","company":"Компания","select":"Выберите поле","all_forms_added":"Все формы добавлены","note":"Примечание","lead_statuses":"Статус сделки","add_tags":"Добавлять теги","settings":"Настройка формы","fields":"Соответствие полей","user_select":"Ответственный","form_name":"Название формы","logout_warning":"При выходе из аккаунта все настроенные Facebook Lead Ads в amoCRM будут удалены. Продолжить?"},"vkform":{"form":"Форма VK","form_page":"Выберите страницу с формой VK","select_form":"Выбрать форму VK","amocrm_fields":"Поля amoCRM","fields":"Соответствие полей","form_name":"Название формы","settings":"Настройка формы"}},"error,errors,errors,errors":"ошибка,ошибки,ошибок,ошибки","warning,warnings,warnings,warnings":"предупреждение,предупреждения,предупреждений,предупреждения","Can't validate archive, continuing loading...":"Не удалось проверить архив, продолжаем загрузку...","It's private integration. It can cause problems with account and security of data.":"Это приватная интеграция. Она может вызвать проблемы с аккаунтом и создать угрозы безопасности данных.","sort":{"default":"По умолчанию","trending":"Актуальные","popular":"Самые популярные","newest":"Сначала новые"},"Sold through the marketplace":"Продается через маркетплейс","When enabled, the integration will be available to customers after purchase.":"При включении интеграция будет доступна клиентам после покупки.","Are you sure you want to turn off selling of integration ?":"Вы уверены, что хотите отключить продажу интеграции ?","lang_code_ru":"Русский","lang_code_en":"English"},"integration_slides":[{"src":"https:\/\/st1.amocrm.ru\/integrations_banners\/1773140179_Tekst_menyat_tut2x.jpg","integration_code":"amo_sipuni_2","active_to":1789037893},{"src":"\/frontend\/images\/interface\/tochka\/banners\/easy-connection-banner.png","integration_code":"amo_tochkacq","active_to":null},{"src":"https:\/\/st1.amocrm.ru\/integrations_banners\/1786369124_Tekst_menyat_tut2x_2_.jpg","integration_code":"ai_up","active_to":1789306471},{"src":"https:\/\/st1.amocrm.ru\/integrations_banners\/1784714965_Tekst_menyat_tut2x_1_.jpg","integration_code":"mao_bot","active_to":1792148553},{"src":"https:\/\/st1.amocrm.ru\/integrations_banners\/1783086941_Tekst_menyat_tut2x_1_.jpg","integration_code":"amo_wazzup","active_to":1814857535}],"main_day_recommendations":{"amomax":{"name":"MAX","langs":{"Add":"Добавить","fail":"Ошибка","success":"Успешно","No token":"Нет токена","Unnamed Bot":"Безымянный бот","widget.name":"MAX","Add the MAX token":"Добавьте токен бота MAX","widget.description":"Интеграция с MAX","salesbot.handler_name":"Запросить контакт","widget.tour_description":"Общайтесь с клиентами из мессенджера MAX прямо в amoCRM — теперь это еще удобнее и быстрее. Предложите клиентам привычный канал общения и обрабатывайте обращения в едином окне, не переключаясь между сервисами. Все сообщения автоматически сохраняются в карточках сделок и доступны вашей команде. <br> <br> Подключите интеграцию MAX, чтобы отвечать клиентам оперативно и не пропустить ни одного сообщения.","salesbot.preview_caption":"Клиент увидит такое сообщение:","widget.short_description":"Интеграция MAX Messenger","Instructions for adding a bot":"Инструкции по добавлению бота"},"logo":"\/widgets\/amomax\/11\/images\/ru\/logo_main.png","logo_small":"\/widgets\/amomax\/11\/images\/ru\/logo_small.png","support":{"link":"https:\/\/www.amocrm.ru\/","name":"amoCRM","email":"support@amocrm.ru","privacy_policy":"https:\/\/www.amocrm.ru\/confidence","livechat":[]},"tour":{"is_tour":true,"tour_images":["\/widgets\/amomax\/11\/images\/ru\/tour_images\/tour_image_a8fedf9636bae376dc41c6fd3e2544bc.png","\/widgets\/amomax\/11\/images\/ru\/tour_images\/tour_image_6339134c89b127d7ce3183518565ba0c.png"]},"descr":"Интеграция MAX Messenger","is_catalog_sdk":false,"is_crm_template":false,"is_showcase":false,"advanced_settings":false,"is_lead_source":true,"widget_page":false,"dp_ready":false,"categories":{"chats_and_messengers":{"id":10,"code":"chats_and_messengers","sort":100,"name":"Чаты и мессенджеры","sort_in_category":1000,"is_hidden":false},"amochats":{"id":314,"code":"amochats","sort":20000,"name":"amoChats","sort_in_category":1000,"is_hidden":true}},"category_code":"amochats","active":false,"code":"amomax","must_pay":"N","installable":"Y","user_settings":null,"settings":{"active":{"name":"active","value":null},"text":{"name":"text","type":"text","required":false,"value":null,"elem":"input"}},"is_not_fully_installed":false,"first_load":true,"is_private":false,"last_installed_at":null,"is_widget_owner":false,"show_stars":false,"show_rating":true,"state":"disconnected","status":"install","id":1229354,"client":{"uuid":"ccad2257-83fc-424c-9884-c1e9850f9a35","name":"amomax","description":"","lang_id":1,"settings":{"is_secret_issued":false,"integrations_billing":{"type":"free"},"is_amocrm_widget":true},"langs":{"ru":{"description":"","name":"amomax"},"en":{"name":"","description":""},"es":{"name":"","description":""},"pt":{"name":"","description":""},"id":{"name":"","description":""},"tr":{"name":"","description":""}}},"oauth_client_uuid":"ccad2257-83fc-424c-9884-c1e9850f9a35","rating":0,"reviews_count":0,"sort":1000,"type":"widget","version":11,"new_design":true,"payment":{"type":"free"}},"amo_instagram":{"name":"i2crm (WhatsApp, Telegram, MAX, Instagram, ВКонтакте и Avito)","langs":{"widget.name":"i2crm (WhatsApp, Telegram, MAX, Instagram, ВКонтакте и Avito)","userLang.imgAlt":"Instagram Image","settings.channel":"Ключ канала","settings.message":"Отправить сообщение","userLang.replyTo":"Ответить в:","userLang.thumbAlt":"Instagram Video","userLang.textLabel":"Текст:","widget.description":"<br><br><span style=\"font-weight:bold\">Как начать пользоваться<\/span> \n<ol> \n<li><a href=\"https:\/\/app.i2crm.ru\/manage\/site\/signup\/?utm_source=amocrm&utm_medium=widget_2&utm_campaign=amocrm_instagram2crm\" target=\"_blank\">Зарегистрируйтесь на сайте i2crm<\/a> и выберите тариф amoCRM<\/li>\n<li>Подключите входящие каналы, которыми будете пользоваться: WhatsApp*, Telegram, MAX, Instagram*, ВКонтакте, Авито.<\/li>\n<li>Подключите amoCRM: просто выберите имя вашего портала в выпадающем списке. <\/li><\/ol>\n<p>Готово! Подключение в среднем занимает 5 минут.<\/p>\n<br><br> <p style=\"font-size: 0.7em;\">* Социальная сеть, запрещенная на территории Российской Федерации. <\/p>","userLang.photoLabel":"Файл:","userLang.clientLabel":"Клиент","userLang.sendCaption":"Отправить","userLang.sourceLabel":"От имени","userLang.submitError":"Ошибка отправки формы","salesbot.choiceSource":"Для продолжения требуется выбрать источник","userLang.replyCaption":"Ответить","userLang.showOriginal":"Открыть в новом окне","userLang.replyToDirect":"Директ","userLang.templateLabel":"Шаблон:","userLang.replyToComment":"Комментарии","widget.tour_description":"<p>Интеграция WhatsApp*, Telegram, MAX, Instagram*, ВКонтакте, WABA и Авито с вашей CRM. <a href=\"https:\/\/app.i2crm.ru\/manage\/site\/signup\/?utm_source=amocrm&utm_medium=widget_2&utm_campaign=amocrm_instagram2crm\" target=\"_blank\">Зарегистрируйтесь и начните прямо сейчас бесплатный тестовый период<\/a>.Подключение займет не более 5 минут.<\/p> \n<span style=\"font-weight:bold\">Преимущества подключения i2crm:<\/span><br><br>\n<p><span style=\"font-weight:bold\";font-size: 14px;>История общения с клиентами хранится в CRM-системе.<\/span>Сотрудники при увольнении не заберут переписку и базу клиентов с собой.<\/p> \n<p><span style=\"font-weight:bold\";font-size: 14px;>Автоматизация рутинных процессов.<\/span>С i2crm можно настроить автоворонки, шаблоны с готовыми ответами, ботов и роботов на стороне CRM-системы, автоответы, автопрочтения, рассылки.<\/p> \n<p><span style=\"font-weight:bold\";font-size: 14px;>Растет конверсия в первую и повторную продажу.<\/span>Сообщения из разных каналов связи мгновенно попадают в CRM-систему. Менеджеры отвечают клиентам быстро и без задержек, первыми пишут из CRM-системы по базе контактов. Чем выше скорость ответа, тем лояльнее клиент.<\/p> \n<p><span style=\"font-weight:bold\";font-size: 14px;>Не тратится время на работу с ненужными сообщениями.<\/span>Помогают с этим спам-фильтры, черные списки номеров, фильтры на ответы только эмоджи или гифками.<\/p> \n<p><span style=\"font-weight:bold\";font-size: 14px;>Вся команда работает в одном сервисе.<\/span>Можно подключить любое количество аккаунтов, закрепить ответственных за каналами, распределять между ними задачи и нагрузку, совместно общаться в одном чате с клиентом.<\/p> \n<p><span style=\"font-weight:bold\";font-size: 14px;>Получаете статистику и аналитику по эффективности каналов.<\/span>С i2crm можно анализировать количество входящих, исходящих и уникальных сообщений по разным каналам общения и развивать те, куда клиенты пишут чаще всего.<\/p>\n<p><span style=\"font-weight:bold\";font-size: 14px;>Выгрузка переписки из соцсетей и мессенджеров за длительный период.<\/span>При подключении i2crm контакты и сообщения из WhatsApp*, Instagram* и Telegram за прошлые периоды можно перенести в CRM-систему. Переписка корректно распределится по сделкам в нужной хронологии.<\/p> \n<br><br><span style=\"font-weight:bold\">Возможности i2crm и amoCRM:<\/span><br><br><ul> \n<li>Можно писать первым.<\/li>\n<li>Поддержка групповых чатов MAX, Telegram иWhatsApp*.<\/li>\n<li>Ответы в формате цитирования.<\/li>\n<li>Получение статусов сообщений: отправлено, доставлено, прочитано.<\/li>\n<li>Получение уведомлений о пропущенных звонках в WhatsApp*.<\/li>\n<li>Запись и получение голосовых сообщений. <\/li>\n<li>Готовые шаблоны amoCRM для быстрых ответов.<\/li>\n<li>Запуск SalesBot по конкретному каналу общения. <\/li>\n<li>Проверка номера на наличие MAX,  WhatsApp* и Telegram.<\/li><\/ul>\n<br><br><span style=\"font-weight:bold\">Техподдержка i2crm <\/span>\n<p>Работает семь дней в неделю. Специалисты помогут клиенту разобраться с любым вопросом: от настроек и пользования до решения проблем со стороны CRM-системы.<\/p>\n<p><a href=\"https:\/\/t.me\/i2crm_support_bot\" target=\"_blank\">Бот технической поддержки<\/a><\/p>\n<p><a href=\"https:\/\/i2crm.ru\/wame?74993501337\" target=\"_blank\">Whatsapp<\/a>: +7 (499) 350-13-37<\/p>\n<p>Email: <a href=\"mailto:support@i2crm.ru\">support@i2crm.ru<\/a><\/p>\n<br><br><span style=\"font-weight:bold\">Как начать пользоваться<\/span> \n<ol> \n<li><a href=\"https:\/\/app.i2crm.ru\/manage\/site\/signup\/?utm_source=amocrm&utm_medium=widget_2&utm_campaign=amocrm_instagram2crm\" target=\"_blank\">Зарегистрируйтесь на сайте i2crm<\/a> и выберите тариф amoCRM<\/li>\n<li>Подключите входящие каналы, которыми будете пользоваться: WhatsApp*, Telegram, MAX, Instagram*, ВКонтакте, Авито.<\/li>\n<li>Подключите amoCRM: просто выберите имя вашего портала в выпадающем списке. <\/li><\/ol>\n<p>Готово! Подключение в среднем занимает  5 минут.<\/p>\n<br><br> <p style=\"font-size: 0.7em;\">* Социальная сеть, запрещенная на территории Российской Федерации. <\/p>","widget.short_description":"Самая удобная и функциональная интеграция","userLang.messageTypeLabel":"Тип сообщения:","userLang.replyWithRegular":"Обычное","userLang.installationError":"Ошибка установки виджета","userLang.networkErrorTitle":"Ошибка сети","userLang.replyWithTemplate":"Шаблон","userLang.createDialogCaption":"Создать чат","userLang.networkErrorMessage":"Не удалось связаться с сервером. Попробуйте повторить попытку позднее.","userLang.errorFileSizeIsLarge":"Файл слишком большой!","salesbot.customAreaPlaceholder":"Текст сообщения"},"logo":"\/widgets\/amo_instagram\/52\/images\/ru\/logo_main.jpg","logo_small":"\/widgets\/amo_instagram\/52\/images\/ru\/logo_small.jpg","support":{"link":"https:\/\/i2crm.ru","name":"i2crm","email":"support@i2crm.ru","privacy_policy":"https:\/\/i2crm.ru\/privacy","livechat":[]},"tour":{"is_tour":true,"tour_images":["\/widgets\/amo_instagram\/52\/images\/ru\/tour_images\/tour_image_c6989ff3fa70a53603154a2efc342918.jpg","\/widgets\/amo_instagram\/52\/images\/ru\/tour_images\/tour_image_84e867a0fbd0dbaf27e9478a1224db46.jpg","\/widgets\/amo_instagram\/52\/images\/ru\/tour_images\/tour_image_0cf38455fee7741cf2dc45f85881f823.jpg","\/widgets\/amo_instagram\/52\/images\/ru\/tour_images\/tour_image_d9f116103dbb88f306f6a278f8563c5a.jpg"]},"descr":"Самая удобная и функциональная интеграция","is_catalog_sdk":false,"is_crm_template":false,"is_showcase":false,"advanced_settings":false,"is_lead_source":true,"widget_page":true,"dp_ready":true,"categories":{"chats_and_messengers":{"id":10,"code":"chats_and_messengers","sort":100,"name":"Чаты и мессенджеры","sort_in_category":1000,"is_hidden":false},"recommended":{"id":1,"code":"recommended","sort":100,"name":"Рекомендуемые виджеты","sort_in_category":1000,"is_hidden":false},"chats":{"id":6,"code":"chats","sort":500,"name":"Онлайн чаты","sort_in_category":1000,"is_hidden":false}},"category_code":"chats","active":false,"code":"amo_instagram","must_pay":"N","installable":"Y","user_settings":null,"settings":{"active":{"name":"active","value":null},"channel":{"name":"channel","type":"text","required":true,"value":null,"elem":"input"}},"is_not_fully_installed":false,"first_load":true,"is_private":false,"last_installed_at":null,"is_widget_owner":false,"show_stars":true,"show_rating":true,"state":"disconnected","status":"install","id":95415,"client":{"uuid":"bf235ea1-4070-4553-904f-cf186608d0ac","name":"amo_instagram","description":"Описание интеграции","lang_id":1,"settings":{"integrations_billing":{"type":"free"}},"langs":{"ru":{"name":"amo_instagram","description":"Описание интеграции"},"en":{"name":"","description":""},"es":{"name":"","description":""},"pt":{"name":"","description":""},"id":{"name":"","description":""},"tr":{"name":"","description":""}}},"oauth_client_uuid":"bf235ea1-4070-4553-904f-cf186608d0ac","rating":4.6,"reviews_count":364,"sort":1000,"type":"widget","version":52,"new_design":true,"payment":{"type":"free"}}},"language":"ru","available_langs":["ru","en"],"widget_server":"https:\/\/widgets.amocrm.ru","archives_checker_server":"https:\/\/inspector.amocrm.ru","has_installed_integrations":true,"sort_options":[{"class_name":"tips-item_selected"}]});</script></div><div id="card_holder" class="card-holder  js-widgets-hidden" style="display:none"></div>
+<div class="card-widgets custom-scroll  " id="widgets_block" style="display: none">
+  <div class="card-widgets__top">
+    <div class="js-card-widgets-on-off card-widgets-on-off-top">
+      <div class="card-widgets__top__icon icon-widgets-toggle-state">
+        <svg class="add-widget-icon" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+           width="24.969px" height="19.936px" viewBox="0 0 24.969 19.936" enable-background="new 0 0 24.969 19.936" xml:space="preserve">
+          <polygon points="2.006,1.999 19.943,1.999 19.943,0 2.006,0 0,0 0,1.999 0,17.961 0,19.936 2.006,19.936 19.943,19.936
+            19.943,17.961 2.006,17.961   "/>
+          <rect x="3.982" y="4.014" width="11.971" height="2.015"/>
+          <polygon points="24.969,9.011 19.943,9.011 19.943,4.014 17.928,4.014 17.928,9.011 13.008,9.011 13.008,10.987 17.928,10.987
+            17.928,16.024 19.943,16.024 19.943,10.987 24.969,10.987   "/>
+        </svg>
+              </div>
+    </div>
+    <span class="card-widgets__top__caption" >Виджеты</span>
+  </div>
+
+  <div class="js-card-widgets-on" id="nano-card-widgets">
+    <div class="card-widgets__elements">
+            <div class="card-widgets__cap js-card-widgets-cap ">
+        <a href="/settings/widgets/" class="js-navigate-link">
+          <span class="card-widgets__cap__text js-widgets-cap-small-text">Добавить виджеты</span>
+        </a>
+      </div>
+          </div>
+  </div>
+</div>
+
+
+    <script>
+        (function() {
+            var req = new XMLHttpRequest(),
+
+                ready = function(fn) {
+                    if (document.readyState != 'loading') {
+                        fn();
+                    } else {
+                        document.addEventListener('DOMContentLoaded', fn);
+                    }
+                };
+
+            req.onload = function() {
+                ready(function(e) {
+                    var div = document.createElement('div');
+                    div.innerHTML = req.responseText;
+                    div.children[0].setAttribute('id', 'svg-sprite-' + AMOCRM.constant('version'));
+                    document.body.insertBefore(div.children[0], document.body.childNodes[0]);
+                });
+            };
+
+            req.open('GET', 'https://statix.amocrm.ru/frontend/build/svg_sprite-688e7c8d.svg?' + window.location.host.split('.')[0]);
+            req.send();
+        }());
+    </script>
+
+</div>
+    <div id="aside"></div>
+</div>
+</body>
+
+</html>

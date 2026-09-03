@@ -1,0 +1,119 @@
+{
+  "webhooks": null,
+  "headerButtons": [
+    {
+      "tag": "A",
+      "text": "KIUT Samarqand",
+      "aria": null,
+      "title": null,
+      "cls": "nav__top__userbar_useraccounts__item_link nav__top__userbar_useraccounts__item_inner js-system-link",
+      "x": -151,
+      "y": -754,
+      "w": 302,
+      "h": 50,
+      "html": "<a class=\"nav__top__userbar_useraccounts__item_link nav__top__userbar_useraccounts__item_inner js-system-link\" tabindex=\"-1\" href=\"https://samcrmkiutuz.amocrm.ru\">\n                    KIUT Samarqand\n\n                    <span class=\"icon icon-arrow-r"
+    },
+    {
+      "tag": "A",
+      "text": "KIUT Namangan",
+      "aria": null,
+      "title": null,
+      "cls": "nav__top__userbar_useraccounts__item_link nav__top__userbar_useraccounts__item_inner js-system-link",
+      "x": -151,
+      "y": -703,
+      "w": 302,
+      "h": 50,
+      "html": "<a class=\"nav__top__userbar_useraccounts__item_link nav__top__userbar_useraccounts__item_inner js-system-link\" tabindex=\"-1\" href=\"https://kiutcrm.amocrm.ru\">\n                    KIUT Namangan\n\n                    <span class=\"icon icon-arrow-right\">"
+    },
+    {
+      "tag": "A",
+      "text": "Bussines Fix",
+      "aria": null,
+      "title": null,
+      "cls": "nav__top__userbar_useraccounts__item_link nav__top__userbar_useraccounts__item_inner js-system-link",
+      "x": -151,
+      "y": -652,
+      "w": 302,
+      "h": 50,
+      "html": "<a class=\"nav__top__userbar_useraccounts__item_link nav__top__userbar_useraccounts__item_inner js-system-link\" tabindex=\"-1\" href=\"https://sultanmuratovazizbek3.amocrm.ru\">\n                    Bussines Fix\n\n                    <span class=\"icon icon-"
+    },
+    {
+      "tag": "A",
+      "text": "unitedliftcrm",
+      "aria": null,
+      "title": null,
+      "cls": "nav__top__userbar_useraccounts__item_link nav__top__userbar_useraccounts__item_inner js-system-link",
+      "x": -151,
+      "y": -601,
+      "w": 302,
+      "h": 50,
+      "html": "<a class=\"nav__top__userbar_useraccounts__item_link nav__top__userbar_useraccounts__item_inner js-system-link\" tabindex=\"-1\" href=\"https://unitedliftcrm.amocrm.ru\">\n                    unitedliftcrm\n\n                    <span class=\"icon icon-arrow-r"
+    },
+    {
+      "tag": "A",
+      "text": "профиль",
+      "aria": null,
+      "title": null,
+      "cls": "nav__top__userbar__profile js-manage-profile",
+      "x": -40,
+      "y": 33,
+      "w": 70,
+      "h": 65,
+      "html": "<a class=\"nav__top__userbar__profile js-manage-profile\" href=\"/settings/profile/\">\n          <span class=\"nav__top__userbar-icon\"><span class=\"icon icon-pencil2 h-abs-position-center\"></span></span>\n          <span class=\"nav__top__userbar__profile__"
+    },
+    {
+      "tag": "A",
+      "text": "выйти",
+      "aria": null,
+      "title": null,
+      "cls": "nav__top__userbar__logout__text nav__top__userbar__grey-link js-system-link",
+      "x": 30,
+      "y": 44,
+      "w": 40,
+      "h": 22,
+      "html": "<a href=\"/?logout=yes\" class=\"nav__top__userbar__logout__text nav__top__userbar__grey-link js-system-link\">\n            выйти\n          </a>"
+    },
+    {
+      "tag": "A",
+      "text": "Рабочий стол",
+      "aria": null,
+      "title": null,
+      "cls": "nav__menu__item__link",
+      "x": 33,
+      "y": 114,
+      "w": 65,
+      "h": 62,
+      "html": "<a class=\"nav__menu__item__link\" href=\"/dashboard/\">\n          <div class=\"nav__menu__item__icon  icon-dash \">\n            \n            <span class=\"js-notifications_counter nav__notifications__counter\" style=\"display: none\">\n              \n         "
+    },
+    {
+      "tag": "A",
+      "text": "Маркетплейс",
+      "aria": null,
+      "title": null,
+      "cls": "aside__list-item-link navigate-link-nodecor h-text-overflow js-navigate-link",
+      "x": 202,
+      "y": 93,
+      "w": 214,
+      "h": 56,
+      "html": "<a href=\"/amo-market/\" class=\"aside__list-item-link navigate-link-nodecor h-text-overflow js-navigate-link\">\n                  Маркетплейс\n            </a>"
+    },
+    {
+      "tag": "A",
+      "text": "Мое приложение",
+      "aria": null,
+      "title": null,
+      "cls": "aside__list-item-link navigate-link-nodecor h-text-overflow js-navigate-link",
+      "x": 202,
+      "y": 149,
+      "w": 214,
+      "h": 56,
+      "html": "<a href=\"/amo-market/application/\" class=\"aside__list-item-link navigate-link-nodecor h-text-overflow js-navigate-link\">\n                  Мое приложение\n            </a>"
+    }
+  ],
+  "allButtons": [],
+  "cssContents": [],
+  "htmlHasCreate": false,
+  "htmlHasCreateEscaped": false,
+  "snippet": "reate__redirect-url-text\">На введенный адрес будет отправлен хук при отключении интеграции</span></div><div class=\"public-integration-edit__access\"><div class=\"",
+  "countIntegr": 4
+}

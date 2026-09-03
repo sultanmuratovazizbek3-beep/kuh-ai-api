@@ -1,0 +1,50 @@
+{
+  "widget": {
+    "name": "widget.name",
+    "description": "widget.description",
+    "short_description": "widget.short_description",
+    "version": "1.1.0",
+    "interface_version": 2,
+    "init_once": false,
+    "locale": [
+      "ru"
+    ],
+    "installation": true,
+    "support": {
+      "link": "https://kuhhospital.uz",
+      "email": "support@kuhhospital.uz"
+    }
+  },
+  "locations": [
+    "lcard-1",
+    "ccard-1",
+    "settings"
+  ],
+  "settings": {
+    "api_base": {
+      "name": "settings.api_base",
+      "type": "text",
+      "required": true
+    },
+    "api_token": {
+      "name": "settings.api_token",
+      "type": "text",
+      "required": false
+    },
+    "auto_refresh": {
+      "name": "settings.auto_refresh",
+      "type": "text",
+      "required": false
+    },
+    "access_mode": {
+      "name": "settings.access_mode",
+      "type": "text",
+      "required": false
+    },
+    "allowed_user_ids": {
+      "name": "settings.allowed_user_ids",
+      "type": "text",
+      "required": false
+    }
+  }
+}

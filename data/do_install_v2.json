@@ -1,0 +1,59 @@
+{
+  "ok": false,
+  "steps": [
+    {
+      "title": "amoCRM: kuhhospital",
+      "url": "https://kuhhospital.amocrm.ru/amo-market/application/"
+    },
+    {
+      "create_strategy_err": 0,
+      "e": "Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for get_by_role(\"button\", name=\"Создать интеграцию\")\n"
+    },
+    {
+      "create_strategy_err": 1,
+      "e": "Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for locator(\"button\").filter(has_text=\"Создать интеграцию\""
+    },
+    {
+      "create_strategy_err": 2,
+      "e": "Locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for locator(\"text=Создать интеграцию\").first\n"
+    },
+    {
+      "create_strategy": 3,
+      "ret": false
+    },
+    {
+      "create_strategy_err": 3,
+      "e": "Locator.count: Unexpected token \"=\" while parsing css selector \"#create-internal-integration, .modal-integration-type, t"
+    },
+    {
+      "submit": "button:has-text('Сохранить')"
+    }
+  ],
+  "api_base": "https://acute-earrings-diamond-judicial.trycloudflare.com",
+  "form_len": 0,
+  "form_ids": [],
+  "form_names": [],
+  "form_placeholders": [],
+  "form_labels": [],
+  "inputs": [],
+  "agreement": {
+    "status": "not_defined",
+    "is_tech_account": false,
+    "is_new_account": true,
+    "entity_type": "legal_entity"
+  },
+  "agreement2": {
+    "status": "not_defined",
+    "is_tech_account": false,
+    "is_new_account": true,
+    "entity_type": "legal_entity"
+  },
+  "upload": {
+    "status": 400,
+    "body": "{\"error\":\"You have not filled additional agreement\"}"
+  },
+  "client": {
+    "name": "AI Помощник менеджера",
+    "has_widget": false
+  }
+}

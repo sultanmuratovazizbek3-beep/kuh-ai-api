@@ -1,0 +1,43 @@
+{
+  "ok": false,
+  "steps": [
+    {
+      "dash": "https://kuhhospital.amocrm.ru/dashboard/?sel=all&period=week",
+      "title": "amoCRM: Рабочий стол, kuhhospital"
+    },
+    {
+      "widgets": "https://kuhhospital.amocrm.ru/amo-market",
+      "title": "amoCRM: amoМаркет, kuhhospital"
+    },
+    {
+      "click_fail": "Создать интеграцию",
+      "err": "Locator.click: Timeout 2000ms exceeded.\nCall log:\n  - waiting for get_by_text(\"С"
+    },
+    {
+      "click_fail": "создать интеграцию",
+      "err": "Locator.click: Timeout 2000ms exceeded.\nCall log:\n  - waiting for get_by_text(\"с"
+    },
+    {
+      "click_fail": "Создать",
+      "err": "Locator.click: Timeout 2000ms exceeded.\nCall log:\n  - waiting for get_by_text(\"С"
+    },
+    {
+      "opened_market": "AI Помощник менеджера"
+    }
+  ],
+  "upload": {
+    "status": 400,
+    "body": "{\"error\":\"You have not filled additional agreement\"}"
+  },
+  "agreement": {
+    "status": "not_defined",
+    "is_tech_account": false,
+    "is_new_account": true,
+    "entity_type": "legal_entity"
+  },
+  "client": {
+    "name": "AI Помощник менеджера",
+    "has_widget": false
+  },
+  "api_base": "https://opinion-laboratory-standing-provincial.trycloudflare.com"
+}

@@ -1,0 +1,803 @@
+{
+  "ok": false,
+  "steps": [
+    {
+      "url": "https://kuhhospital.amocrm.ru/amo-market/application/",
+      "title": "amoCRM: kuhhospital"
+    },
+    {
+      "save": "Сохранить"
+    }
+  ],
+  "api_base": "https://acute-earrings-diamond-judicial.trycloudflare.com",
+  "agreement_start": {
+    "status": "not_defined",
+    "is_tech_account": false,
+    "is_new_account": true,
+    "entity_type": "legal_entity"
+  },
+  "fields_after_create": [
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "KIUT Samarqand",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://samcrmkiutuz.amocrm.ru/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "KIUT Namangan",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kiutcrm.amocrm.ru/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Bussines Fix",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://sultanmuratovazizbek3.amocrm.ru/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "unitedliftcrm",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://unitedliftcrm.amocrm.ru/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Условия использования",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://www.amocrm.ru/oferta/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Обратиться за поддержкой",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/settings/support/"
+    },
+    {
+      "tag": "BUTTON",
+      "type": "button",
+      "id": "",
+      "name": "",
+      "text": "Обратиться за поддержкой",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "профиль",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/settings/profile/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "выйти",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/?logout=yes"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Рабочий стол",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/dashboard/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Сделки",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/leads/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "46111\nimBox",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/imbox/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Задачи",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/todo/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Списки",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/contacts/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Wazzup",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/widget_page/amo_wazzup/amo_wazzup"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Аналитика",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/stats/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "amoМаркет",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/amo-market/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Настройки",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/settings/new_version/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Маркетплейс",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/amo-market/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Мое приложение",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/amo-market/application/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Рекламное размещение",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/amo-market/ads-manager/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Мои продажи",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/amo-market/sales/"
+    },
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "id": "",
+      "name": "widget_code",
+      "text": "",
+      "placeholder": "Код виджета",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "id": "",
+      "name": "redirect_uri",
+      "text": "",
+      "placeholder": "Ссылка для перенаправления",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "id": "",
+      "name": "revoke_access_hook_uri",
+      "text": "",
+      "placeholder": "Ccылка для хука об отключении (необязательно)",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "BUTTON",
+      "type": "button",
+      "id": "",
+      "name": "",
+      "text": "Чаты и мессенджеры",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "LABEL",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Русский",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "INPUT",
+      "type": "checkbox",
+      "id": "",
+      "name": "languages",
+      "text": "",
+      "placeholder": "",
+      "value": "ru",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "LABEL",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "English",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "INPUT",
+      "type": "checkbox",
+      "id": "",
+      "name": "languages",
+      "text": "",
+      "placeholder": "",
+      "value": "en",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "LABEL",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "BUTTON",
+      "type": "button",
+      "id": "",
+      "name": "",
+      "text": "Бесплатно",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "BUTTON",
+      "type": "button",
+      "id": "",
+      "name": "",
+      "text": "Сохранить",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": ""
+    }
+  ],
+  "fields_form": [
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "KIUT Samarqand",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://samcrmkiutuz.amocrm.ru/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "KIUT Namangan",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kiutcrm.amocrm.ru/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Bussines Fix",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://sultanmuratovazizbek3.amocrm.ru/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "unitedliftcrm",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://unitedliftcrm.amocrm.ru/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Условия использования",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://www.amocrm.ru/oferta/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Обратиться за поддержкой",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/settings/support/"
+    },
+    {
+      "tag": "BUTTON",
+      "type": "button",
+      "id": "",
+      "name": "",
+      "text": "Обратиться за поддержкой",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "профиль",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/settings/profile/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "выйти",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/?logout=yes"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Рабочий стол",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/dashboard/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Сделки",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/leads/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "46111\nimBox",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/imbox/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Задачи",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/todo/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Списки",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/contacts/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Wazzup",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/widget_page/amo_wazzup/amo_wazzup"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Аналитика",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/stats/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "amoМаркет",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/amo-market/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Настройки",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/settings/new_version/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Маркетплейс",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/amo-market/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Мое приложение",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/amo-market/application/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Рекламное размещение",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/amo-market/ads-manager/"
+    },
+    {
+      "tag": "A",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Мои продажи",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": "https://kuhhospital.amocrm.ru/amo-market/sales/"
+    },
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "id": "",
+      "name": "widget_code",
+      "text": "",
+      "placeholder": "Код виджета",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "id": "",
+      "name": "redirect_uri",
+      "text": "",
+      "placeholder": "Ссылка для перенаправления",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "INPUT",
+      "type": "text",
+      "id": "",
+      "name": "revoke_access_hook_uri",
+      "text": "",
+      "placeholder": "Ccылка для хука об отключении (необязательно)",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "BUTTON",
+      "type": "button",
+      "id": "",
+      "name": "",
+      "text": "Чаты и мессенджеры",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "LABEL",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "Русский",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "INPUT",
+      "type": "checkbox",
+      "id": "",
+      "name": "languages",
+      "text": "",
+      "placeholder": "",
+      "value": "ru",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "LABEL",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "English",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "INPUT",
+      "type": "checkbox",
+      "id": "",
+      "name": "languages",
+      "text": "",
+      "placeholder": "",
+      "value": "en",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "LABEL",
+      "type": "",
+      "id": "",
+      "name": "",
+      "text": "",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "BUTTON",
+      "type": "button",
+      "id": "",
+      "name": "",
+      "text": "Бесплатно",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": ""
+    },
+    {
+      "tag": "BUTTON",
+      "type": "button",
+      "id": "",
+      "name": "",
+      "text": "Сохранить",
+      "placeholder": "",
+      "value": "",
+      "visible": true,
+      "href": ""
+    }
+  ],
+  "form_ids": [
+    "svg-sprite-undefined",
+    "ai--stars",
+    "ai--starsFilled",
+    "amma_chat--agent",
+    "amma_chat--attach-file",
+    "amma_chat--cross-close",
+    "amma_chat--link",
+    "amma_chat--mic",
+    "amma_chat--new-chat",
+    "amma_chat--search",
+    "amma_chat--send-message",
+    "amma_chat--sidebar-toggle",
+    "analytics--data-storage",
+    "analytics--overdue-timer",
+    "analytics--pause",
+    "analytics--play",
+    "auth--cloud",
+    "auth--key",
+    "billing_com--exclamation_mark",
+    "billing_com--paypal",
+    "billing_com--paypal_with_text",
+    "billing_com--question_mark_help",
+    "billing_pro_trial--analyst-sparkles"
+  ],
+  "form_names": [],
+  "agreement_after_ui": {
+    "status": "not_defined",
+    "is_tech_account": false,
+    "is_new_account": true,
+    "entity_type": "legal_entity"
+  },
+  "agree_post": {
+    "status": 400,
+    "body": "{\"title\":\"Creation failed\",\"type\":\"https://httpstatus.es/400\",\"status\":400,\"detail\":\"Invalid data\"}"
+  },
+  "agree_post_individual": {
+    "status": 400,
+    "body": "{\"title\":\"Creation failed\",\"type\":\"https://httpstatus.es/400\",\"status\":400,\"detail\":\"Invalid data\"}"
+  },
+  "agreement_final": {
+    "status": "not_defined",
+    "is_tech_account": false,
+    "is_new_account": true,
+    "entity_type": "legal_entity"
+  },
+  "upload": {
+    "status": 400,
+    "body": "{\"error\":\"You have not filled additional agreement\"}"
+  },
+  "client": {
+    "name": "AI Помощник менеджера",
+    "has_widget": false
+  }
+}

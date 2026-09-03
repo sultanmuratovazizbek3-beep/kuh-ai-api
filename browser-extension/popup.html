@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { font-family: system-ui, sans-serif; width: 320px; margin: 14px; color: #0f172a; }
+    h1 { font-size: 14px; margin: 0 0 8px; }
+    .ok { color: #15803d; font-weight: 800; }
+    .bad { color: #dc2626; font-weight: 800; }
+    p { font-size: 12px; color: #475569; line-height: 1.45; margin: 8px 0; }
+    ul { font-size: 12px; color: #475569; margin: 6px 0 8px 16px; padding: 0; line-height: 1.45; }
+    button { width: 100%; margin-top: 6px; padding: 9px; border-radius: 9px; border: 1px solid #e2e8f0;
+      cursor: pointer; font-weight: 700; background: #fff; }
+    .p { background: #2563eb; color: #fff; border-color: #2563eb; }
+    code { font-size: 11px; background: #f1f5f9; padding: 2px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>KUH AI · помощник в amoCRM</h1>
+  <div id="st">…</div>
+  <p>
+    На карточке сделки справа внизу — кнопка <b>KUH AI</b>.
+    Нажмите, чтобы развернуть панель.
+  </p>
+  <ul>
+    <li><b>Разобрать</b> — анализ заметок и звонков</li>
+    <li><b>Копировать ответ</b> — лучшая фраза в буфер</li>
+    <li><b>В заметку сделки</b> — записать разбор в amo</li>
+  </ul>
+  <p>API: <code id="api">http://127.0.0.1:8090</code></p>
+  <button class="p" id="amo">Открыть AmoCRM</button>
+  <button id="opt">Настройки</button>
+  <script src="popup.js"></script>
+</body>
+</html>

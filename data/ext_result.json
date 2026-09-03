@@ -1,0 +1,15 @@
+{
+  "ok": false,
+  "ts": 1788429703,
+  "api_health": {
+    "status": "ok",
+    "missing_config": [],
+    "ts": 1788429703,
+    "worker": false,
+    "write_amo_notes": true
+  },
+  "edge": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+  "dash_title": "amoCRM: Авторизация",
+  "dash_url": "https://kuhhospital.amocrm.ru/dashboard/",
+  "error": "auth failed — обновите data/_ycookies"
+}

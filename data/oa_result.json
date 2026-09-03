@@ -1,0 +1,26 @@
+{
+  "steps": [
+    {
+      "aside_err": "Locator.click: Timeout 3000ms exceeded.\nCall log:\n  - waiting for locator(\"text=",
+      "href_err": "Locator.click: Timeout 3000ms exceeded.\nCall log:\n  - waiting for locator(\"a[hre"
+    },
+    {
+      "create_err": "Locator.click: Timeout 4000ms exceeded.\nCall log:\n  - waiting for locator(\"text=Создать интеграцию\")\n"
+    }
+  ],
+  "open": {
+    "tried": [
+      "../build/transpiled/interface/account/development/private_integration_form",
+      "interface/account/development/private_integration_form",
+      "lib/interface/account/development/private_integration_form"
+    ],
+    "ok": false,
+    "mods": [],
+    "fail": [
+      "interface/account/development/private_integration_form",
+      "../build/transpiled/interface/account/development/private_integration_form",
+      "lib/interface/account/development/private_integration_form"
+    ]
+  },
+  "fields": []
+}

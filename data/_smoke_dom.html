@@ -1,0 +1,2276 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Аналитика звонков</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("kuh_theme");
+        if (t !== "light" && t !== "dark") t = "light";
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="aivex-tokens.css?v=20260824ru3">
+  <link rel="stylesheet" href="styles.css?v=20260824ru3">
+  <link rel="stylesheet" href="layout.css?v=20260824ru3">
+</head>
+<body>
+  <div id="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">AI</div>
+        <div>
+          <div class="brand-title">Аналитика</div>
+          <div class="brand-sub">Клиника · звонки и сделки</div>
+        </div>
+      </div>
+
+      <nav class="nav" id="side-nav">
+        <div class="nav-group">Меню</div>
+        <button class="nav-item active" data-view="dashboard">
+          <span class="ico">1</span><span class="nav-label">Главная</span>
+        </button>
+        <button class="nav-item" data-view="assistant">
+          <span class="ico">2</span><span class="nav-label">Разбор звонка</span>
+        </button>
+        <button class="nav-item" data-view="crm">
+          <span class="ico">3</span><span class="nav-label">Подключение amo</span>
+        </button>
+        <button class="nav-item" data-view="settings">
+          <span class="ico">4</span><span class="nav-label">Настройки</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="how-mini">
+          <b>Авторабота</b>
+          <span id="worker-status-text">Сейчас: collect</span>
+        </div>
+        <div class="status-active ok" id="api-status" title="Система работает · авто">
+          <span class="dot-ok"></span>
+          <span id="api-status-text">На связи</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="page-toolbar ax-topbar">
+        <div>
+          <div class="crumb" id="view-crumb">Меню</div>
+          <h1 id="view-title">Главная</h1>
+          <p class="muted small" id="view-sub">Подключено: amocrm · KUH Analytics · активность</p>
+        </div>
+        <div class="topbar-actions">
+          <button type="button" class="ax-search" id="btn-cmdk" title="Быстрый поиск">
+            <span>Найти раздел…</span>
+            <kbd>Ctrl+K</kbd>
+          </button>
+          <div class="header-date" title="Период">
+            <input type="date" id="hdr-from">
+            <span class="sep">â€”</span>
+            <input type="date" id="hdr-to">
+          </div>
+          <div class="theme-switch" id="theme-switch" title="Тема оформления">
+            <button type="button" class="theme-btn active" data-theme="light" aria-label="Ğ¡Ğ²ĞµÑ‚Ğ»Ğ°Ñ">
+              <span class="theme-ico">â˜€</span>
+            </button>
+            <button type="button" class="theme-btn" data-theme="dark" aria-label="Ğ¢Ñ‘Ğ¼Ğ½Ğ°Ñ">
+              <span class="theme-ico">â˜¾</span>
+            </button>
+          </div>
+          <div class="lang-switch" id="lang-switch" title="Язык подсказок">
+            <button type="button" class="lang-btn active" data-lang="ru">RU</button>
+            <button type="button" class="lang-btn" data-lang="uz">UZ</button>
+            <button type="button" class="lang-btn" data-lang="both">+</button>
+          </div>
+          <button class="btn ghost sm" id="btn-refresh" title="Обновить экран">Обновить</button>
+          <button class="btn primary sm" id="btn-collect" title="Скачать новые звонки из amoCRM">Забрать звонки</button>
+        </div>
+      </div>
+            <div class="period-chips" id="period-chips">
+        <button type="button" class="period-chip" data-days="1">Сегодня</button>
+        <button type="button" class="period-chip" data-days="2">Вчера</button>
+        <button type="button" class="period-chip active" data-days="7">Неделя</button>
+        <button type="button" class="period-chip" data-days="30">Месяц</button>
+        <button type="button" class="period-chip" data-days="90">Квартал</button>
+        <button type="button" class="period-chip" data-days="365">Год</button>
+      </div>
+
+      <!-- 0. ĞšĞĞš Ğ­Ğ¢Ğ Ğ ĞĞ‘ĞĞ¢ĞĞ•Ğ¢ -->
+      <section class="view" id="view-howto" hidden="" aria-hidden="true">
+        <div class="card howto-hero">
+          <h2>Ğ§Ñ‚Ğ¾ Ğ´ĞµĞ»Ğ°ĞµÑ‚ CRM AI Desk</h2>
+          <p class="muted">
+            Ğ‘ĞµÑ€Ñ‘Ñ‚ <b>Ğ·Ğ²Ğ¾Ğ½ĞºĞ¸ Ğ¸ Ñ‡Ğ°Ñ‚Ñ‹ Ğ¸Ğ· amoCRM</b> â†’ Ğ´ĞµĞ»Ğ°ĞµÑ‚ <b>Ñ‚ĞµĞºÑÑ‚</b> (RU + UZ) â†’ ÑÑ‚Ğ°Ğ²Ğ¸Ñ‚
+            <b>Ğ¾Ñ†ĞµĞ½ĞºÑƒ</b> â†’ Ğ¿Ğ¸ÑˆĞµÑ‚ <b>Ñ‡Ñ‚Ğ¾ ÑĞºĞ°Ğ·Ğ°Ñ‚ÑŒ ĞºĞ»Ğ¸ĞµĞ½Ñ‚Ñƒ</b> Ğ¸ ĞºÑƒĞ´Ğ° Ğ¼ĞµĞ½ĞµĞ´Ğ¶ĞµÑ€ ÑĞ±Ğ¸Ğ»ÑÑ ÑĞ¾ ÑĞºÑ€Ğ¸Ğ¿Ñ‚Ğ°.
+            Ğ—Ğ°Ğ¼ĞµÑ‚ĞºĞ¸ Ğ¼Ğ¾Ğ¶Ğ½Ğ¾ ÑÑ€Ğ°Ğ·Ñƒ Ğ¾Ñ‚Ğ¿Ñ€Ğ°Ğ²Ğ»ÑÑ‚ÑŒ Ğ² ĞºĞ°Ñ€Ñ‚Ğ¾Ñ‡ĞºÑƒ ÑĞ´ĞµĞ»ĞºĞ¸.
+          </p>
+          <div class="howto-actions quick-path">
+            <button class="btn primary" data-goto="crm">1. ĞŸĞ¾Ğ´ĞºĞ»ÑÑ‡Ğ¸Ñ‚ÑŒ CRM</button>
+            <button class="btn ghost" data-goto="dashboard">2. Ğ¡Ğ¼Ğ¾Ñ‚Ñ€ĞµÑ‚ÑŒ Ñ†Ğ¸Ñ„Ñ€Ñ‹</button>
+            <button class="btn ghost" data-goto="assistant">3. Ğ&nbsp;Ğ°Ğ·Ğ¾Ğ±Ñ€Ğ°Ñ‚ÑŒ Ğ·Ğ²Ğ¾Ğ½Ğ¾Ğº</button>
+          </div>
+        </div>
+
+        <div class="rechka-pipeline">
+          <div class="pipe-step">
+            <div class="pipe-n">01</div>
+            <h3>Ğ¡Ğ±Ğ¾Ñ€ Ğ·Ğ²Ğ¾Ğ½ĞºĞ°</h3>
+            <p>ĞšĞ½Ğ¾Ğ¿ĞºĞ° <b>Â«Ğ—Ğ°Ğ±Ñ€Ğ°Ñ‚ÑŒ Ğ¸Ğ· CRMÂ»</b> â€” ÑĞºĞ°Ñ‡Ğ¸Ğ²Ğ°ĞµĞ¼ Ğ·Ğ°Ğ¿Ğ¸ÑĞ¸ Ğ¸ Ñ‡Ğ°Ñ‚Ñ‹ Ğ¸Ğ· amoCRM.</p>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-n">02</div>
+            <h3>Ğ¢ĞµĞºÑÑ‚ Ñ€Ğ°Ğ·Ğ³Ğ¾Ğ²Ğ¾Ñ€Ğ°</h3>
+            <p>Ğ“Ğ¾Ğ»Ğ¾Ñ â†’ Ñ‚ĞµĞºÑÑ‚ (STT). ĞĞ° Ñ‚ĞµĞ»ĞµÑ„Ğ¾Ğ½Ğµ Ñ‡Ğ°ÑÑ‚Ğ¾ <b>ÑĞ¼ĞµÑÑŒ RU + UZ</b> â€” ÑÑ‚Ğ¾ Ğ½Ğ¾Ñ€Ğ¼Ğ°Ğ»ÑŒĞ½Ğ¾.</p>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-n">03</div>
+            <h3>ĞšĞ»Ğ¸ĞµĞ½Ñ‚</h3>
+            <p>Ğ§Ñ‚Ğ¾ Ñ…Ğ¾Ñ‚ĞµĞ», Ğ²Ğ¾Ğ·Ñ€Ğ°Ğ¶ĞµĞ½Ğ¸Ñ, ÑÑ€Ğ¾Ñ‡Ğ½Ğ¾ÑÑ‚ÑŒ, ĞºÑƒĞ´Ğ° Ğ·Ğ²Ğ¾Ğ½Ğ¸Ğ» (ĞœĞ&nbsp;Ğ¢ / Ğ£Ğ—Ğ˜ / Ğ¿Ñ€Ğ¸Ñ‘Ğ¼).</p>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-n">04</div>
+            <h3>ĞœĞµĞ½ĞµĞ´Ğ¶ĞµÑ€</h3>
+            <p>ĞÑ†ĞµĞ½ĞºĞ° /10, Ñ‡Ñ‚Ğ¾ ÑĞ´ĞµĞ»Ğ°Ğ» Ñ…Ğ¾Ñ€Ğ¾ÑˆĞ¾, Ñ‡Ñ‚Ğ¾ Ğ¿Ñ€Ğ¾Ğ¿ÑƒÑÑ‚Ğ¸Ğ» Ğ¿Ğ¾ ÑĞºÑ€Ğ¸Ğ¿Ñ‚Ñƒ.</p>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-n">05</div>
+            <h3>Ğ&nbsp;ĞµĞºĞ¾Ğ¼ĞµĞ½Ğ´Ğ°Ñ†Ğ¸Ğ¸</h3>
+            <p>Ğ“Ğ¾Ñ‚Ğ¾Ğ²Ñ‹Ğµ Ñ„Ñ€Ğ°Ğ·Ñ‹ <b>Ğ½Ğ° RU Ğ¸ UZ Ğ¾Ñ‚Ğ´ĞµĞ»ÑŒĞ½Ğ¾</b> â€” ĞºĞ¾Ğ¿Ğ¸Ñ€ÑƒĞµÑ‚Ğµ Ğ² Ñ‡Ğ°Ñ‚ Ğ¸Ğ»Ğ¸ Ğ·Ğ²Ğ¾Ğ½Ğ¾Ğº.</p>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-n">06</div>
+            <h3>ĞšĞ¾Ğ½Ñ‚Ñ€Ğ¾Ğ»ÑŒ Ğ&nbsp;ĞĞŸ</h3>
+            <p>Ğ­ĞºÑ€Ğ°Ğ½ Â«ĞšĞ¾Ğ½Ñ‚Ñ€Ğ¾Ğ»ÑŒÂ» â€” ÑĞ»Ğ°Ğ±Ñ‹Ğµ Ğ·Ğ²Ğ¾Ğ½ĞºĞ¸ Ğ¸ Ğ·Ğ°Ğ²Ğ¸ÑÑˆĞ¸Ğµ ÑĞ´ĞµĞ»ĞºĞ¸ Ğ·Ğ° Ğ´ĞµĞ½ÑŒ.</p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>ĞšÑ‚Ğ¾ Ñ‡ĞµĞ¼ Ğ¿Ğ¾Ğ»ÑŒĞ·ÑƒĞµÑ‚ÑÑ</h3>
+            <ul class="howto-list">
+              <li><b>ĞœĞµĞ½ĞµĞ´Ğ¶ĞµÑ€</b> â€” Â«Ğ&nbsp;Ğ°Ğ·Ğ±Ğ¾Ñ€ Ğ·Ğ²Ğ¾Ğ½ĞºĞ°Â»: Ğ¾Ñ†ĞµĞ½ĞºĞ° + Ñ‡Ñ‚Ğ¾ ÑĞºĞ°Ğ·Ğ°Ñ‚ÑŒ Ğ´Ğ°Ğ»ÑŒÑˆĞµ</li>
+              <li><b>Ğ&nbsp;ĞĞŸ</b> â€” Â«ĞšĞ¾Ğ½Ñ‚Ñ€Ğ¾Ğ»ÑŒ ĞºĞ°Ñ‡ĞµÑÑ‚Ğ²Ğ°Â»: ĞºĞ¾Ğ³Ğ¾ Ğ¿Ñ€Ğ¾Ğ²ĞµÑ€Ğ¸Ñ‚ÑŒ ÑĞµĞ³Ğ¾Ğ´Ğ½Ñ</li>
+              <li><b>Ğ’ÑĞµ</b> â€” Â«Ğ¡ĞºÑ€Ğ¸Ğ¿Ñ‚Ñ‹ RU/UZÂ»: Ğ³Ğ¾Ñ‚Ğ¾Ğ²Ñ‹Ğµ Ñ„Ñ€Ğ°Ğ·Ñ‹ Ğ¿Ğ¾ ÑƒÑĞ»ÑƒĞ³Ğ°Ğ¼</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Ğ¯Ğ·Ñ‹ĞºĞ¸ (RU / UZ)</h3>
+            <ul class="howto-list">
+              <li>Ğ¡Ğ²ĞµÑ€Ñ…Ñƒ ÑĞ¿Ñ€Ğ°Ğ²Ğ°: Ğ¿ĞµÑ€ĞµĞºĞ»ÑÑ‡Ğ°Ñ‚ĞµĞ»ÑŒ <b>RU Â· UZ Â· RU+UZ</b></li>
+              <li><b>RU</b> â€” Ñ‚Ğ¾Ğ»ÑŒĞºĞ¾ Ñ€ÑƒÑÑĞºĞ¸Ğ¹ Ñ‚ĞµĞºÑÑ‚ Ğ¿Ğ¾Ğ´ÑĞºĞ°Ğ·Ğ¾Ğº Ğ¸ ÑĞºÑ€Ğ¸Ğ¿Ñ‚Ğ¾Ğ²</li>
+              <li><b>UZ</b> â€” Ñ‚Ğ¾Ğ»ÑŒĞºĞ¾ oâ€˜zbekcha (lotin)</li>
+              <li><b>RU+UZ</b> â€” Ğ´Ğ²Ğ° Ğ±Ğ»Ğ¾ĞºĞ° Ñ€ÑĞ´Ğ¾Ğ¼, Ğ±ĞµĞ· ĞºĞ°ÑˆĞ¸ Ğ² Ğ¾Ğ´Ğ½Ğ¾Ğ¹ ÑÑ‚Ñ€Ğ¾ĞºĞµ</li>
+              <li>Ğ¢ĞµĞºÑÑ‚ Ğ·Ğ²Ğ¾Ğ½ĞºĞ° â€” ĞºĞ°Ğº Ğ³Ğ¾Ğ²Ğ¾Ñ€Ğ¸Ğ» Ñ‡ĞµĞ»Ğ¾Ğ²ĞµĞº (Ñ‡Ğ°ÑÑ‚Ğ¾ ÑĞ¼ĞµÑÑŒ). ĞœĞµÑ‚ĞºĞ° ÑĞ·Ñ‹ĞºĞ° ÑĞ²ĞµÑ€Ñ…Ñƒ ĞºĞ°Ñ€Ñ‚Ğ¾Ñ‡ĞºĞ¸.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3>ĞœĞ¸Ğ½Ğ¸Ğ¼Ğ°Ğ»ÑŒĞ½Ñ‹Ğ¹ ÑÑ‚Ğ°Ñ€Ñ‚ Ğ·Ğ° 2 Ğ¼Ğ¸Ğ½ÑƒÑ‚Ñ‹</h3>
+          <ol class="howto-ol">
+            <li>ĞÑ‚ĞºÑ€Ğ¾Ğ¹Ñ‚Ğµ <b>ĞŸĞ¾Ğ´ĞºĞ»ÑÑ‡Ğ¸Ñ‚ÑŒ CRM</b> â€” Ğ¿Ñ€Ğ¾Ğ²ĞµÑ€ÑŒÑ‚Ğµ, Ñ‡Ñ‚Ğ¾ amoCRM Ğ·ĞµĞ»Ñ‘Ğ½Ñ‹Ğ¹ / Ğ°ĞºÑ‚Ğ¸Ğ²ĞµĞ½</li>
+            <li>ĞĞ°Ğ¶Ğ¼Ğ¸Ñ‚Ğµ <b>âŸ³ Ğ—Ğ°Ğ±Ñ€Ğ°Ñ‚ÑŒ Ğ¸Ğ· CRM</b> (ÑĞ²ĞµÑ€Ñ…Ñƒ) â€” Ğ¿Ğ¾Ğ´Ñ‚ÑĞ½ÑƒÑ‚ÑÑ Ğ·Ğ²Ğ¾Ğ½ĞºĞ¸</li>
+            <li>Ğ—Ğ°Ğ¹Ğ´Ğ¸Ñ‚Ğµ Ğ² <b>Ğ&nbsp;Ğ°Ğ·Ğ±Ğ¾Ñ€ Ğ·Ğ²Ğ¾Ğ½ĞºĞ°</b> â†’ Ñ„Ğ¸Ğ»ÑŒÑ‚Ñ€ Â«Ğ•ÑÑ‚ÑŒ Ñ‚Ñ€Ğ°Ğ½ÑĞºÑ€Ğ¸Ğ¿Ñ‚Â» â†’ Ğ²Ñ‹Ğ±ĞµÑ€Ğ¸Ñ‚Ğµ ÑĞ´ĞµĞ»ĞºÑƒ â†’ <b>Ğ&nbsp;Ğ°Ğ·Ğ¾Ğ±Ñ€Ğ°Ñ‚ÑŒ</b></li>
+            <li>Ğ§Ğ¸Ñ‚Ğ°Ğ¹Ñ‚Ğµ ÑĞ²ĞµÑ€Ñ…Ñƒ Ğ²Ğ½Ğ¸Ğ·: Ğ¾Ñ†ĞµĞ½ĞºĞ° â†’ ÑÑƒÑ‚ÑŒ â†’ Ğ¿Ğ»Ğ°Ğ½ â†’ Ñ„Ñ€Ğ°Ğ·Ñ‹ â†’ Ğ¿Ğ¾Ğ»Ğ½Ñ‹Ğ¹ Ñ‚ĞµĞºÑÑ‚ Ğ·Ğ²Ğ¾Ğ½ĞºĞ°</li>
+          </ol>
+          <button class="btn primary" data-goto="assistant">ĞŸĞµÑ€ĞµĞ¹Ñ‚Ğ¸ Ğº Ñ€Ğ°Ğ·Ğ±Ğ¾Ñ€Ñƒ Ğ·Ğ²Ğ¾Ğ½ĞºĞ°</button>
+        </div>
+      </section>
+
+      <!-- 1. Ğ”ĞĞ¨Ğ‘ĞĞ Ğ” -->
+      <section class="view active" id="view-dashboard">
+        <!-- hidden inputs kept for existing JS period helpers -->
+        <input type="date" id="dash-from" class="hidden" hidden="">
+        <input type="date" id="dash-to" class="hidden" hidden="">
+        <button type="button" class="hidden" id="btn-dash-apply" hidden=""></button>
+
+        <div class="card pipeline-status pending" id="pipeline-status">
+          <div class="ps-left">
+            <span class="ps-dot" id="ps-dot"></span>
+            <div>
+              <b id="ps-title">Забираем звонки из amo…</b>
+              <div class="muted small" id="ps-sub">сейчас: сбор → расшифровка → анализ → заметка в amo</div>
+            </div>
+          </div>
+          <div class="ps-actions">
+            <button type="button" class="btn primary sm" id="btn-dash-collect">Забрать звонки</button>
+            <button type="button" class="btn ghost sm" data-goto="assistant">Открыть разбор</button>
+          </div>
+        </div>
+          <div class="ps-actions">
+            <button type="button" class="btn primary sm" id="btn-dash-collect">⟳ Забрать из CRM</button>
+            <button type="button" class="btn ghost sm" data-goto="assistant">Открыть разбор</button>
+          </div>
+        </section></main></div>
+
+        <div class="cards cards-3" id="kpi-cards" style="display:grid !important;grid-template-columns:repeat(3,minmax(0,1fr)) !important;gap:16px !important;margin-bottom:16px">
+          <div class="card kpi">
+            <div class="kpi-top">
+              <div class="kpi-ico c1" id="k-calls-ico">1091</div>
+              <div class="kpi-label" id="k-calls-label">Звонки</div>
+            </div>
+            <div class="kpi-val" id="k-calls">1091</div>
+            <div class="kpi-hint" id="k-period-hint">период: 18.08 – 24.08.2026</div>
+          </div>
+          <div class="card kpi">
+            <div class="kpi-top">
+              <div class="kpi-ico c4" id="k-won-ico">453</div>
+              <div class="kpi-label">Успешные сделки</div>
+            </div>
+            <div class="kpi-val" id="k-won">453 · 38%</div>
+            <div class="kpi-hint" id="k-conv-hint">отдел 38.5% · ср. звонок 103с</div>
+          </div>
+          <div class="card kpi">
+            <div class="kpi-top">
+              <div class="kpi-ico c5" id="k-quality-ico">4.34</div>
+              <div class="kpi-label">Качество звонков</div>
+            </div>
+            <div class="kpi-val" id="k-quality">4.34</div>
+            <div class="kpi-hint" id="k-quality-hint">231 оценок · текст 39</div>
+          </div>
+          <div class="card kpi">
+            <div class="kpi-top">
+              <div class="kpi-ico c2" id="k-chats-ico">2353</div>
+              <div class="kpi-label" id="k-chats-label">Чаты</div>
+            </div>
+            <div class="kpi-val" id="k-chats">2353</div>
+            <div class="kpi-hint">teal Â· communication</div>
+          </div>
+          <div class="card kpi">
+            <div class="kpi-top">
+              <div class="kpi-ico c3" id="k-leads-ico">2119</div>
+              <div class="kpi-label">Сделок в работе</div>
+            </div>
+            <div class="kpi-val" id="k-leads">2119</div>
+            <div class="kpi-hint">growth Â· green</div>
+          </div>
+          <div class="card kpi">
+            <div class="kpi-top">
+              <div class="kpi-ico c6" id="k-pending-ico">512</div>
+              <div class="kpi-label">Ждут расшифровку</div>
+            </div>
+            <div class="kpi-val" id="k-pending-stt">512</div>
+            <div class="kpi-hint">red Â· Ğ±ĞµĞ· Ñ€Ğ°ÑÑˆĞ¸Ñ„Ñ€Ğ¾Ğ²ĞºĞ¸</div>
+          </div>
+        </div>
+
+        <div class="ax-insights" id="ax-insights">
+          <div class="ax-insight">
+            <div class="tag">Подсказка</div>
+            <b id="ax-ins-1-t">Ждут расшифровки: 512</b>
+            <p id="ax-ins-1-p">Нажмите «Забрать звонки», чтобы обновить данные из amoCRM.</p>
+            <div class="meta" id="ax-ins-1-m">влияет на запись клиентов</div>
+          </div>
+          <div class="ax-insight">
+            <div class="tag">Подсказка</div>
+            <b id="ax-ins-2-t">Лучший: Без ответственного</b>
+            <p id="ax-ins-2-p">Средняя оценка 7.9/10. Держите этот паттерн на скриптах.</p>
+            <div class="meta" id="ax-ins-2-m">качество разговоров</div>
+          </div>
+          <div class="ax-insight">
+            <div class="tag">Что сделать</div>
+            <b id="ax-ins-3-t">512 ждут расшифровку</b>
+            <p id="ax-ins-3-p">Риск: решения без текста. Воркер расшифрует автоматически.</p>
+            <div class="meta" id="ax-ins-3-m">нужна расшифровка</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-h">
+            <div>
+              <h3>Ğ¡Ğ²ĞµĞ¶Ğ¸Ğµ ÑĞ´ĞµĞ»ĞºĞ¸</h3>
+              <p class="muted small card-desc">ĞšĞ»Ğ¸Ğº â€” Ğ¾Ñ‚ĞºÑ€Ñ‹Ñ‚ÑŒ Ñ€Ğ°Ğ·Ğ±Ğ¾Ñ€ Ğ·Ğ²Ğ¾Ğ½ĞºĞ°</p>
+            </div>
+            <button type="button" class="btn ghost sm" data-goto="assistant">Ğ’ÑĞµ</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ğ¡Ğ´ĞµĞ»ĞºĞ°</th>
+                  <th>ĞœĞµĞ½ĞµĞ´Ğ¶ĞµÑ€</th>
+                  <th>Ğ¡Ñ‚Ğ°Ñ‚ÑƒÑ</th>
+                  <th>ĞšĞ°Ñ‡ĞµÑÑ‚Ğ²Ğ¾</th>
+                </tr>
+              </thead>
+              <tbody id="dash-leads-body"><tr class="dash-lead-row" data-lead-id="31393797" style="cursor:pointer">
+        <td><b>Сделка #31393797</b></td>
+        <td>Oysanam</td>
+        <td>—</td>
+        <td>—</td>
+      </tr><tr class="dash-lead-row" data-lead-id="31385131" style="cursor:pointer">
+        <td><b>Сделка #31385131</b></td>
+        <td>Dilafruz</td>
+        <td>—</td>
+        <td>—</td>
+      </tr><tr class="dash-lead-row" data-lead-id="31393795" style="cursor:pointer">
+        <td><b>Сделка #31393795</b></td>
+        <td>Oysanam</td>
+        <td>—</td>
+        <td>—</td>
+      </tr><tr class="dash-lead-row" data-lead-id="31387043" style="cursor:pointer">
+        <td><b>Сделка #31387043</b></td>
+        <td>Dilafruz</td>
+        <td>—</td>
+        <td>—</td>
+      </tr><tr class="dash-lead-row" data-lead-id="31393459" style="cursor:pointer">
+        <td><b>Входящий 917105988 (5084040 - 5084040)</b></td>
+        <td>Irodaxon</td>
+        <td>—</td>
+        <td>—</td>
+      </tr><tr class="dash-lead-row" data-lead-id="31392865" style="cursor:pointer">
+        <td><b>Входящий 998757171 (5084040 - 5084040)</b></td>
+        <td>Dilafruz</td>
+        <td>—</td>
+        <td>—</td>
+      </tr><tr class="dash-lead-row" data-lead-id="31369833" style="cursor:pointer">
+        <td><b>Входящий 909034123 (5084040 - 5084040)</b></td>
+        <td>Dilafruz</td>
+        <td>—</td>
+        <td>—</td>
+      </tr><tr class="dash-lead-row" data-lead-id="31393701" style="cursor:pointer">
+        <td><b>Сделка #31393701</b></td>
+        <td>Oysanam</td>
+        <td>—</td>
+        <td>—</td>
+      </tr><tr class="dash-lead-row" data-lead-id="31393717" style="cursor:pointer">
+        <td><b>Входящий 958044373 (5084040 - 5084040)</b></td>
+        <td>Dilafruz</td>
+        <td>—</td>
+        <td>—</td>
+      </tr><tr class="dash-lead-row" data-lead-id="31393479" style="cursor:pointer">
+        <td><b>Пропущенный 949567600 (5084040 - 5084040)</b></td>
+        <td>Oysanam</td>
+        <td>—</td>
+        <td>—</td>
+      </tr><tr class="dash-lead-row" data-lead-id="31393279" style="cursor:pointer">
+        <td><b>Сделка #31393279</b></td>
+        <td>Irodaxon</td>
+        <td>—</td>
+        <td>—</td>
+      </tr><tr class="dash-lead-row" data-lead-id="31390647" style="cursor:pointer">
+        <td><b>Входящий 915917825 (5084040 - 5084040)</b></td>
+        <td>Irodaxon</td>
+        <td>—</td>
+        <td>—</td>
+      </tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="charts-row">
+          <div class="card chart-card">
+            <div class="card-h">
+              <div>
+                <h3>ĞĞºÑ‚Ğ¸Ğ²Ğ½Ğ¾ÑÑ‚ÑŒ</h3>
+                <p class="muted small card-desc">Ğ—Ğ²Ğ¾Ğ½ĞºĞ¸ Ğ¸ Ñ‡Ğ°Ñ‚Ñ‹ Ğ¿Ğ¾ Ğ´Ğ½ÑĞ¼</p>
+              </div>
+              <span class="badge" id="chart-period-label">18.08 – 24.08.26</span>
+            </div>
+            <canvas id="chart-activity" width="718" height="220" style="height: 220px;"></canvas>
+            <div class="chart-legend">
+              <span class="leg calls">â–&nbsp; Ğ—Ğ²Ğ¾Ğ½ĞºĞ¸</span>
+              <span class="leg chats">â–&nbsp; Ğ§Ğ°Ñ‚Ñ‹</span>
+            </div>
+          </div>
+          <div class="card chart-card">
+            <div class="card-h">
+              <div>
+                <h3>ĞšĞ°Ñ‡ĞµÑÑ‚Ğ²Ğ¾ Ğ¸ ÑĞ´ĞµĞ»ĞºĞ¸</h3>
+                <p class="muted small card-desc">Ğ¡Ñ€ĞµĞ´Ğ½ÑÑ Ğ¾Ñ†ĞµĞ½ĞºĞ° Â· won / lost</p>
+              </div>
+            </div>
+            <canvas id="chart-quality" width="718" height="220" style="height: 220px;"></canvas>
+            <div class="chart-legend">
+              <span class="leg quality">â–&nbsp; ĞšĞ°Ñ‡ĞµÑÑ‚Ğ²Ğ¾</span>
+              <span class="leg won">â–&nbsp; Ğ£ÑĞ¿ĞµÑ…</span>
+              <span class="leg lost">â–&nbsp; ĞÑ‚ĞºĞ°Ğ·</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="insight-bar card" id="insight-bar">
+          <div class="insight-ico">!</div>
+          <div>
+            <div class="insight-title" id="insight-title">Коротко по отделу (18.08 – 24.08.2026)</div>
+            <div class="muted small" id="insight-text">Звонков 1091, чатов 2353, успешных сделок 453 (конверсия 38%). На контроле: 64 сигналов (0 критичных), зависших сделок 80, слабых звонков 58. Лучший по контролю: Bfix (индекс 50, качество —). Кому помочь: Muqaddasxon, Dilafruz, Oysanam. Лучший по качеству: Без ответственного (7.9/10). Слабее: Muqaddasxon (1.7/10). Больше успешных: Muqaddasxon (187). ждут расшифровку: 512.</div>
+          </div>
+        </div>
+
+        <div class="grid-2 dash-extras">
+          <div class="card">
+            <div class="card-h">
+              <div>
+                <h3>Ğ&nbsp;Ğ°Ğ±Ğ¾Ñ‡Ğ¸Ğµ ÑĞ¾Ğ²ĞµÑ‚Ñ‹</h3>
+                <p class="muted small card-desc">Ğ§Ñ‚Ğ¾ Ñ€ĞµĞ°Ğ»ÑŒĞ½Ğ¾ Ğ´Ğ²Ğ¸Ğ³Ğ°ĞµÑ‚ Ğ·Ğ°Ğ¿Ğ¸ÑÑŒ Ğ½Ğ° Ğ¿Ñ€Ğ¸Ñ‘Ğ¼</p>
+              </div>
+            </div>
+            <div id="dash-tips" class="tips-list"><div class="tip-item">
+      <span class="tip-tag">STT</span>
+      <b>Ждут расшифровки: 512</b>
+      <p>Много звонков с записью без текста. В разборе — «Расшифровать», или прогоните пакет STT.</p>
+    </div><div class="tip-item">
+      <span class="tip-tag">Запись</span>
+      <b>Два слота вслух</b>
+      <p>«Сегодня после 15:00 или завтра до 12:00 — что берём?» Без даты в CRM сделка почти не возвращается.</p>
+    </div><div class="tip-item">
+      <span class="tip-tag">Гео</span>
+      <b>Адрес — после записи</b>
+      <p>Не диктовать дорогу 5 минут, пока клиент за рулём. Сначала слот → потом гео/SMS.</p>
+    </div><div class="tip-item">
+      <span class="tip-tag">WhatsApp</span>
+      <b>Спам-фильтр</b>
+      <p>Корп. WhatsApp часто не доходит. Клиент пишет первым «Kimyo» — или шлите SMS-ссылку.</p>
+    </div><div class="tip-item">
+      <span class="tip-tag">Цена</span>
+      <b>Сумма + что входит</b>
+      <p>Не спорить «мы лучше». Назвать ориентир, состав, закрыть слотом.</p>
+    </div><div class="tip-item">
+      <span class="tip-tag">Подумаю</span>
+      <b>Hold 2 часа</b>
+      <p>Слот без оплаты + ваш перезвон во времени. Не «звоните сами, когда решите».</p>
+    </div><div class="tip-item">
+      <span class="tip-tag">Этика</span>
+      <b>Без диагноза по телефону</b>
+      <p>Маршрут и запись. Диагноз и «100% вылечим» — только врач на приёме / 103 при угрозе.</p>
+    </div><div class="tip-item">
+      <span class="tip-tag">РОП</span>
+      <b>Кому помочь с качеством</b>
+      <p>Muqaddasxon, KUH hospital, Irodaxon — разбор 1-на-1: запись, 2 слота, без «навигации» до фиксации.</p>
+    </div><div class="tip-item">
+      <span class="tip-tag">Эталон</span>
+      <b>Ориентир: Без ответственного</b>
+      <p>Ср. качество 7.9, успехов 0. Разберите 2–3 их звонка как образец.</p>
+    </div></div>
+          </div>
+          <div class="card">
+            <div class="card-h">
+              <div>
+                <h3>Ğ¢Ğ¾Ğ¿Ñ‹ Ğ¼ĞµĞ½ĞµĞ´Ğ¶ĞµÑ€Ğ¾Ğ²</h3>
+                <p class="muted small card-desc" id="dash-tops-period">период: 18.08 – 24.08.2026</p>
+              </div>
+            </div>
+            <div id="dash-tops" class="tops-grid"><div class="top-card best"><h4>Лучшее качество</h4><div class="top-row">
+            <span class="n">1.</span>
+            <span class="name" title="Без ответственного">Без ответственного</span>
+            <span class="val">7.9/10</span>
+          </div><div class="top-row">
+            <span class="n">2.</span>
+            <span class="name" title="Dilafruz">Dilafruz</span>
+            <span class="val">2.9/10</span>
+          </div><div class="top-row">
+            <span class="n">3.</span>
+            <span class="name" title="Oysanam">Oysanam</span>
+            <span class="val">2.8/10</span>
+          </div><div class="top-row">
+            <span class="n">4.</span>
+            <span class="name" title="Irodaxon">Irodaxon</span>
+            <span class="val">2.4/10</span>
+          </div><div class="top-row">
+            <span class="n">5.</span>
+            <span class="name" title="KUH hospital">KUH hospital</span>
+            <span class="val">2.3/10</span>
+          </div></div><div class="top-card weak"><h4>Слабое качество</h4><div class="top-row">
+            <span class="n">1.</span>
+            <span class="name" title="Muqaddasxon">Muqaddasxon</span>
+            <span class="val">1.7/10</span>
+          </div><div class="top-row">
+            <span class="n">2.</span>
+            <span class="name" title="KUH hospital">KUH hospital</span>
+            <span class="val">2.3/10</span>
+          </div><div class="top-row">
+            <span class="n">3.</span>
+            <span class="name" title="Irodaxon">Irodaxon</span>
+            <span class="val">2.4/10</span>
+          </div><div class="top-row">
+            <span class="n">4.</span>
+            <span class="name" title="Oysanam">Oysanam</span>
+            <span class="val">2.8/10</span>
+          </div><div class="top-row">
+            <span class="n">5.</span>
+            <span class="name" title="Dilafruz">Dilafruz</span>
+            <span class="val">2.9/10</span>
+          </div></div><div class="top-card "><h4>Больше звонков</h4><div class="top-row">
+            <span class="n">1.</span>
+            <span class="name" title="KUH hospital">KUH hospital</span>
+            <span class="val">377</span>
+          </div><div class="top-row">
+            <span class="n">2.</span>
+            <span class="name" title="Oysanam">Oysanam</span>
+            <span class="val">241</span>
+          </div><div class="top-row">
+            <span class="n">3.</span>
+            <span class="name" title="Dilafruz">Dilafruz</span>
+            <span class="val">221</span>
+          </div><div class="top-row">
+            <span class="n">4.</span>
+            <span class="name" title="Irodaxon">Irodaxon</span>
+            <span class="val">162</span>
+          </div><div class="top-row">
+            <span class="n">5.</span>
+            <span class="name" title="Muqaddasxon">Muqaddasxon</span>
+            <span class="val">62</span>
+          </div></div><div class="top-card best"><h4>Больше успешных</h4><div class="top-row">
+            <span class="n">1.</span>
+            <span class="name" title="Muqaddasxon">Muqaddasxon</span>
+            <span class="val">187</span>
+          </div><div class="top-row">
+            <span class="n">2.</span>
+            <span class="name" title="Irodaxon">Irodaxon</span>
+            <span class="val">185</span>
+          </div><div class="top-row">
+            <span class="n">3.</span>
+            <span class="name" title="Oysanam">Oysanam</span>
+            <span class="val">54</span>
+          </div><div class="top-row">
+            <span class="n">4.</span>
+            <span class="name" title="Dilafruz">Dilafruz</span>
+            <span class="val">27</span>
+          </div></div><div class="top-card best"><h4>Лучшая конверсия</h4><div class="top-row">
+            <span class="n">1.</span>
+            <span class="name" title="Muqaddasxon">Muqaddasxon</span>
+            <span class="val">56.2%</span>
+          </div><div class="top-row">
+            <span class="n">2.</span>
+            <span class="name" title="Irodaxon">Irodaxon</span>
+            <span class="val">55.1%</span>
+          </div><div class="top-row">
+            <span class="n">3.</span>
+            <span class="name" title="Oysanam">Oysanam</span>
+            <span class="val">27.4%</span>
+          </div><div class="top-row">
+            <span class="n">4.</span>
+            <span class="name" title="Dilafruz">Dilafruz</span>
+            <span class="val">16.9%</span>
+          </div><div class="top-row">
+            <span class="n">5.</span>
+            <span class="name" title="KUH hospital">KUH hospital</span>
+            <span class="val">0%</span>
+          </div></div><div class="top-card "><h4>Больше чатов</h4><div class="top-row">
+            <span class="n">1.</span>
+            <span class="name" title="Без ответственного">Без ответственного</span>
+            <span class="val">2072</span>
+          </div><div class="top-row">
+            <span class="n">2.</span>
+            <span class="name" title="Muqaddasxon">Muqaddasxon</span>
+            <span class="val">134</span>
+          </div><div class="top-row">
+            <span class="n">3.</span>
+            <span class="name" title="Irodaxon">Irodaxon</span>
+            <span class="val">86</span>
+          </div><div class="top-row">
+            <span class="n">4.</span>
+            <span class="name" title="Oysanam">Oysanam</span>
+            <span class="val">37</span>
+          </div><div class="top-row">
+            <span class="n">5.</span>
+            <span class="name" title="Dilafruz">Dilafruz</span>
+            <span class="val">23</span>
+          </div></div></div>
+          </div>
+        </div>
+
+        <div class="card chart-card" style="margin-bottom:14px">
+          <div class="card-h">
+            <div>
+              <h3>ĞœĞµĞ½ĞµĞ´Ğ¶ĞµÑ€Ñ‹ â€” Ğ·Ğ²Ğ¾Ğ½ĞºĞ¸ Ğ¸ ĞºĞ°Ñ‡ĞµÑÑ‚Ğ²Ğ¾</h3>
+              <p class="muted small card-desc">Ğ¡Ñ€Ğ°Ğ²Ğ½ĞµĞ½Ğ¸Ğµ Ğ¾Ğ¿ĞµÑ€Ğ°Ñ‚Ğ¾Ñ€Ğ¾Ğ²</p>
+            </div>
+          </div>
+          <canvas id="chart-managers" width="718" height="260" style="height: 260px;"></canvas>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-h">
+              <div>
+                <h3>ĞœĞµĞ½ĞµĞ´Ğ¶ĞµÑ€Ñ‹ Ğ·Ğ° ÑÑƒÑ‚ĞºĞ¸</h3>
+                <p class="muted small card-desc">ĞšÑ‚Ğ¾ ÑĞºĞ¾Ğ»ÑŒĞºĞ¾ Ğ·Ğ²Ğ¾Ğ½Ğ¸Ğ» Ğ¸ ĞºĞ°ĞºĞ¾Ğµ ÑÑ€ĞµĞ´Ğ½ĞµĞµ ĞºĞ°Ñ‡ĞµÑÑ‚Ğ²Ğ¾</p>
+              </div>
+              <span class="badge">24 Ñ‡Ğ°ÑĞ°</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ĞœĞµĞ½ĞµĞ´Ğ¶ĞµÑ€</th>
+                    <th>Ğ—Ğ²Ğ¾Ğ½ĞºĞ¸</th>
+                    <th>Ğ£ÑĞ¿ĞµÑ…</th>
+                    <th>ĞšĞ¾Ğ½Ğ².</th>
+                    <th>ĞšĞ°Ñ‡ĞµÑÑ‚Ğ²Ğ¾</th>
+                  </tr>
+                </thead>
+                <tbody id="mgr-body"><tr>
+      <td><b>Muqaddasxon</b></td>
+      <td>62</td>
+      <td>187</td>
+      <td>56%</td>
+      <td><div class="q-bar">
+    <div class="q-bar-track"><div class="q-bar-fill b" style="width:17%"></div></div>
+    <span class="q-bar-val">1.7/10</span>
+  </div></td></tr><tr>
+      <td><b>Irodaxon</b></td>
+      <td>162</td>
+      <td>185</td>
+      <td>55%</td>
+      <td><div class="q-bar">
+    <div class="q-bar-track"><div class="q-bar-fill b" style="width:24%"></div></div>
+    <span class="q-bar-val">2.4/10</span>
+  </div></td></tr><tr>
+      <td><b>Oysanam</b></td>
+      <td>241</td>
+      <td>54</td>
+      <td>27%</td>
+      <td><div class="q-bar">
+    <div class="q-bar-track"><div class="q-bar-fill b" style="width:27.999999999999996%"></div></div>
+    <span class="q-bar-val">2.8/10</span>
+  </div></td></tr><tr>
+      <td><b>Dilafruz</b></td>
+      <td>221</td>
+      <td>27</td>
+      <td>17%</td>
+      <td><div class="q-bar">
+    <div class="q-bar-track"><div class="q-bar-fill b" style="width:28.999999999999996%"></div></div>
+    <span class="q-bar-val">2.9/10</span>
+  </div></td></tr><tr>
+      <td><b>KUH hospital</b></td>
+      <td>377</td>
+      <td>0</td>
+      <td>0%</td>
+      <td><div class="q-bar">
+    <div class="q-bar-track"><div class="q-bar-fill b" style="width:23%"></div></div>
+    <span class="q-bar-val">2.3/10</span>
+  </div></td></tr><tr>
+      <td><b>Без ответственного</b></td>
+      <td>28</td>
+      <td>0</td>
+      <td>—</td>
+      <td><div class="q-bar">
+    <div class="q-bar-track"><div class="q-bar-fill g" style="width:79%"></div></div>
+    <span class="q-bar-val">7.9/10</span>
+  </div></td></tr><tr>
+      <td><b>Bfix</b></td>
+      <td>0</td>
+      <td>0</td>
+      <td>—</td>
+      <td><span class="muted">—</span></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h">
+              <div>
+                <h3>Ğ¡Ğ²ĞµĞ¶Ğ¸Ğµ ÑĞ´ĞµĞ»ĞºĞ¸</h3>
+                <p class="muted small card-desc">ĞšĞ»Ğ¸Ğº â†’ ÑÑ€Ğ°Ğ·Ñƒ Ğ¾Ñ‚ĞºÑ€Ñ‹Ñ‚ÑŒ Ñ€Ğ°Ğ·Ğ±Ğ¾Ñ€</p>
+              </div>
+              <span class="badge">live</span>
+            </div>
+            <div class="lead-list" id="lead-list"><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31393797</div>
+        <div class="sub">Oysanam · 24.08, 16:18 · #31393797</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31385131</div>
+        <div class="sub">Dilafruz · 24.08, 16:17 · #31385131</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31393795</div>
+        <div class="sub">Oysanam · 24.08, 16:17 · #31393795</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31387043</div>
+        <div class="sub">Dilafruz · 24.08, 16:17 · #31387043</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 917105988 (5084040 - 5084040)</div>
+        <div class="sub">Irodaxon · 24.08, 16:17 · #31393459</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 998757171 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 16:17 · #31392865</div>
+      </div>
+      <span class="tag">🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 909034123 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 16:17 · #31369833</div>
+      </div>
+      <span class="tag">🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31393701</div>
+        <div class="sub">Oysanam · 24.08, 16:16 · #31393701</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 958044373 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 16:16 · #31393717</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Пропущенный 949567600 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 16:15 · #31393479</div>
+      </div>
+      <span class="tag lost">LOST · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31393279</div>
+        <div class="sub">Irodaxon · 24.08, 16:14 · #31393279</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 915917825 (5084040 - 5084040)</div>
+        <div class="sub">Irodaxon · 24.08, 16:14 · #31390647</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #29733251</div>
+        <div class="sub">Muqaddasxon · 24.08, 16:12 · #29733251</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 999347813 (5084040 - 5084040)</div>
+        <div class="sub">KUH hospital · 24.08, 16:12 · #31177595</div>
+      </div>
+      <span class="tag">🎙 3</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 935232117 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 16:12 · #31393399</div>
+      </div>
+      <span class="tag">🎙 1</span></div></div>
+          </div>
+        </div>
+      
+
+      <!-- 2. Ğ ĞĞ—Ğ‘ĞĞ  Ğ—Ğ’ĞĞĞšĞ -->
+      <section class="view" id="view-assistant">
+        <div class="guide card">
+          <b>ĞšĞ°Ğº Ñƒ Rechka:</b> 1) Ğ²Ñ‹Ğ±ĞµÑ€Ğ¸Ñ‚Ğµ ÑĞ´ĞµĞ»ĞºÑƒ â†’ 2) Â«Ğ&nbsp;Ğ°Ğ·Ğ¾Ğ±Ñ€Ğ°Ñ‚ÑŒÂ» â†’
+          3) Ğ¾Ñ†ĞµĞ½ĞºĞ° + Ñ„Ñ€Ğ°Ğ·Ñ‹ + Ñ€Ğ°Ğ·Ğ³Ğ¾Ğ²Ğ¾Ñ€. Ğ&nbsp;Ğ°Ğ·Ğ±Ğ¾Ñ€ <b>Ğ¿Ğ¸ÑˆĞµÑ‚ÑÑ Ğ² Ğ·Ğ°Ğ¼ĞµÑ‚ĞºÑƒ ÑĞ´ĞµĞ»ĞºĞ¸ Ğ² amoCRM</b>
+          (ĞºĞ½Ğ¾Ğ¿ĞºĞ° Â«Ğ’ amoÂ» â€” Ğ¾Ñ‚ĞºÑ€Ñ‹Ñ‚ÑŒ ĞºĞ°Ñ€Ñ‚Ğ¾Ñ‡ĞºÑƒ Ğ¸ Ğ¿Ñ€Ğ¾Ğ²ĞµÑ€Ğ¸Ñ‚ÑŒ Ğ·Ğ°Ğ¼ĞµÑ‚ĞºÑƒ).
+        </div>
+        <div class="assistant-layout">
+          <div class="card lead-picker">
+            <div class="card-h">
+              <div>
+                <h3>Ğ¡Ğ¿Ğ¸ÑĞ¾Ğº ÑĞ´ĞµĞ»Ğ¾Ğº</h3>
+                <p class="muted small card-desc"><span id="assist-count">200</span> Ğ² Ñ„Ğ¸Ğ»ÑŒÑ‚Ñ€Ğµ</p>
+              </div>
+              <button class="btn ghost sm" id="btn-filters-reset" title="Ğ¡Ğ±Ñ€Ğ¾ÑĞ¸Ñ‚ÑŒ Ñ„Ğ¸Ğ»ÑŒÑ‚Ñ€Ñ‹">Ğ¡Ğ±Ñ€Ğ¾Ñ</button>
+            </div>
+
+            <div class="filter-panel">
+              <input type="search" id="lead-search" placeholder="ĞŸĞ¾Ğ¸ÑĞº: Ğ¸Ğ¼Ñ, Ğ¼ĞµĞ½ĞµĞ´Ğ¶ĞµÑ€, IDâ€¦">
+
+              <label class="filt">
+                <span>Ğ¡Ñ‚Ğ°Ñ‚ÑƒÑ</span>
+                <select id="f-status" class="select">
+                  <option value="all" selected="">Ğ’ÑĞµ</option>
+                  <option value="open">Ğ’ Ñ€Ğ°Ğ±Ğ¾Ñ‚Ğµ</option>
+                  <option value="won">Ğ£ÑĞ¿ĞµÑˆĞ½Ñ‹Ğµ (WON)</option>
+                  <option value="lost">ĞÑ‚ĞºĞ°Ğ· (LOST)</option>
+                </select>
+              </label>
+
+              <label class="filt">
+                <span>ĞœĞµĞ½ĞµĞ´Ğ¶ĞµÑ€</span>
+                <select id="f-manager" class="select"><option value="all">Все менеджеры</option><option value="Dilafruz">Dilafruz</option><option value="Irodaxon">Irodaxon</option><option value="KUH hospital">KUH hospital</option><option value="Muqaddasxon">Muqaddasxon</option><option value="Oysanam">Oysanam</option></select>
+              </label>
+
+              <label class="filt">
+                <span>Ğ—Ğ²Ğ¾Ğ½Ğ¾Ğº / Ğ·Ğ°Ğ¿Ğ¸ÑÑŒ</span>
+                <select id="f-media" class="select">
+                  <option value="all">ĞĞµ Ğ²Ğ°Ğ¶Ğ½Ğ¾</option>
+                  <option value="transcript">Ğ•ÑÑ‚ÑŒ Ñ‚Ñ€Ğ°Ğ½ÑĞºÑ€Ğ¸Ğ¿Ñ‚</option>
+                  <option value="no_transcript">Ğ‘ĞµĞ· Ñ‚Ñ€Ğ°Ğ½ÑĞºÑ€Ğ¸Ğ¿Ñ‚Ğ°</option>
+                </select>
+              </label>
+
+              <label class="filt">
+                <span>ĞŸĞµÑ€Ğ¸Ğ¾Ğ´</span>
+                <select id="f-period" class="select">
+                  <option value="24">Ğ¡ÑƒÑ‚ĞºĞ¸</option>
+                  <option value="72">3 Ğ´Ğ½Ñ</option>
+                  <option value="168" selected="">7 Ğ´Ğ½ĞµĞ¹</option>
+                  <option value="720">30 Ğ´Ğ½ĞµĞ¹</option>
+                  <option value="0">Ğ’ĞµÑÑŒ ĞºÑÑˆ</option>
+                </select>
+              </label>
+
+              <label class="filt">
+                <span>Ğ¡Ğ¾Ñ€Ñ‚Ğ¸Ñ€Ğ¾Ğ²ĞºĞ°</span>
+                <select id="f-sort" class="select">
+                  <option value="updated_desc" selected="">Ğ¡Ğ½Ğ°Ñ‡Ğ°Ğ»Ğ° Ğ½Ğ¾Ğ²Ñ‹Ğµ</option>
+                  <option value="updated_asc">Ğ¡Ğ½Ğ°Ñ‡Ğ°Ğ»Ğ° ÑÑ‚Ğ°Ñ€Ñ‹Ğµ</option>
+                  <option value="name">ĞŸĞ¾ Ğ¸Ğ¼ĞµĞ½Ğ¸ Ğâ†’Ğ¯</option>
+                  <option value="manager">ĞŸĞ¾ Ğ¼ĞµĞ½ĞµĞ´Ğ¶ĞµÑ€Ñƒ</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="lead-list compact" id="assist-leads"><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31393797</div>
+        <div class="sub">Oysanam · 24.08, 16:18 · #31393797</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31385131</div>
+        <div class="sub">Dilafruz · 24.08, 16:17 · #31385131</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31393795</div>
+        <div class="sub">Oysanam · 24.08, 16:17 · #31393795</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31387043</div>
+        <div class="sub">Dilafruz · 24.08, 16:17 · #31387043</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 917105988 (5084040 - 5084040)</div>
+        <div class="sub">Irodaxon · 24.08, 16:17 · #31393459</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 998757171 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 16:17 · #31392865</div>
+      </div>
+      <span class="tag">🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 909034123 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 16:17 · #31369833</div>
+      </div>
+      <span class="tag">🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31393701</div>
+        <div class="sub">Oysanam · 24.08, 16:16 · #31393701</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 958044373 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 16:16 · #31393717</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Пропущенный 949567600 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 16:15 · #31393479</div>
+      </div>
+      <span class="tag lost">LOST · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31393279</div>
+        <div class="sub">Irodaxon · 24.08, 16:14 · #31393279</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 915917825 (5084040 - 5084040)</div>
+        <div class="sub">Irodaxon · 24.08, 16:14 · #31390647</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #29733251</div>
+        <div class="sub">Muqaddasxon · 24.08, 16:12 · #29733251</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 999347813 (5084040 - 5084040)</div>
+        <div class="sub">KUH hospital · 24.08, 16:12 · #31177595</div>
+      </div>
+      <span class="tag">🎙 3</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 935232117 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 16:12 · #31393399</div>
+      </div>
+      <span class="tag">🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 712310271 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 16:12 · #31358077</div>
+      </div>
+      <span class="tag">🎙 2</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31257755</div>
+        <div class="sub">Oysanam · 24.08, 16:09 · #31257755</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #29771439</div>
+        <div class="sub">Dilafruz · 24.08, 16:09 · #29771439</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #12549391</div>
+        <div class="sub">Dilafruz · 24.08, 16:08 · #12549391</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31000403</div>
+        <div class="sub">Dilafruz · 24.08, 16:08 · #31000403</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31392741</div>
+        <div class="sub">Oysanam · 24.08, 16:08 · #31392741</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 900181410 (5084040 - 5084040)</div>
+        <div class="sub">Irodaxon · 24.08, 16:08 · #31390571</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #30716999</div>
+        <div class="sub">Dilafruz · 24.08, 16:08 · #30716999</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #30783547</div>
+        <div class="sub">Dilafruz · 24.08, 16:08 · #30783547</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 993389687 (5084040 - 5084040)</div>
+        <div class="sub">Irodaxon · 24.08, 16:07 · #31390557</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 946488558 (5084040 - 5084040)</div>
+        <div class="sub">Irodaxon · 24.08, 16:06 · #31393505</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 902271507 (5084040 - 5084040)</div>
+        <div class="sub">Irodaxon · 24.08, 16:05 · #31393315</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #30714163</div>
+        <div class="sub">KUH hospital · 24.08, 16:05 · #30714163</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31393653</div>
+        <div class="sub">Dilafruz · 24.08, 16:05 · #31393653</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31393481</div>
+        <div class="sub">Dilafruz · 24.08, 16:05 · #31393481</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 943577217 (5084040 - 5084040)</div>
+        <div class="sub">Irodaxon · 24.08, 16:04 · #31390529</div>
+      </div>
+      <span class="tag">🎧 3</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31156443</div>
+        <div class="sub">Dilafruz · 24.08, 16:04 · #31156443</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31392551</div>
+        <div class="sub">Oysanam · 24.08, 16:04 · #31392551</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #29982837</div>
+        <div class="sub">Muqaddasxon · 24.08, 16:03 · #29982837</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #30886085</div>
+        <div class="sub">Muqaddasxon · 24.08, 16:03 · #30886085</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 953707825 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 16:02 · #31388707</div>
+      </div>
+      <span class="tag lost">LOST · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 994095409 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 16:02 · #31388723</div>
+      </div>
+      <span class="tag lost">LOST · 🎧 2</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 909800335 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 16:02 · #31388929</div>
+      </div>
+      <span class="tag won">WON · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31390551</div>
+        <div class="sub">Irodaxon · 24.08, 16:01 · #31390551</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31079073</div>
+        <div class="sub">Dilafruz · 24.08, 16:01 · #31079073</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31391387</div>
+        <div class="sub">Oysanam · 24.08, 16:00 · #31391387</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 905033031 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 15:59 · #31155631</div>
+      </div>
+      <span class="tag">🎧 2</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 959495999 (5084040 - 5084040)</div>
+        <div class="sub">KUH hospital · 24.08, 15:58 · #31393569</div>
+      </div>
+      <span class="tag lost">LOST · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31381993</div>
+        <div class="sub">Oysanam · 24.08, 15:57 · #31381993</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31220515</div>
+        <div class="sub">Oysanam · 24.08, 15:57 · #31220515</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 931878844 (5084040 - 5084040)</div>
+        <div class="sub">Irodaxon · 24.08, 15:56 · #31393019</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 971078999 (5084040 - 5084040)</div>
+        <div class="sub">KUH hospital · 24.08, 15:56 · #31393539</div>
+      </div>
+      <span class="tag lost">LOST · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 994867788 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 15:55 · #31392707</div>
+      </div>
+      <span class="tag">🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 909704244 (5084040 - 5084040)</div>
+        <div class="sub">Irodaxon · 24.08, 15:55 · #31391745</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 971078999 (5084040 - 5084040)</div>
+        <div class="sub">KUH hospital · 24.08, 15:54 · #31393507</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31391803</div>
+        <div class="sub">Dilafruz · 24.08, 15:53 · #31391803</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31291977</div>
+        <div class="sub">Dilafruz · 24.08, 15:53 · #31291977</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 935838080 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 15:50 · #31366625</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 998741466 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:50 · #31388931</div>
+      </div>
+      <span class="tag won">WON · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 946289399 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:49 · #31389115</div>
+      </div>
+      <span class="tag lost">LOST · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31374241</div>
+        <div class="sub">Muqaddasxon · 24.08, 15:49 · #31374241</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 509073883 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:49 · #31389375</div>
+      </div>
+      <span class="tag won">WON · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31388447</div>
+        <div class="sub">Dilafruz · 24.08, 15:49 · #31388447</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 977009779 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:49 · #31393317</div>
+      </div>
+      <span class="tag lost">LOST · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #30362401</div>
+        <div class="sub">KUH hospital · 24.08, 15:48 · #30362401</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31209199</div>
+        <div class="sub">Oysanam · 24.08, 15:48 · #31209199</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 901102056 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 15:48 · #31389323</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 943481290 (5084040 - 5084040)</div>
+        <div class="sub">Irodaxon · 24.08, 15:48 · #31392405</div>
+      </div>
+      <span class="tag">🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 915510035 (5084040 - 5084040)</div>
+        <div class="sub">Irodaxon · 24.08, 15:48 · #31376163</div>
+      </div>
+      <span class="tag">🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 903462046 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:47 · #31391403</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 771912525 (5084040 - 5084040)</div>
+        <div class="sub">Irodaxon · 24.08, 15:46 · #31392699</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31393385</div>
+        <div class="sub">Dilafruz · 24.08, 15:45 · #31393385</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 901395170 (5084040 - 5084040)</div>
+        <div class="sub">Irodaxon · 24.08, 15:43 · #31390261</div>
+      </div>
+      <span class="tag">🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31389635</div>
+        <div class="sub">Oysanam · 24.08, 15:43 · #31389635</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31392461</div>
+        <div class="sub">Oysanam · 24.08, 15:43 · #31392461</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Пропущенный 974615300 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 15:42 · #31259239</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31121360</div>
+        <div class="sub">Muqaddasxon · 24.08, 15:41 · #31121360</div>
+      </div>
+      <span class="tag won">WON · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 990289700 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:41 · #31268247</div>
+      </div>
+      <span class="tag">🎧 5</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31393281</div>
+        <div class="sub">Irodaxon · 24.08, 15:40 · #31393281</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 930684141 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 15:39 · #31366925</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 903123540 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:39 · #31389423</div>
+      </div>
+      <span class="tag won">WON · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 900933343 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:38 · #31390015</div>
+      </div>
+      <span class="tag won">WON · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31347925</div>
+        <div class="sub">Oysanam · 24.08, 15:38 · #31347925</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 992780044 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 15:37 · #31392339</div>
+      </div>
+      <span class="tag">🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 900070389 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:37 · #31393259</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 947563330 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:36 · #31390537</div>
+      </div>
+      <span class="tag won">WON · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31393193</div>
+        <div class="sub">Oysanam · 24.08, 15:36 · #31393193</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 950265652 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:35 · #31389621</div>
+      </div>
+      <span class="tag lost">LOST · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31384101</div>
+        <div class="sub">Irodaxon · 24.08, 15:34 · #31384101</div>
+      </div>
+      <span class="tag won">WON · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 933554355 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:34 · #31393211</div>
+      </div>
+      <span class="tag lost">LOST · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 933554355 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:34 · #31372377</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31385907</div>
+        <div class="sub">Irodaxon · 24.08, 15:33 · #31385907</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 913718204 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 15:33 · #31367657</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31392917</div>
+        <div class="sub">Irodaxon · 24.08, 15:33 · #31392917</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31073231</div>
+        <div class="sub">Oysanam · 24.08, 15:33 · #31073231</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 946428050 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 15:32 · #31367759</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 957005445 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 15:31 · #31391221</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 938322674 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:31 · #31390265</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 946336016 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:30 · #31390315</div>
+      </div>
+      <span class="tag won">WON · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31391877</div>
+        <div class="sub">Irodaxon · 24.08, 15:30 · #31391877</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 995313931 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:30 · #31390499</div>
+      </div>
+      <span class="tag lost">LOST · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 900344410 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 24.08, 15:29 · #31368061</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 776778434 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 24.08, 15:29 · #31392973</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31392993</div>
+        <div class="sub">Oysanam · 24.08, 15:29 · #31392993</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31392987</div>
+        <div class="sub">Oysanam · 24.08, 15:28 · #31392987</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 977416939 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 20:15 · #31280583</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 907700501 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 20:15 · #31281443</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 937733885 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 20:15 · #31328849</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 977879110 (5084040 - 5084040)</div>
+        <div class="sub">KUH hospital · 17.08, 20:14 · #31330177</div>
+      </div>
+      <span class="tag lost">LOST · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #30800109</div>
+        <div class="sub">KUH hospital · 17.08, 20:01 · #30800109</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 974610934 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 19:57 · #30145201</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 998798634 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 19:57 · #31259299</div>
+      </div>
+      <span class="tag">🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31272297</div>
+        <div class="sub">Dilafruz · 17.08, 19:55 · #31272297</div>
+      </div>
+      <span class="tag">🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 999255074 (5084040 - 5084040)</div>
+        <div class="sub">Muqaddasxon · 17.08, 19:51 · #31267569</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31268525</div>
+        <div class="sub">Dilafruz · 17.08, 19:51 · #31268525</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 79058102822 (5084040 - 5084040)</div>
+        <div class="sub">Muqaddasxon · 17.08, 19:51 · #31268883</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 935454424 (5084040 - 5084040)</div>
+        <div class="sub">Muqaddasxon · 17.08, 19:51 · #31274979</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 777399300 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 19:51 · #31281661</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 919063477 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 17.08, 19:51 · #31281687</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 990257070 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 19:51 · #31281689</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31329015</div>
+        <div class="sub">Dilafruz · 17.08, 19:51 · #31329015</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #30453593</div>
+        <div class="sub">KUH hospital · 17.08, 19:49 · #30453593</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31071837</div>
+        <div class="sub">KUH hospital · 17.08, 19:36 · #31071837</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31271713</div>
+        <div class="sub">Dilafruz · 17.08, 19:28 · #31271713</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 507903187 (5084040 - 5084040)</div>
+        <div class="sub">Muqaddasxon · 17.08, 19:28 · #31275013</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 907276177 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 19:28 · #31275025</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31271789</div>
+        <div class="sub">Dilafruz · 17.08, 19:28 · #31271789</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 958882686 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 17.08, 19:28 · #31275227</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 777231135 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 19:28 · #31276027</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 919681919 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 19:27 · #31279015</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 952441536 (5084040 - 5084040)</div>
+        <div class="sub">Muqaddasxon · 17.08, 19:27 · #31279087</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31277749</div>
+        <div class="sub">Muqaddasxon · 17.08, 19:27 · #31277749</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31278599</div>
+        <div class="sub">Muqaddasxon · 17.08, 19:27 · #31278599</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31281483</div>
+        <div class="sub">Oysanam · 17.08, 19:27 · #31281483</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 990318716 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 19:27 · #31326085</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 937370589 (5084040 - 5084040)</div>
+        <div class="sub">Muqaddasxon · 17.08, 19:27 · #31300511</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 773263663 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 19:27 · #31326167</div>
+      </div>
+      <span class="tag won">WON · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 994020200 (5084040 - 5084040)</div>
+        <div class="sub">KUH hospital · 17.08, 19:14 · #31329669</div>
+      </div>
+      <span class="tag lost">LOST · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 948717666 (5084040 - 5084040)</div>
+        <div class="sub">KUH hospital · 17.08, 19:09 · #31329597</div>
+      </div>
+      <span class="tag lost">LOST · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 954391170 (5084040 - 5084040)</div>
+        <div class="sub">KUH hospital · 17.08, 18:59 · #31329499</div>
+      </div>
+      <span class="tag lost">LOST · 🎙 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 954391170 (5084040 - 5084040)</div>
+        <div class="sub">KUH hospital · 17.08, 18:57 · #31329471</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #30831795</div>
+        <div class="sub">KUH hospital · 17.08, 18:56 · #30831795</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #30253341</div>
+        <div class="sub">Irodaxon · 17.08, 18:49 · #30253341</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #30420151</div>
+        <div class="sub">Dilafruz · 17.08, 18:35 · #30420151</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31310293</div>
+        <div class="sub">Oysanam · 17.08, 18:35 · #31310293</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31310197</div>
+        <div class="sub">Oysanam · 17.08, 18:34 · #31310197</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31312445</div>
+        <div class="sub">Oysanam · 17.08, 18:33 · #31312445</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31328911</div>
+        <div class="sub">Oysanam · 17.08, 18:33 · #31328911</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31327689</div>
+        <div class="sub">Oysanam · 17.08, 18:31 · #31327689</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31328565</div>
+        <div class="sub">Oysanam · 17.08, 18:31 · #31328565</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31328603</div>
+        <div class="sub">Oysanam · 17.08, 18:30 · #31328603</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31328935</div>
+        <div class="sub">Oysanam · 17.08, 18:29 · #31328935</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31328983</div>
+        <div class="sub">Oysanam · 17.08, 18:29 · #31328983</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31328971</div>
+        <div class="sub">Oysanam · 17.08, 18:28 · #31328971</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31253699</div>
+        <div class="sub">Dilafruz · 17.08, 18:28 · #31253699</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Пропущенный 977709167 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 17:49 · #31328671</div>
+      </div>
+      <span class="tag lost">LOST · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31322021</div>
+        <div class="sub">Dilafruz · 17.08, 17:47 · #31322021</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31301621</div>
+        <div class="sub">Dilafruz · 17.08, 17:41 · #31301621</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31225075</div>
+        <div class="sub">Dilafruz · 17.08, 17:35 · #31225075</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 995799619 (5084040 - 5084040)</div>
+        <div class="sub">Dilafruz · 17.08, 17:28 · #31323625</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31328141</div>
+        <div class="sub">Oysanam · 17.08, 17:25 · #31328141</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31328185</div>
+        <div class="sub">Dilafruz · 17.08, 17:25 · #31328185</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31327605</div>
+        <div class="sub">Oysanam · 17.08, 17:15 · #31327605</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31204733</div>
+        <div class="sub">Oysanam · 17.08, 17:09 · #31204733</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31251503</div>
+        <div class="sub">Oysanam · 17.08, 17:07 · #31251503</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 958569966 (5084040 - 5084040)</div>
+        <div class="sub">KUH hospital · 17.08, 17:06 · #31328157</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #30980575</div>
+        <div class="sub">Dilafruz · 17.08, 17:01 · #30980575</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31327975</div>
+        <div class="sub">Oysanam · 17.08, 16:57 · #31327975</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31004195</div>
+        <div class="sub">KUH hospital · 17.08, 16:55 · #31004195</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #29596839</div>
+        <div class="sub">Oysanam · 17.08, 16:54 · #29596839</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #30029583</div>
+        <div class="sub">Oysanam · 17.08, 16:54 · #30029583</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31327859</div>
+        <div class="sub">Oysanam · 17.08, 16:51 · #31327859</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31247373</div>
+        <div class="sub">Dilafruz · 17.08, 16:51 · #31247373</div>
+      </div>
+      <span class="tag won">WON · ☎ 2</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31247305</div>
+        <div class="sub">Dilafruz · 17.08, 16:51 · #31247305</div>
+      </div>
+      <span class="tag won">WON · ☎ 2</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31243769</div>
+        <div class="sub">Dilafruz · 17.08, 16:50 · #31243769</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31233175</div>
+        <div class="sub">Dilafruz · 17.08, 16:49 · #31233175</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31233037</div>
+        <div class="sub">Dilafruz · 17.08, 16:49 · #31233037</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31232629</div>
+        <div class="sub">Dilafruz · 17.08, 16:49 · #31232629</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31232459</div>
+        <div class="sub">Dilafruz · 17.08, 16:48 · #31232459</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31232445</div>
+        <div class="sub">Dilafruz · 17.08, 16:48 · #31232445</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 932009000 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 16:48 · #31327517</div>
+      </div>
+      <span class="tag lost">LOST · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31232283</div>
+        <div class="sub">Dilafruz · 17.08, 16:47 · #31232283</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31231409</div>
+        <div class="sub">Dilafruz · 17.08, 16:46 · #31231409</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31231339</div>
+        <div class="sub">Dilafruz · 17.08, 16:46 · #31231339</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31327599</div>
+        <div class="sub">Oysanam · 17.08, 16:46 · #31327599</div>
+      </div>
+      <span class="tag won">WON · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31231209</div>
+        <div class="sub">Dilafruz · 17.08, 16:44 · #31231209</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31163113</div>
+        <div class="sub">Oysanam · 17.08, 16:44 · #31163113</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31230817</div>
+        <div class="sub">Dilafruz · 17.08, 16:44 · #31230817</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31230673</div>
+        <div class="sub">Dilafruz · 17.08, 16:43 · #31230673</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31230591</div>
+        <div class="sub">Dilafruz · 17.08, 16:43 · #31230591</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31229543</div>
+        <div class="sub">Dilafruz · 17.08, 16:43 · #31229543</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31228795</div>
+        <div class="sub">Dilafruz · 17.08, 16:36 · #31228795</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31229453</div>
+        <div class="sub">Dilafruz · 17.08, 16:36 · #31229453</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31229293</div>
+        <div class="sub">Dilafruz · 17.08, 16:36 · #31229293</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31226137</div>
+        <div class="sub">Dilafruz · 17.08, 16:36 · #31226137</div>
+      </div>
+      <span class="tag lost">LOST · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31227217</div>
+        <div class="sub">Dilafruz · 17.08, 16:36 · #31227217</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 932009000 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 16:35 · #31327437</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31155317</div>
+        <div class="sub">Dilafruz · 17.08, 16:35 · #31155317</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #18000433</div>
+        <div class="sub">Dilafruz · 17.08, 16:35 · #18000433</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #31281393</div>
+        <div class="sub">Dilafruz · 17.08, 16:33 · #31281393</div>
+      </div>
+      <span class="tag won">WON · ·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #30848689</div>
+        <div class="sub">Oysanam · 17.08, 16:28 · #30848689</div>
+      </div>
+      <span class="tag">·</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 971040027 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 16:27 · #31299919</div>
+      </div>
+      <span class="tag">🎧 3</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 933104054 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 16:26 · #31323721</div>
+      </div>
+      <span class="tag">🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Входящий 977561241 (5084040 - 5084040)</div>
+        <div class="sub">Oysanam · 17.08, 16:23 · #31327251</div>
+      </div>
+      <span class="tag won">WON · 🎧 1</span></div><div class="lead-item">
+      <div>
+        <div class="name">Сделка #30864991</div>
+        <div class="sub">Muqaddasxon · 17.08, 16:22 · #30864991</div>
+      </div>
+      <span class="tag won">WON · ·</span></div></div>
+            <div class="manual-id">
+              <input type="number" id="manual-lead" placeholder="ID ÑĞ´ĞµĞ»ĞºĞ¸ Ğ¸Ğ· amo">
+              <button class="btn primary sm" id="btn-load-lead">ĞÑ‚ĞºÑ€Ñ‹Ñ‚ÑŒ</button>
+            </div>
+          </div>
+
+          <div class="assist-main">
+            <div class="card assist-hero" id="assist-empty">
+              <div class="empty-illu">2</div>
+              <h2>Ğ&nbsp;Ğ°Ğ·Ğ±Ğ¾Ñ€ ÑĞ´ĞµĞ»ĞºĞ¸</h2>
+              <ol class="howto">
+                <li>Ğ¡Ğ»ĞµĞ²Ğ° Ğ¾Ñ‚Ñ„Ğ¸Ğ»ÑŒÑ‚Ñ€ÑƒĞ¹Ñ‚Ğµ Ğ¸ Ğ²Ñ‹Ğ±ĞµÑ€Ğ¸Ñ‚Ğµ ÑĞ´ĞµĞ»ĞºÑƒ</li>
+                <li>ĞĞ°Ğ¶Ğ¼Ğ¸Ñ‚Ğµ <b>Â«Ğ&nbsp;Ğ°Ğ·Ğ¾Ğ±Ñ€Ğ°Ñ‚ÑŒÂ»</b></li>
+                <li>Ğ§Ğ¸Ñ‚Ğ°Ğ¹Ñ‚Ğµ Ğ¾Ñ‚Ñ‡Ñ‘Ñ‚ ÑĞ²ĞµÑ€Ñ…Ñƒ Ğ²Ğ½Ğ¸Ğ·: Ğ²ĞµÑ€Ğ´Ğ¸ĞºÑ‚ â†’ ÑÑƒÑ‚ÑŒ â†’ Ğ´ĞµĞ¹ÑÑ‚Ğ²Ğ¸Ñ â†’ Ñ„Ñ€Ğ°Ğ·Ñ‹</li>
+              </ol>
+              <p class="muted small">Ğ¡Ñ‚Ñ€ÑƒĞºÑ‚ÑƒÑ€Ğ°: 01 ÑÑƒÑ‚ÑŒ Â· 02 ĞºĞ°Ñ‡ĞµÑÑ‚Ğ²Ğ¾ Â· 03 Ğ¿Ğ»Ğ°Ğ½ Â· 04 Ñ„Ñ€Ğ°Ğ·Ñ‹ Â· 05 Ñ€Ğ¸ÑĞºĞ¸ Â· 06 Ğ¸ÑÑ‚Ğ¾Ñ€Ğ¸Ñ</p>
+            </div>
+
+            <div class="assist-panel hidden" id="assist-panel">
+              <div class="assist-toolbar">
+                <div>
+                  <div class="assist-title" id="a-title">â€”</div>
+                  <div class="muted small" id="a-meta">â€”</div>
+                </div>
+                <div class="assist-toolbar-actions">
+                  <button class="btn ghost sm" id="btn-collapse-panel" title="Ğ¡Ğ²ĞµÑ€Ğ½ÑƒÑ‚ÑŒ">âˆ’</button>
+                  <button class="btn ghost sm" id="btn-open-amo">Ğ’ amo â†—</button>
+                  <button class="btn ghost sm" id="btn-write-amo" title="Ğ—Ğ°Ğ¿Ğ¸ÑĞ°Ñ‚ÑŒ ÑĞ¾Ğ²ĞµÑ‚ Ğ² Ğ·Ğ°Ğ¼ĞµÑ‚ĞºÑƒ amo">âœ Ğ’ CRM</button>
+                  <button class="btn primary sm" id="btn-analyze">âŸ³ Ğ&nbsp;Ğ°Ğ·Ğ¾Ğ±Ñ€Ğ°Ñ‚ÑŒ</button>
+                </div>
+              </div>
+
+              <div id="assist-body" class="report-body">
+                <!-- A. SCORE CARD (always first, always visible) -->
+                <div class="score-card" id="sec-verdict">
+                  <div class="score-card-left">
+                    <div class="score-ring" id="a-score">â€”</div>
+                    <div class="verdict-badge" id="a-verdict">â€”</div>
+                  </div>
+                  <div class="score-card-right">
+                    <div class="score-bar-wrap"><div class="score-bar" id="a-score-bar"></div></div>
+                    <div class="kv-grid">
+                      <div class="kv"><em>Ğ£ÑĞ»ÑƒĞ³Ğ°</em><strong id="a-svc">â€”</strong></div>
+                      <div class="kv"><em>Ğ­Ñ‚Ğ°Ğ¿</em><strong id="a-stage">â€”</strong></div>
+                      <div class="kv"><em>Ğ˜Ñ‚Ğ¾Ğ³</em><strong id="a-outcome">â€”</strong></div>
+                      <div class="kv"><em>Ğ’ CRM</em><strong id="a-data">â€”</strong></div>
+                    </div>
+                    <div class="muted small" id="a-model">â€”</div>
+                    <div class="chips" id="a-booking"></div>
+                  </div>
+                </div>
+                <div class="urgent hidden" id="a-urgent">âš&nbsp; Ğ¡Ñ€Ğ¾Ñ‡Ğ½Ğ¾: Ğ¿Ñ€Ğ¸Ñ‘Ğ¼ / 103 â€” Ğ½Ğµ ĞºĞ¾Ğ½ÑÑƒĞ»ÑŒÑ‚Ğ¸Ñ€Ğ¾Ğ²Ğ°Ñ‚ÑŒ Ğ¿Ğ¾ Ñ‚ĞµĞ»ĞµÑ„Ğ¾Ğ½Ñƒ</div>
+                <div class="nodialog-banner hidden" id="a-nodialog">
+                  <div class="nodialog-ico">â„¹</div>
+                  <div>
+                    <b>ĞĞµÑ‚ Ñ‚ĞµĞºÑÑ‚Ğ° Ñ€Ğ°Ğ·Ğ³Ğ¾Ğ²Ğ¾Ñ€Ğ°</b>
+                    <p class="muted small" id="a-nodialog-text">
+                      Ğ’ ÑÑ‚Ğ¾Ğ¹ ÑĞ´ĞµĞ»ĞºĞµ Ğ½ĞµÑ‚ Ğ·Ğ°Ğ¿Ğ¸ÑĞ¸ Ğ·Ğ²Ğ¾Ğ½ĞºĞ° Ğ¸ Ñ€Ğ°ÑÑˆĞ¸Ñ„Ñ€Ğ¾Ğ²ĞºĞ¸. ĞÑ†ĞµĞ½ĞºĞ° Â«ĞºĞ°Ğº Ñƒ RechkaÂ» Ğ²Ğ¾Ğ·Ğ¼Ğ¾Ğ¶Ğ½Ğ° Ñ‚Ğ¾Ğ»ÑŒĞºĞ¾
+                      ĞºĞ¾Ğ³Ğ´Ğ° ĞµÑÑ‚ÑŒ Ğ³Ğ¾Ğ»Ğ¾Ñ/Ñ‚ĞµĞºÑÑ‚. Instagram/WhatsApp-Ñ‡Ğ°Ñ‚ ÑĞ¼Ğ¾Ñ‚Ñ€Ğ¸Ñ‚Ğµ Ğ² amoCRM. Ğ’Ñ‹Ğ±ĞµÑ€Ğ¸Ñ‚Ğµ ÑĞ»ĞµĞ²Ğ°
+                      Ñ„Ğ¸Ğ»ÑŒÑ‚Ñ€ Â«Ğ•ÑÑ‚ÑŒ Ñ‚Ñ€Ğ°Ğ½ÑĞºÑ€Ğ¸Ğ¿Ñ‚Â» â€” Ñ‚Ğ°Ğ¼ ĞºĞ°Ñ€Ñ‚Ğ¾Ñ‡ĞºĞ¸ Ñ Ğ¿Ğ¾Ğ»Ğ½Ñ‹Ğ¼ Ñ€Ğ°Ğ·Ğ±Ğ¾Ñ€Ğ¾Ğ¼.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- B. SIMPLE STACK (no hide/scroll chaos) -->
+                <div class="stack-block" id="sec-summary">
+                  <div class="stack-h"><span class="sn">1</span> Ğ¡ÑƒÑ‚ÑŒ</div>
+                  <div class="stack-b pre" id="a-summary">Ğ’Ñ‹Ğ±ĞµÑ€Ğ¸Ñ‚Ğµ ÑĞ´ĞµĞ»ĞºÑƒ Ğ¸ Ğ½Ğ°Ğ¶Ğ¼Ğ¸Ñ‚Ğµ Â«Ğ&nbsp;Ğ°Ğ·Ğ¾Ğ±Ñ€Ğ°Ñ‚ÑŒÂ»</div>
+                </div>
+
+                <div class="stack-block" id="sec-quality">
+                  <div class="stack-h"><span class="sn">2</span> ĞšĞ°Ñ‡ĞµÑÑ‚Ğ²Ğ¾</div>
+                  <div class="stack-b two">
+                    <div class="box ok">
+                      <div class="box-h">Ğ¥Ğ¾Ñ€Ğ¾ÑˆĞ¾</div>
+                      <div class="pre" id="a-strengths">â€”</div>
+                    </div>
+                    <div class="box bad">
+                      <div class="box-h">Ğ£Ğ»ÑƒÑ‡ÑˆĞ¸Ñ‚ÑŒ</div>
+                      <div class="pre" id="a-weak">â€”</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="stack-block" id="sec-actions">
+                  <div class="stack-h"><span class="sn">3</span> ĞŸĞ»Ğ°Ğ½</div>
+                  <div class="stack-b two">
+                    <div class="box">
+                      <div class="box-h">Ğ¡Ğ´ĞµĞ»Ğ°Ñ‚ÑŒ ÑĞµĞ¹Ñ‡Ğ°Ñ</div>
+                      <ol class="plan-list" id="a-next"></ol>
+                    </div>
+                    <div class="box">
+                      <div class="box-h">Ğ¡Ğ¿Ñ€Ğ¾ÑĞ¸Ñ‚ÑŒ</div>
+                      <ol class="plan-list" id="a-questions"></ol>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="stack-block" id="sec-phrases">
+                  <div class="stack-h"><span class="sn">4</span> Ğ¤Ñ€Ğ°Ğ·Ñ‹ <span class="hint">ĞºĞ»Ğ¸Ğº = ĞºĞ¾Ğ¿Ğ¸Ñ€Ğ¾Ğ²Ğ°Ñ‚ÑŒ</span></div>
+                  <div class="stack-b">
+                    <div class="box-h">Ğ›ÑƒÑ‡ÑˆĞ¸Ğ¹ Ğ¾Ñ‚Ğ²ĞµÑ‚</div>
+                    <div class="reply primary-reply" id="a-primary">â€”</div>
+                    <div class="box-h" style="margin-top:10px">Ğ•Ñ‰Ñ‘ Ğ²Ğ°Ñ€Ğ¸Ğ°Ğ½Ñ‚Ñ‹</div>
+                    <div id="a-replies"></div>
+                    <div class="box-h" style="margin-top:10px">Ğ’Ğ¾Ğ·Ñ€Ğ°Ğ¶ĞµĞ½Ğ¸Ñ</div>
+                    <div id="a-obj" class="obj-cards"></div>
+                  </div>
+                </div>
+
+                <div class="stack-block" id="sec-risks">
+                  <div class="stack-h"><span class="sn">5</span> Ğ&nbsp;Ğ¸ÑĞºĞ¸</div>
+                  <div class="stack-b two">
+                    <div class="box warn">
+                      <div class="box-h">Ğ&nbsp;Ğ¸ÑĞºĞ¸</div>
+                      <ul class="plan-list plain" id="a-risks"></ul>
+                    </div>
+                    <div class="box ban">
+                      <div class="box-h">ĞĞµĞ»ÑŒĞ·Ñ</div>
+                      <ul class="plan-list plain" id="a-donot"></ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="stack-block" id="sec-talk">
+                  <div class="stack-h">
+                    <span class="sn">6</span> Ğ&nbsp;Ğ°Ğ·Ğ³Ğ¾Ğ²Ğ¾Ñ€
+                    <span class="hint">Ğ³Ğ¾Ğ»Ğ¾Ñ + Ğ¿Ğ¾Ğ»Ğ½Ñ‹Ğ¹ Ñ‚ĞµĞºÑÑ‚ Â· Ğ¿Ñ€Ğ¾ĞºÑ€ÑƒÑ‚ĞºĞ° / Â«Ğ&nbsp;Ğ°Ğ·Ğ²ĞµÑ€Ğ½ÑƒÑ‚ÑŒÂ»</span>
+                  </div>
+                  <div class="stack-b">
+                    <div id="a-conversation" class="conv-list">
+                      <div class="empty-box">ĞĞµÑ‚ Ğ·Ğ²Ğ¾Ğ½ĞºĞ¾Ğ²/Ñ‚ĞµĞºÑÑ‚Ğ° â€” Â«Ğ—Ğ°Ğ±Ñ€Ğ°Ñ‚ÑŒ Ğ¸Ğ· CRMÂ» Ğ¸ Ğ´Ğ¾Ğ¶Ğ´Ğ¸Ñ‚ĞµÑÑŒ Ñ€Ğ°ÑÑˆĞ¸Ñ„Ñ€Ğ¾Ğ²ĞºĞ¸</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="stack-block" id="sec-history">
+                  <div class="stack-h">
+                    <span class="sn">7</span> Ğ˜ÑÑ‚Ğ¾Ñ€Ğ¸Ñ CRM
+                    <select id="f-hist-kind" class="select hist-sel">
+                      <option value="all">Ğ’ÑĞµ</option>
+                      <option value="call">Ğ—Ğ²Ğ¾Ğ½ĞºĞ¸</option>
+                      <option value="chat">Ğ§Ğ°Ñ‚Ñ‹</option>
+                      <option value="note">Ğ—Ğ°Ğ¼ĞµÑ‚ĞºĞ¸</option>
+                    </select>
+                  </div>
+                  <div class="stack-b">
+                    <div id="a-history" class="hist-list"></div>
+                    <div id="a-history-block" class="hidden"></div>
+                  </div>
+                </div>
+
+                <nav id="result-tabs" class="hidden"></nav>
+              </div>
+
+              <div class="collapsed-bar hidden" id="assist-collapsed">
+                <span>Ğ&nbsp;Ğ°Ğ·Ğ±Ğ¾Ñ€ ÑĞ²Ñ‘Ñ€Ğ½ÑƒÑ‚</span>
+                <button class="btn primary sm" id="btn-expand-panel">Ğ&nbsp;Ğ°Ğ·Ğ²ĞµÑ€Ğ½ÑƒÑ‚ÑŒ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. ĞšĞĞĞ¢Ğ ĞĞ›Ğ¬ -->
+      <section class="view" id="view-rop" hidden="" aria-hidden="true">
+        <div class="guide card">
+          <b>Ğ—Ğ°Ñ‡ĞµĞ¼ ÑÑ‚Ğ¾Ñ‚ ÑĞºÑ€Ğ°Ğ½:</b> Ñ€ÑƒĞºĞ¾Ğ²Ğ¾Ğ´Ğ¸Ñ‚ĞµĞ»Ñ â€” ĞºĞ¾Ğ³Ğ¾ Ğ¿Ñ€Ğ¾Ğ²ĞµÑ€Ğ¸Ñ‚ÑŒ ÑĞµĞ³Ğ¾Ğ´Ğ½Ñ. ĞĞ»ĞµÑ€Ñ‚Ñ‹, Â«Ğ·Ğ°Ğ²Ğ¸ÑÑˆĞ¸ĞµÂ» ÑĞ´ĞµĞ»ĞºĞ¸, ÑĞ»Ğ°Ğ±Ñ‹Ğµ Ğ·Ğ²Ğ¾Ğ½ĞºĞ¸.
+        </div>
+        <div class="cards" id="rop-kpis">
+          <div class="card kpi">
+            <div class="kpi-label">Ğ’ÑĞµĞ³Ğ¾ Ğ°Ğ»ĞµÑ€Ñ‚Ğ¾Ğ²</div>
+            <div class="kpi-val" id="rop-alerts-n">â€”</div>
+          </div>
+          <div class="card kpi">
+            <div class="kpi-label">ĞšÑ€Ğ¸Ñ‚Ğ¸Ñ‡Ğ½Ñ‹Ğµ</div>
+            <div class="kpi-val bad-text" id="rop-crit-n">â€”</div>
+          </div>
+          <div class="card kpi">
+            <div class="kpi-label">Ğ—Ğ°Ğ²Ğ¸ÑÑˆĞ¸Ğµ ÑĞ´ĞµĞ»ĞºĞ¸</div>
+            <div class="kpi-val" id="rop-queue-n">â€”</div>
+            <div class="kpi-hint">Ğ´Ğ°Ğ²Ğ½Ğ¾ Ğ±ĞµĞ· Ğ´Ğ²Ğ¸Ğ¶ĞµĞ½Ğ¸Ñ</div>
+          </div>
+          <div class="card kpi">
+            <div class="kpi-label">Ğ¡Ğ»Ğ°Ğ±Ñ‹Ğµ Ğ·Ğ²Ğ¾Ğ½ĞºĞ¸</div>
+            <div class="kpi-val" id="rop-low-n">â€”</div>
+            <div class="kpi-hint">Ğ¾Ñ†ĞµĞ½ĞºĞ° Ğ½Ğ¸Ğ¶Ğµ 4.5</div>
+          </div>
+        </div>
+
+        <div class="row-gap" style="margin-bottom:12px">
+          <label class="field-inline">
+            <span>ĞŸĞµÑ€Ğ¸Ğ¾Ğ´</span>
+            <select id="rop-hours" class="select">
+              <option value="24">ÑÑƒÑ‚ĞºĞ¸</option>
+              <option value="48" selected="">2 Ğ´Ğ½Ñ</option>
+              <option value="168">Ğ½ĞµĞ´ĞµĞ»Ñ</option>
+            </select>
+          </label>
+          <button class="btn ghost sm" id="btn-rop-refresh">ĞĞ±Ğ½Ğ¾Ğ²Ğ¸Ñ‚ÑŒ ĞºĞ¾Ğ½Ñ‚Ñ€Ğ¾Ğ»ÑŒ</button>
+          <button class="btn primary sm" id="btn-rop-export">Ğ¡ĞºĞ°Ñ‡Ğ°Ñ‚ÑŒ Excel/CSV</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-h">
+              <div>
+                <h3>ĞĞ»ĞµÑ€Ñ‚Ñ‹ â€” ÑĞ½Ğ°Ñ‡Ğ°Ğ»Ğ° ÑÑĞ´Ğ°</h3>
+                <p class="muted small card-desc">ĞšĞ»Ğ¸Ğº Ğ¿Ğ¾ Ğ°Ğ»ĞµÑ€Ñ‚Ñƒ â†’ Ñ€Ğ°Ğ·Ğ±Ğ¾Ñ€ ÑĞ´ĞµĞ»ĞºĞ¸</p>
+              </div>
+            </div>
+            <div class="alert-list" id="rop-alerts"></div>
+          </div>
+          <div class="card">
+            <div class="card-h">
+              <div>
+                <h3>Ğ&nbsp;ĞµĞ¹Ñ‚Ğ¸Ğ½Ğ³ Ğ¼ĞµĞ½ĞµĞ´Ğ¶ĞµÑ€Ğ¾Ğ²</h3>
+                <p class="muted small card-desc">ĞšĞ°Ñ‡ĞµÑÑ‚Ğ²Ğ¾ Â· ÑƒÑĞ¿ĞµÑ…Ğ¸ Â· ÑĞ»Ğ°Ğ±Ñ‹Ğµ ĞºĞ¾Ğ½Ñ‚Ğ°ĞºÑ‚Ñ‹</p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>ĞœĞµĞ½ĞµĞ´Ğ¶ĞµÑ€</th>
+                    <th>Ğ˜Ğ½Ğ´ĞµĞºÑ</th>
+                    <th>ĞšĞ°Ñ‡ĞµÑÑ‚Ğ²Ğ¾</th>
+                    <th>Ğ£ÑĞ¿ĞµÑ…</th>
+                    <th>Ğ¡Ğ»Ğ°Ğ±Ñ‹Ñ…</th>
+                  </tr>
+                </thead>
+                <tbody id="rop-rank-body"></tbody>
+              </table>
+            </div>
+            <div id="rop-coach-cards" class="coach-cards"></div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:14px">
+          <div class="card">
+            <div class="card-h">
+              <div>
+                <h3>Ğ—Ğ°Ğ²Ğ¸ÑÑˆĞ¸Ğµ ÑĞ´ĞµĞ»ĞºĞ¸</h3>
+                <p class="muted small card-desc">ĞÑƒĞ¶ĞµĞ½ follow-up</p>
+              </div>
+            </div>
+            <div class="lead-list compact" id="rop-queue"></div>
+          </div>
+          <div class="card">
+            <div class="card-h">
+              <div>
+                <h3>Ğ¡Ğ»Ğ°Ğ±Ñ‹Ğµ Ğ·Ğ²Ğ¾Ğ½ĞºĞ¸</h3>
+                <p class="muted small card-desc">Ğ”Ğ»Ñ Ñ€Ğ°Ğ·Ğ±Ğ¾Ñ€Ğ° 1-Ğ½Ğ°-1</p>
+              </div>
+            </div>
+            <div class="lead-list compact" id="rop-weak"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Ğ¡ĞšĞ Ğ˜ĞŸĞ¢Ğ« -->
+      <section class="view" id="view-scripts" hidden="" aria-hidden="true">
+        <div class="guide card">
+          <b>Ğ¡ĞºÑ€Ğ¸Ğ¿Ñ‚ = Ğ³Ğ¾Ñ‚Ğ¾Ğ²Ñ‹Ğµ Ñ„Ñ€Ğ°Ğ·Ñ‹ Ğ´Ğ»Ñ Ğ·Ğ²Ğ¾Ğ½ĞºĞ°/Ñ‡Ğ°Ñ‚Ğ°.</b>
+          Ğ’Ñ‹Ğ±ĞµÑ€Ğ¸Ñ‚Ğµ ÑƒÑĞ»ÑƒĞ³Ñƒ. ĞšĞ°Ğ¶Ğ´Ğ°Ñ Ñ„Ñ€Ğ°Ğ·Ğ° Ğ¿Ğ¾ĞºĞ°Ğ·Ñ‹Ğ²Ğ°ĞµÑ‚ÑÑ <b>Ğ¾Ñ‚Ğ´ĞµĞ»ÑŒĞ½Ğ¾ Ğ½Ğ° Ñ€ÑƒÑÑĞºĞ¾Ğ¼ Ğ¸ Ğ½Ğ° ÑƒĞ·Ğ±ĞµĞºÑĞºĞ¾Ğ¼</b>
+          (Ñ€ĞµĞ¶Ğ¸Ğ¼ ÑĞ·Ñ‹ĞºĞ° â€” ĞºĞ½Ğ¾Ğ¿ĞºĞ¸ RU / UZ / RU+UZ ÑĞ²ĞµÑ€Ñ…Ñƒ). ĞšĞ»Ğ¸Ğº = ĞºĞ¾Ğ¿Ğ¸Ñ€Ğ¾Ğ²Ğ°Ñ‚ÑŒ.
+        </div>
+        <div class="card">
+          <div class="card-h">
+            <div>
+              <h3 id="script-title">Ğ¡ĞºÑ€Ğ¸Ğ¿Ñ‚ Ğ¿Ğ¾ ÑƒÑĞ»ÑƒĞ³Ğµ</h3>
+              <p class="muted small" id="script-key">default</p>
+            </div>
+            <select id="script-service" class="select" style="width:auto;min-width:200px">
+              <option value="default">ĞĞ±Ñ‰Ğ¸Ğ¹ Ğ¿Ñ€Ğ¸Ñ‘Ğ¼</option>
+              <option value="mrt">ĞœĞ&nbsp;Ğ¢</option>
+              <option value="uzi">Ğ£Ğ—Ğ˜</option>
+              <option value="endo">Ğ­Ğ½Ğ´Ğ¾ĞºÑ€Ğ¸Ğ½Ğ¾Ğ»Ğ¾Ğ³</option>
+              <option value="ped_neuro">Ğ”ĞµÑ‚ÑĞºĞ¸Ğ¹ Ğ½ĞµĞ²Ñ€Ğ¾Ğ»Ğ¾Ğ³</option>
+            </select>
+          </div>
+          <div id="script-body" class="script-body muted">Ğ—Ğ°Ğ³Ñ€ÑƒĞ·ĞºĞ°â€¦</div>
+        </div>
+      </section>
+
+      <!-- Ğ¢Ğ Ğ•ĞĞĞ–ĞĞ  -->
+      <section class="view" id="view-trainer" hidden="" aria-hidden="true">
+        <div class="guide card">
+          <b>Ğ—Ğ°Ñ‡ĞµĞ¼:</b> Ğ¿Ğ¾Ñ‚Ñ€ĞµĞ½Ğ¸Ñ€Ğ¾Ğ²Ğ°Ñ‚ÑŒ Ğ¾Ñ‚Ğ²ĞµÑ‚Ñ‹ Ğ½Ğ° Ğ²Ğ¾Ğ·Ñ€Ğ°Ğ¶ĞµĞ½Ğ¸Ñ. Ğ¡Ğ¼Ğ¾Ñ‚Ñ€Ğ¸Ñ‚Ğµ Â«Ñ…Ğ¾Ñ€Ğ¾ÑˆĞ¾Â» vs Â«Ğ¿Ğ»Ğ¾Ñ…Ğ¾Â».
+        </div>
+        <div class="card">
+          <div class="card-h">
+            <h3>ĞšĞµĞ¹Ñ Ğ²Ğ¾Ğ·Ñ€Ğ°Ğ¶ĞµĞ½Ğ¸Ñ</h3>
+            <button class="btn primary sm" id="btn-trainer-next">Ğ¡Ğ»ĞµĞ´ÑƒÑÑ‰Ğ¸Ğ¹ ĞºĞµĞ¹Ñ</button>
+          </div>
+          <div id="trainer-box" class="trainer-box">
+            <p class="muted">ĞĞ°Ğ¶Ğ¼Ğ¸Ñ‚Ğµ Â«Ğ¡Ğ»ĞµĞ´ÑƒÑÑ‰Ğ¸Ğ¹ ĞºĞµĞ¹ÑÂ»</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ĞĞ¢Ğ§ĞĞ¢Ğ« -->
+      <section class="view" id="view-reports" hidden="" aria-hidden="true">
+        <div class="guide card">
+          <b>Ğ—Ğ°Ñ‡ĞµĞ¼:</b> ÑĞ²Ğ¾Ğ´ĞºĞ° Ğ·Ğ° Ğ¿ĞµÑ€Ğ¸Ğ¾Ğ´ Ğ½Ğ° Desktop. Ğ’ amoCRM Ğ¾Ñ‚Ñ‡Ñ‘Ñ‚Ñ‹ <b>Ğ½Ğµ Ğ¾Ñ‚Ğ¿Ñ€Ğ°Ğ²Ğ»ÑÑÑ‚ÑÑ</b>.
+        </div>
+        <div class="card">
+          <div class="card-h">
+            <h3>Ğ¡Ğ¾Ğ±Ñ€Ğ°Ñ‚ÑŒ Ğ¾Ñ‚Ñ‡Ñ‘Ñ‚</h3>
+            <div class="row-gap">
+              <button class="btn ghost sm" data-report="day">Ğ”ĞµĞ½ÑŒ</button>
+              <button class="btn ghost sm" data-report="week">ĞĞµĞ´ĞµĞ»Ñ</button>
+              <button class="btn ghost sm" data-report="month">ĞœĞµÑÑÑ†</button>
+            </div>
+          </div>
+          <p class="muted small">ĞŸĞ°Ğ¿ĞºĞ°: Desktop â†’ AmoCRM-AI-Reports</p>
+          <pre class="report-box" id="report-box">Ğ’Ñ‹Ğ±ĞµÑ€Ğ¸Ñ‚Ğµ Ğ¿ĞµÑ€Ğ¸Ğ¾Ğ´: Ğ”ĞµĞ½ÑŒ / ĞĞµĞ´ĞµĞ»Ñ / ĞœĞµÑÑÑ†</pre>
+        </div>
+      </section>
+
+      <!-- CRM -->
+      <section class="view" id="view-crm">
+        <div class="guide card">
+          <b>Ğ—Ğ°Ñ‡ĞµĞ¼:</b> Ğ¾Ğ´Ğ¸Ğ½ Ñ€Ğ°Ğ· Ğ¿Ğ¾Ğ´ĞºĞ»ÑÑ‡Ğ¸Ñ‚ÑŒ amoCRM (subdomain + long-lived token). Ğ‘ĞµĞ· ÑÑ‚Ğ¾Ğ³Ğ¾ Ğ´Ğ°Ğ½Ğ½Ñ‹Ğµ Ğ½Ğµ Ğ¿Ğ¾ÑĞ²ÑÑ‚ÑÑ.
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-h">
+              <h3>Ğ£Ğ¶Ğµ Ğ¿Ğ¾Ğ´ĞºĞ»ÑÑ‡ĞµĞ½Ğ¾</h3>
+              <button class="btn ghost sm" id="btn-reload-profiles">ĞĞ±Ğ½Ğ¾Ğ²Ğ¸Ñ‚ÑŒ</button>
+            </div>
+            <div id="crm-profiles" class="lead-list compact"></div>
+          </div>
+          <div class="card">
+            <div class="card-h"><h3>ĞĞ¾Ğ²Ğ¾Ğµ Ğ¿Ğ¾Ğ´ĞºĞ»ÑÑ‡ĞµĞ½Ğ¸Ğµ</h3></div>
+            <label class="field"><span>Ğ¢Ğ¸Ğ¿ CRM</span>
+              <select id="crm-provider" class="select">
+                <option value="amocrm">amoCRM / Kommo</option>
+                <option value="bitrix24">Bitrix24</option>
+              </select>
+            </label>
+            <label class="field"><span>ĞĞ°Ğ·Ğ²Ğ°Ğ½Ğ¸Ğµ (Ğ´Ğ»Ñ ÑĞµĞ±Ñ)</span>
+              <input type="text" id="crm-label" placeholder="ĞšĞ»Ğ¸Ğ½Ğ¸ĞºĞ° KUH">
+            </label>
+            <div id="fields-amocrm">
+              <label class="field"><span>Subdomain (Ğ±ĞµĞ· .amocrm.ru)</span>
+                <input type="text" id="crm-subdomain" placeholder="kuhhospital">
+              </label>
+              <label class="field"><span>Long-lived token</span>
+                <input type="password" id="crm-token" placeholder="eyJ...">
+              </label>
+              <label class="field"><span>Client ID (ĞµÑĞ»Ğ¸ OAuth)</span>
+                <input type="text" id="crm-client-id">
+              </label>
+              <label class="field"><span>Client Secret</span>
+                <input type="password" id="crm-client-secret">
+              </label>
+              <label class="field"><span>Refresh token</span>
+                <input type="password" id="crm-refresh">
+              </label>
+            </div>
+            <div id="fields-bitrix" class="hidden">
+              <label class="field"><span>Webhook URL Bitrix24</span>
+                <input type="text" id="crm-webhook" placeholder="https://portal.bitrix24.ru/rest/1/xxxx/">
+              </label>
+            </div>
+            <div class="row-gap" style="margin-top:12px">
+              <button class="btn ghost" id="btn-crm-test">ĞŸÑ€Ğ¾Ğ²ĞµÑ€Ğ¸Ñ‚ÑŒ ÑĞ²ÑĞ·ÑŒ</button>
+              <button class="btn primary" id="btn-crm-save">Ğ¡Ğ¾Ñ…Ñ€Ğ°Ğ½Ğ¸Ñ‚ÑŒ Ğ¸ Ğ²ĞºĞ»ÑÑ‡Ğ¸Ñ‚ÑŒ</button>
+            </div>
+            <p class="muted small" id="crm-test-result" style="margin-top:10px"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="view" id="view-settings">
+        <div class="guide card">
+          <b>Ğ’Ğ½ĞµÑˆĞ½Ğ¸Ğ¹ Ğ²Ğ¸Ğ´ Ğ¸ ÑĞ·Ñ‹Ğº.</b> Ğ¢ĞµĞ¼Ñƒ Ğ¸ ÑĞ·Ñ‹Ğº Ğ¼Ğ¾Ğ¶Ğ½Ğ¾ Ğ¼ĞµĞ½ÑÑ‚ÑŒ Ğ¸ Ğ·Ğ´ĞµÑÑŒ, Ğ¸ ĞºĞ½Ğ¾Ğ¿ĞºĞ°Ğ¼Ğ¸ Ğ² ÑˆĞ°Ğ¿ĞºĞµ â€”
+          Ğ²Ñ‹Ğ±Ğ¾Ñ€ ÑĞ¾Ñ…Ñ€Ğ°Ğ½ÑĞµÑ‚ÑÑ Ğ½Ğ° ÑÑ‚Ğ¾Ğ¼ ĞºĞ¾Ğ¼Ğ¿ÑŒÑÑ‚ĞµÑ€Ğµ.
+        </div>
+        <div class="card narrow">
+          <h3>Ğ¢ĞµĞ¼Ğ° Ğ¸Ğ½Ñ‚ĞµÑ€Ñ„ĞµĞ¹ÑĞ°</h3>
+          <p class="muted small">Ğ¡Ğ²ĞµÑ‚Ğ»Ğ°Ñ â€” ĞºĞ°Ğº Ğ² Rechka. Ğ¢Ñ‘Ğ¼Ğ½Ğ°Ñ â€” Ğ¼ĞµĞ½ÑŒÑˆĞµ ÑƒÑÑ‚Ğ°Ğ»Ğ¾ÑÑ‚Ğ¸ Ğ³Ğ»Ğ°Ğ· Ğ²ĞµÑ‡ĞµÑ€Ğ¾Ğ¼.</p>
+          <div class="theme-card-grid" id="theme-cards">
+            <button type="button" class="theme-choice active" data-theme="light" id="theme-card-light">
+              <div class="theme-preview light" aria-hidden="true"></div>
+              <b>â˜€ Ğ¡Ğ²ĞµÑ‚Ğ»Ğ°Ñ</b>
+              <span>Ğ‘ĞµĞ»Ñ‹Ğµ ĞºĞ°Ñ€Ñ‚Ğ¾Ñ‡ĞºĞ¸, Ğ±Ğ¸Ñ€ÑĞ·Ğ¾Ğ²Ñ‹Ğµ Ğ°ĞºÑ†ĞµĞ½Ñ‚Ñ‹ â€” ÑƒĞ´Ğ¾Ğ±Ğ½Ğ¾ Ğ´Ğ½Ñ‘Ğ¼</span>
+            </button>
+            <button type="button" class="theme-choice" data-theme="dark" id="theme-card-dark">
+              <div class="theme-preview dark" aria-hidden="true"></div>
+              <b>â˜¾ Ğ¢Ñ‘Ğ¼Ğ½Ğ°Ñ</b>
+              <span>Ğ¢Ñ‘Ğ¼Ğ½Ñ‹Ğ¹ Ñ„Ğ¾Ğ½, Ğ¼ÑĞ³ĞºĞ¸Ğµ Ğ¿Ğ°Ğ½ĞµĞ»Ğ¸ â€” ÑƒĞ´Ğ¾Ğ±Ğ½Ğ¾ Ğ²ĞµÑ‡ĞµÑ€Ğ¾Ğ¼</span>
+            </button>
+          </div>
+        </div>
+        <div class="card narrow" style="margin-top:14px">
+          <h3>Ğ¯Ğ·Ñ‹Ğº Ğ¸ API</h3>
+          <label class="field">
+            <span>Ğ¯Ğ·Ñ‹Ğº Ğ¿Ğ¾Ğ´ÑĞºĞ°Ğ·Ğ¾Ğº Ğ¸ ÑĞºÑ€Ğ¸Ğ¿Ñ‚Ğ¾Ğ²</span>
+            <select id="cfg-lang" class="select">
+              <option value="ru">Ğ¢Ğ¾Ğ»ÑŒĞºĞ¾ Ñ€ÑƒÑÑĞºĞ¸Ğ¹ (RU)</option>
+              <option value="uz">Faqat oâ€˜zbekcha (UZ)</option>
+              <option value="both">ĞĞ±Ğ° ÑĞ·Ñ‹ĞºĞ° (RU + UZ)</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>ĞĞ´Ñ€ĞµÑ API (backend)</span>
+            <input type="text" id="cfg-api" value="http://127.0.0.1:8090">
+          </label>
+          <p class="muted small">ĞĞ±Ñ‹Ñ‡Ğ½Ğ¾ Ğ½Ğµ Ñ‚Ñ€Ğ¾Ğ³Ğ°Ñ‚ÑŒ: 127.0.0.1:8090 â€” Ğ»Ğ¾ĞºĞ°Ğ»ÑŒĞ½Ñ‹Ğ¹ ÑĞµÑ€Ğ²ĞµÑ€ Ğ²Ğ½ÑƒÑ‚Ñ€Ğ¸ Ğ¿Ñ€Ğ¸Ğ»Ğ¾Ğ¶ĞµĞ½Ğ¸Ñ.</p>
+          <button class="btn primary" id="btn-save-cfg">Ğ¡Ğ¾Ñ…Ñ€Ğ°Ğ½Ğ¸Ñ‚ÑŒ</button>
+          <div class="toast" id="toast"></div>
+        </div>
+        <div class="card narrow" style="margin-top:14px">
+          <h3>Ğ•ÑĞ»Ğ¸ Â«Ğ½Ğ¸Ñ‡ĞµĞ³Ğ¾ Ğ½Ğµ Ñ€Ğ°Ğ±Ğ¾Ñ‚Ğ°ĞµÑ‚Â»</h3>
+          <ol class="howto-ol">
+            <li>Ğ¡Ñ‚Ğ°Ñ‚ÑƒÑ ÑĞ»ĞµĞ²Ğ° Ğ²Ğ½Ğ¸Ğ·Ñƒ â€” <b>Ğ·ĞµĞ»Ñ‘Ğ½Ñ‹Ğ¹</b> (Â«ĞĞºÑ‚Ğ¸Ğ²Ğ½Ğ¾Â»)</li>
+            <li>Ğ&nbsp;Ğ°Ğ·Ğ´ĞµĞ» <b>CRM</b> â€” Ğ¿Ñ€Ğ¾Ñ„Ğ¸Ğ»ÑŒ amoCRM Ğ°ĞºÑ‚Ğ¸Ğ²ĞµĞ½</li>
+            <li>ĞšĞ½Ğ¾Ğ¿ĞºĞ° <b>âŸ³ CRM</b> ÑĞ²ĞµÑ€Ñ…Ñƒ â€” Ğ¿Ğ¾Ğ´Ğ¾Ğ¶Ğ´Ğ¸Ñ‚Ğµ 1â€“2 Ğ¼Ğ¸Ğ½ÑƒÑ‚Ñ‹</li>
+            <li><b>Ğ&nbsp;Ğ°Ğ·Ğ±Ğ¾Ñ€ Ğ·Ğ²Ğ¾Ğ½ĞºĞ°</b>: Ñ„Ğ¸Ğ»ÑŒÑ‚Ñ€ Â«Ğ•ÑÑ‚ÑŒ Ñ‚Ñ€Ğ°Ğ½ÑĞºÑ€Ğ¸Ğ¿Ñ‚Â» â†’ Â«Ğ&nbsp;Ğ°Ğ·Ğ¾Ğ±Ñ€Ğ°Ñ‚ÑŒÂ»</li>
+          </ol>
+          <button class="btn ghost" data-goto="crm">ĞÑ‚ĞºÑ€Ñ‹Ñ‚ÑŒ CRM</button>
+        </div>
+      </section>
+    
+  
+
+  <div class="cmdk-overlay" id="cmdk-overlay" aria-hidden="true">
+    <div class="cmdk" role="dialog" aria-label="Command Palette">
+      <input type="search" id="cmdk-input" placeholder="ĞŸĞµÑ€ĞµĞ¹Ñ‚Ğ¸ Ğº ÑĞºÑ€Ğ°Ğ½Ñƒ, Ğ´ĞµĞ¹ÑÑ‚Ğ²Ğ¸Ñâ€¦" autocomplete="off">
+      <div class="cmdk-list" id="cmdk-list"></div>
+    </div>
+  </div>
+
+  <div class="toast-global" id="toast-g"></div>
+    <script>
+    window.__deskErrors=[];
+    window.addEventListener('error', function(e){
+      window.__deskErrors.push((e.message||'')+' @ '+(e.filename||'')+':'+e.lineno+':'+e.colno);
+      var el=document.getElementById('js-error-banner');
+      if(!el){
+        el=document.createElement('div');
+        el.id='js-error-banner';
+        el.style.cssText='position:fixed;bottom:8px;left:8px;right:8px;z-index:99999;background:#7f1d1d;color:#fff;padding:10px 12px;border-radius:10px;font:12px/1.4 monospace;white-space:pre-wrap';
+        document.body.appendChild(el);
+      }
+      el.textContent=window.__deskErrors.join('\n');
+    });
+  </script>
+
+  <script src="app.js?v=20260824ru3"></script>
+
+
+</body></html>

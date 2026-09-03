@@ -1,0 +1,3 @@
+﻿api_base: https://emerald-gale-med-cube.trycloudflare.com
+zip: C:\Users\ACC-2\amocrm-analytics\public\kuh-assistant-widget.zip exists= True
+COOKIE_ERROR ºØºÁªé ªÇº░º▒º¥ªçºÁº╣ ªüºÁªüªüº©º© amoCRM (cookies). ºÆº¥º╣º┤º©ªéºÁ º▓ https://kuhhospital.amocrm.ru º▓ Yandex/Edge, ºÀº░ªéºÁº╝ ºÀº░º║ªÇº¥º╣ªéºÁ º▒ªÇº░ªâºÀºÁªÇ º¢º░ 5 ªüºÁº║ º© º┐ºÁªÇºÁºÀº░º┐ªâªüªéº©ªéºÁ ªüº║ªÇº©º┐ªé. last_err=session.json: 401 Unauthorized

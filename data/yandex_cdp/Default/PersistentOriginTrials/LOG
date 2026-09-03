@@ -1,0 +1,4 @@
+2026/08/28-10:41:07.857 20ac File C:\Users\ACC-2\amocrm-analytics\data\yandex_cdp\Default\PersistentOriginTrials is locked for recovering successfully
+2026/08/28-10:41:07.858 20ac Deletion DBImpl for C:\Users\ACC-2\amocrm-analytics\data\yandex_cdp\Default\PersistentOriginTrials, waiting for background work finished
+2026/08/28-10:41:07.858 20ac Deletion DBImpl for C:\Users\ACC-2\amocrm-analytics\data\yandex_cdp\Default\PersistentOriginTrials, background work finished
+2026/08/28-10:41:07.858 20ac File C:\Users\ACC-2\amocrm-analytics\data\yandex_cdp\Default\PersistentOriginTrials unlocked successfully

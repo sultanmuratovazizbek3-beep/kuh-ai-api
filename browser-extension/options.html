@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title>KUH AI — настройки</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 420px; margin: 20px; color: #0f172a; }
+    label { display: block; font-weight: 700; margin: 14px 0 6px; font-size: 13px; }
+    input[type=text], input[type=number] { width: 100%; padding: 9px; border: 1px solid #cbd5e1; border-radius: 8px; }
+    button { margin-top: 14px; padding: 10px 14px; background: #2563eb; color: #fff; border: 0; border-radius: 8px; font-weight: 800; cursor: pointer; }
+    .hint { color: #64748b; font-size: 12px; margin-top: 4px; }
+    #msg { margin-top: 10px; color: #15803d; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <h2>KUH AI — настройки</h2>
+  <label>URL API</label>
+  <input id="apiBase" type="text" value="http://127.0.0.1:8090" />
+  <p class="hint">На этом ПК: http://127.0.0.1:8090 (backend должен быть запущен)</p>
+
+  <label>Автообновление (сек), 0 = выкл</label>
+  <input id="autoRefreshSec" type="number" min="0" value="120" />
+  <p class="hint">Только когда панель развёрнута. Анализ не пишет в CRM сам.</p>
+
+  <label><input type="checkbox" id="startCollapsed" checked /> Стартовать свёрнутым</label>
+  <p class="hint">Кнопка «В заметку сделки» пишет примечание только по клику.</p>
+
+  <button id="save">Сохранить</button>
+  <div id="msg"></div>
+  <script src="options.js"></script>
+</body>
+</html>

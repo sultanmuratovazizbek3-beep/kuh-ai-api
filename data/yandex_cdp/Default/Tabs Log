@@ -1,0 +1,16 @@
+
+2026-08-28 05:41:07.702 [0] InitSessionLog done
+2026-08-28 05:41:07.703 [0] ReadLastSessionCommands
+2026-08-28 05:41:07.703 [3]   SessionState (2)
+2026-08-28 05:41:07.703 [0]     13432368630276664: 1447
+2026-08-28 05:41:07.703 [0]     13432292653219518: 1536
+2026-08-28 05:41:07.703 [1]   Init
+2026-08-28 05:41:07.707 [0]   Init done
+2026-08-28 05:41:07.707 [0]   ReadCommandsFromFile
+2026-08-28 05:41:07.709 [0]   ReadCommandsFromFile done: 1447 (659)
+2026-08-28 05:41:07.709 [0] ReadLastSessionCommands done
+2026-08-28 05:41:13.904 [672] AppendCommandsWithReset
+2026-08-28 05:41:13.904 [0] TruncateOrOpenFile
+2026-08-28 05:41:13.904 [0] OpenAndWriteHeader
+2026-08-28 05:41:13.906 [0] OpenAndWriteHeader done
+2026-08-28 05:41:13.906 [0] TruncateOrOpenFile done

@@ -1,0 +1,23 @@
+{
+  "ok": false,
+  "steps": [
+    {
+      "url": "https://kuhhospital.amocrm.ru/settings/widgets/",
+      "title": "amoCRM: Авторизация"
+    },
+    {
+      "file_inputs": 0
+    },
+    {
+      "api_upload_status": 401,
+      "body": "<!doctype html>\n<html>\n\n<head>\n    <title>amoCRM: Авторизация</title>\n    <link rel=\"stylesheet\" href=\"/frontend/stylesheets/common/auth.css?1787762072\">\n    <link rel=\"shortcut icon\" type=\"image/png\" href=/favicon.ico>\n\n    <script>\n    (function (window, document) {\n        'use strict';\n\n        var whichTransAnimEvent = function (trans_anim) {\n            var t,\n                el = document.createElement('fakeelement'),\n                events = {\n                    transition: {\n          "
+    }
+  ],
+  "has_widget": false,
+  "client_name": "AI Помощник менеджера",
+  "matched_widgets": [],
+  "install_errors": [
+    "4b1a3bfc-df9e-4e52-a6ac-c40dab529b31: 404 Client Error: Not Found for url: https://kuhhospital.amocrm.ru/api/v4/widgets/4b1a3bfc-df9e-4e52-a6ac-c40dab529b31"
+  ],
+  "api_base": "https://opinion-laboratory-standing-provincial.trycloudflare.com"
+}

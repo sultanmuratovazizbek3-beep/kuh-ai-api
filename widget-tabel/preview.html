@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Табель — превью</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    html, body { margin: 0; min-height: 100%; background: #d8dee8; }
+    .fake-crm { height: 100vh; background: linear-gradient(90deg, #2b333d 64px, #e9edf3 64px); }
+  </style>
+</head>
+<body>
+<div class="fake-crm"></div>
+<div class="kuh-tabel-overlay" style="padding-top:24px">
+  <div class="kuh-tabel-modal">
+    <div class="kuh-tabel-head">
+      <div class="kuh-tabel-title">Табель</div>
+      <button type="button" class="kuh-tabel-close">×</button>
+    </div>
+    <div class="kuh-tabel-me">
+      <div class="kuh-tabel-avatar" style="background:#7aa2d4">АИ<span class="kuh-tabel-dot on"></span></div>
+      <div class="kuh-tabel-me-main">
+        <div class="kuh-tabel-name">Анна Иванова</div>
+        <div class="kuh-tabel-meta">anna@kuhhospital.uz · сегодня 6ч 20м · неделя 31ч 10м</div>
+      </div>
+      <div class="kuh-tabel-me-right">
+        <span class="kuh-tabel-leads">24 сделки</span>
+        <select class="kuh-tabel-select">
+          <option>Без статуса</option>
+          <option>В отпуске</option>
+          <option selected>Удалённо</option>
+        </select>
+      </div>
+    </div>
+    <div class="kuh-tabel-summary">
+      <div class="kuh-tabel-kpi"><b>6</b><span>сотрудников</span></div>
+      <div class="kuh-tabel-kpi on"><b>3</b><span>онлайн сейчас</span></div>
+      <div class="kuh-tabel-kpi warn"><b>2</b><span>без активности</span></div>
+      <div class="kuh-tabel-kpi"><b>18ч 40м</b><span>часов команды сегодня</span></div>
+      <div class="kuh-tabel-kpi"><b>41</b><span>звонков сегодня</span></div>
+      <div class="kuh-tabel-kpi"><b>9</b><span>новых сделок</span></div>
+    </div>
+    <div class="kuh-tabel-toolbar">
+      <input class="kuh-tabel-search" placeholder="Найти сотрудника, email, роль">
+      <select class="kuh-tabel-filter"><option>Все статусы</option><option>Онлайн</option><option>Без активности сегодня</option></select>
+      <select class="kuh-tabel-filter"><option>По имени</option><option>По часам сегодня</option></select>
+      <button type="button" class="kuh-tabel-ghost">Развернуть всех</button>
+    </div>
+    <div class="kuh-tabel-body">
+      <div class="kuh-tabel-group">▾ Отдел продаж · 3</div>
+
+      <div class="kuh-tabel-card open">
+        <div class="kuh-tabel-row is-me">
+          <div class="kuh-tabel-avatar" style="background:#7aa2d4">АИ<span class="kuh-tabel-dot on"></span></div>
+          <div class="kuh-tabel-user-cell">
+            <div class="kuh-tabel-name">Анна Иванова <span class="kuh-tabel-badge" style="background:#4c8bf522;color:#4c8bf5">Удалённо</span></div>
+            <div class="kuh-tabel-meta">онлайн · менеджер</div>
+          </div>
+          <div class="kuh-tabel-hours-cell">6ч 20м<small>неделя 31ч 10м</small></div>
+          <div class="kuh-tabel-bar-wrap">
+            <div class="kuh-tabel-bar">
+              <i class="kuh-tabel-seg" title="09:00–12:15" style="left:37.5%;width:13.5%"></i>
+              <i class="kuh-tabel-seg" title="13:00–16:40" style="left:54.1%;width:15.2%"></i>
+              <i class="kuh-tabel-seg" title="17:10–18:05" style="left:71.5%;width:3.8%"></i>
+            </div>
+            <div class="kuh-tabel-hours"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div>
+          </div>
+          <select class="kuh-tabel-select"><option selected>Удалённо</option><option>В отпуске</option></select>
+          <button type="button" class="kuh-tabel-chevron">▾</button>
+        </div>
+        <div class="kuh-tabel-expand">
+          <div class="kuh-tabel-stats">
+            <div class="kuh-tabel-stat"><b>6ч 20м</b><span>сегодня в CRM</span></div>
+            <div class="kuh-tabel-stat"><b>31ч 10м</b><span>за 7 дней</span></div>
+            <div class="kuh-tabel-stat"><b>09:02</b><span>первый заход</span></div>
+            <div class="kuh-tabel-stat"><b>18:05</b><span>последняя активность</span></div>
+            <div class="kuh-tabel-stat"><b>14 · 62 мин</b><span>звонки сегодня</span></div>
+            <div class="kuh-tabel-stat"><b>7.8</b><span>качество диалогов</span></div>
+            <div class="kuh-tabel-stat"><b>9</b><span>чаты сегодня</span></div>
+            <div class="kuh-tabel-stat"><b>6</b><span>заметки сегодня</span></div>
+            <div class="kuh-tabel-stat"><b>4</b><span>создано сделок</span></div>
+            <div class="kuh-tabel-stat"><b>1</b><span>выиграно сегодня</span></div>
+            <div class="kuh-tabel-stat"><b>0</b><span>проиграно</span></div>
+            <div class="kuh-tabel-stat"><b>24</b><span>открытых сделок</span></div>
+          </div>
+          <div class="kuh-tabel-dayline"><div class="kuh-tabel-day-label">Сегодня</div><div>
+            <div class="kuh-tabel-bar"><i class="kuh-tabel-seg" style="left:37.5%;width:13.5%"></i><i class="kuh-tabel-seg" style="left:54.1%;width:15.2%"></i><i class="kuh-tabel-seg" style="left:71.5%;width:3.8%"></i></div>
+            <div class="kuh-tabel-hours"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div>
+          </div><div class="kuh-tabel-day-h">6ч 20м</div></div>
+          <div class="kuh-tabel-dayline"><div class="kuh-tabel-day-label">Вчера</div><div>
+            <div class="kuh-tabel-bar"><i class="kuh-tabel-seg" style="left:36%;width:28%"></i></div>
+            <div class="kuh-tabel-hours"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div>
+          </div><div class="kuh-tabel-day-h">6ч 45м</div></div>
+          <div class="kuh-tabel-dayline"><div class="kuh-tabel-day-label">пн, 25.08</div><div>
+            <div class="kuh-tabel-bar"><i class="kuh-tabel-seg" style="left:38%;width:22%"></i></div>
+            <div class="kuh-tabel-hours"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div>
+          </div><div class="kuh-tabel-day-h">5ч 10м</div></div>
+          <div class="kuh-tabel-contacts">
+            <span>anna@kuhhospital.uz <button type="button" class="kuh-tabel-copy">копировать</button></span>
+            <span>менеджер</span>
+            <span>был: только что</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="kuh-tabel-card">
+        <div class="kuh-tabel-row">
+          <div class="kuh-tabel-avatar" style="background:#8fbf7a">ИП<span class="kuh-tabel-dot on"></span></div>
+          <div class="kuh-tabel-user-cell">
+            <div class="kuh-tabel-name">Иван Петров</div>
+            <div class="kuh-tabel-meta">онлайн · РОП</div>
+          </div>
+          <div class="kuh-tabel-hours-cell">7ч 05м<small>неделя 34ч</small></div>
+          <div class="kuh-tabel-bar-wrap">
+            <div class="kuh-tabel-bar"><i class="kuh-tabel-seg" style="left:33%;width:22%"></i><i class="kuh-tabel-seg" style="left:62%;width:10%"></i></div>
+            <div class="kuh-tabel-hours"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div>
+          </div>
+          <select class="kuh-tabel-select"><option selected>Без статуса</option></select>
+          <button type="button" class="kuh-tabel-chevron">▸</button>
+        </div>
+      </div>
+
+      <div class="kuh-tabel-card">
+        <div class="kuh-tabel-row">
+          <div class="kuh-tabel-avatar" style="background:#d4a15a">МС<span class="kuh-tabel-dot"></span></div>
+          <div class="kuh-tabel-user-cell">
+            <div class="kuh-tabel-name">Мария Сидорова <span class="kuh-tabel-badge" style="background:#f5a62322;color:#f5a623">В отпуске</span></div>
+            <div class="kuh-tabel-meta">3 ч назад</div>
+          </div>
+          <div class="kuh-tabel-hours-cell">0ч<small>неделя 12ч</small></div>
+          <div class="kuh-tabel-bar-wrap">
+            <div class="kuh-tabel-bar"></div>
+            <div class="kuh-tabel-hours"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div>
+          </div>
+          <select class="kuh-tabel-select"><option selected>В отпуске</option></select>
+          <button type="button" class="kuh-tabel-chevron">▸</button>
+        </div>
+      </div>
+    </div>
+    <div class="kuh-tabel-foot">
+      <span class="kuh-tabel-hint">Клик по сотруднику — карточка: часы, звонки, сделки и 7 дней. Наведи на зелёный кусок — время.</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

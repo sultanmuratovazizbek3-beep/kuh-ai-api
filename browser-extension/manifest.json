@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "KUH AI — помощник AmoCRM",
+  "description": "AI-помощник в карточке сделки: разбор звонков/заметок, готовые ответы, запись в примечание. API: http://127.0.0.1:8090",
+  "version": "1.4.0",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "KUH AI",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "permissions": ["storage", "alarms"],
+  "host_permissions": [
+    "https://*.amocrm.ru/*",
+    "https://*.kommo.com/*",
+    "http://127.0.0.1:8090/*",
+    "http://localhost:8090/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.amocrm.ru/*",
+        "https://*.kommo.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["panel.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["https://*.amocrm.ru/*", "https://*.kommo.com/*"]
+    }
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  }
+}

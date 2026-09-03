@@ -1,0 +1,137 @@
+{
+  "ok": false,
+  "steps": [
+    {
+      "dash": "ok",
+      "title": "amoCRM: Рабочий стол, kuhhospital"
+    },
+    {
+      "spa_loaded": false,
+      "title": "amoCRM: kuhhospital",
+      "url": "https://kuhhospital.amocrm.ru/amo-market/application/"
+    },
+    {
+      "create_js": {
+        "ok": false,
+        "sample": [
+          "kuhhospital\nKIUT Samarqand\nKIUT Namangan",
+          "kuhhospital\nKIUT Samarqand\nKIUT Namangan",
+          "amo\nМАРКЕТ\nМаркетплейс\nМое приложение\nРе",
+          "amo\nМАРКЕТ\nМаркетплейс\nМое приложение\nРе",
+          "amo\nМАРКЕТ\nМаркетплейс\nМое приложение\nРе",
+          "Не более 20 символов\nПользователь будет ",
+          "Не более 20 символов\nПользователь будет ",
+          "Не более 20 символов\nПользователь будет ",
+          "Не более 20 символов\nПользователь будет ",
+          "Не более 20 символов\nПользователь будет "
+        ]
+      }
+    },
+    {
+      "type_modal_err": "Page.wait_for_selector: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator(\"#create-interna"
+    },
+    {
+      "internal": "js"
+    },
+    {
+      "alert_err": "Page.wait_for_selector: Timeout 10000ms exceeded.\nCall log:\n  - waiting for locator(\".alert-modal__actions-button__confi"
+    },
+    {
+      "fill": "widget_code",
+      "val": "KUH Hospital"
+    },
+    {
+      "fill": "redirect_uri",
+      "val": "+998901234567"
+    },
+    {
+      "fill": "revoke_access_hook_uri",
+      "val": "+998901234567"
+    },
+    {
+      "submit": "Сохранить"
+    }
+  ],
+  "api_base": "https://acute-earrings-diamond-judicial.trycloudflare.com",
+  "form_len": 0,
+  "placeholders": [],
+  "ids": [],
+  "names": [],
+  "inputs": [
+    {
+      "id": "",
+      "name": "widget_code",
+      "type": "text",
+      "placeholder": "Код виджета",
+      "label": "Не более 20 символов"
+    },
+    {
+      "id": "",
+      "name": "redirect_uri",
+      "type": "text",
+      "placeholder": "Ссылка для перенаправления",
+      "label": "Пользователь будет перенаправлен по данной ссылке после предоставления доступов к amoCRM"
+    },
+    {
+      "id": "",
+      "name": "revoke_access_hook_uri",
+      "type": "text",
+      "placeholder": "Ccылка для хука об отключении (необязательно)",
+      "label": "На введенный адрес будет отправлен хук при отключении интеграции"
+    },
+    {
+      "id": "",
+      "name": "languages",
+      "type": "checkbox",
+      "placeholder": "",
+      "label": "Русский"
+    },
+    {
+      "id": "",
+      "name": "languages",
+      "type": "checkbox",
+      "placeholder": "",
+      "label": "English"
+    }
+  ],
+  "agreement": {
+    "status": "not_defined",
+    "is_tech_account": false,
+    "is_new_account": true,
+    "entity_type": "legal_entity"
+  },
+  "posts": [
+    {
+      "status": 400,
+      "body": "{\"title\":\"Creation failed\",\"type\":\"https://httpstatus.es/400\",\"status\":400,\"detail\":\"Invalid data\"}",
+      "keys": [
+        "widget_code",
+        "redirect_uri",
+        "revoke_access_hook_uri"
+      ]
+    },
+    {
+      "status": 400,
+      "body": "{\"title\":\"Creation failed\",\"type\":\"https://httpstatus.es/400\",\"status\":400,\"detail\":\"Invalid data\"}",
+      "keys": [
+        "widget_code",
+        "redirect_uri",
+        "revoke_access_hook_uri"
+      ]
+    }
+  ],
+  "agreement2": {
+    "status": "not_defined",
+    "is_tech_account": false,
+    "is_new_account": true,
+    "entity_type": "legal_entity"
+  },
+  "upload": {
+    "status": 400,
+    "body": "{\"error\":\"You have not filled additional agreement\"}"
+  },
+  "client": {
+    "name": "AI Помощник менеджера",
+    "has_widget": false
+  }
+}

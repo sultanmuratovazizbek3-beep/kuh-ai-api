@@ -1,0 +1,185 @@
+{
+  "ok": false,
+  "steps": [
+    {
+      "url": "https://kuhhospital.amocrm.ru/amo-market/#category-installed",
+      "title": "amoCRM: amoМаркет, kuhhospital"
+    },
+    {
+      "opened": "AI Помощник менеджера"
+    },
+    {
+      "click": "Редактировать"
+    },
+    {
+      "set_file": true
+    },
+    {
+      "modal_html_len": 16548
+    }
+  ],
+  "api_base": "https://opinion-laboratory-standing-provincial.trycloudflare.com",
+  "js": {
+    "info": {
+      "status": "not_defined",
+      "is_tech_account": false,
+      "is_new_account": true,
+      "entity_type": "legal_entity"
+    },
+    "opened": false,
+    "hasRequire": true,
+    "hasAPP": true
+  },
+  "modal_fields": [
+    {
+      "id": "input-upload-icon",
+      "name": "widget-icon",
+      "type": "file",
+      "placeholder": "",
+      "cls": "edit-integration-modal__file-input text-input",
+      "visible": false
+    },
+    {
+      "id": "",
+      "name": "redirect_uri",
+      "type": "text",
+      "placeholder": "Ссылка для перенаправления",
+      "cls": "edit-integration-modal__text-input text-input",
+      "visible": false
+    },
+    {
+      "id": "",
+      "name": "revoke_access_hook_uri",
+      "type": "text",
+      "placeholder": "Ccылка для хука об отключении (необязательно)",
+      "cls": "edit-integration-modal__text-input text-input",
+      "visible": false
+    },
+    {
+      "id": "cbx_drop_master_503",
+      "name": "",
+      "type": "checkbox",
+      "placeholder": "",
+      "cls": "js-form-changes-skip js-master-checkbox",
+      "visible": false
+    },
+    {
+      "id": "cbx_drop_crm37280",
+      "name": "scopes[]",
+      "type": "checkbox",
+      "placeholder": "",
+      "cls": "js-item-checkbox",
+      "visible": false
+    },
+    {
+      "id": "cbx_drop_notifications33296",
+      "name": "scopes[]",
+      "type": "checkbox",
+      "placeholder": "",
+      "cls": "js-item-checkbox",
+      "visible": false
+    },
+    {
+      "id": "cbx_drop_files97422",
+      "name": "scopes[]",
+      "type": "checkbox",
+      "placeholder": "",
+      "cls": "js-item-checkbox",
+      "visible": false
+    },
+    {
+      "id": "cbx_drop_files_delete17589",
+      "name": "scopes[]",
+      "type": "checkbox",
+      "placeholder": "",
+      "cls": "js-item-checkbox",
+      "visible": false
+    },
+    {
+      "id": "",
+      "name": "",
+      "type": "checkbox",
+      "placeholder": "",
+      "cls": "js-form-changes-skip js-master-checkbox",
+      "visible": false
+    },
+    {
+      "id": "",
+      "name": "is_duplication_control_supported",
+      "type": "checkbox",
+      "placeholder": "",
+      "cls": "",
+      "visible": false
+    },
+    {
+      "id": "",
+      "name": "is_multiple_sources_supported",
+      "type": "checkbox",
+      "placeholder": "",
+      "cls": "",
+      "visible": false
+    },
+    {
+      "id": "",
+      "name": "language",
+      "type": "hidden",
+      "placeholder": "",
+      "cls": "control--select--input ",
+      "visible": false
+    },
+    {
+      "id": "",
+      "name": "name",
+      "type": "text",
+      "placeholder": "Название интеграции",
+      "cls": "edit-integration-modal__text-input js-validate-name text-input",
+      "visible": false
+    },
+    {
+      "id": "new-integration-description",
+      "name": "description",
+      "type": "textarea",
+      "placeholder": "Описание",
+      "cls": "text-input text-input-textarea edit-integration-modal__textarea js-validate-description",
+      "visible": false
+    },
+    {
+      "id": "",
+      "name": "language",
+      "type": "hidden",
+      "placeholder": "",
+      "cls": "control--select--input ",
+      "visible": false
+    },
+    {
+      "id": "",
+      "name": "name",
+      "type": "text",
+      "placeholder": "Название интеграции",
+      "cls": "edit-integration-modal__text-input js-validate-name text-input",
+      "visible": false
+    },
+    {
+      "id": "new-integration-description",
+      "name": "description",
+      "type": "textarea",
+      "placeholder": "Описание",
+      "cls": "text-input text-input-textarea edit-integration-modal__textarea js-validate-description",
+      "visible": false
+    }
+  ],
+  "agreement": {
+    "status": "not_defined",
+    "is_tech_account": false,
+    "is_new_account": true,
+    "entity_type": "legal_entity"
+  },
+  "upload": {
+    "status": 400,
+    "body": "{\"error\":\"You have not filled additional agreement\"}"
+  },
+  "client": {
+    "name": "AI Помощник менеджера",
+    "has_widget": false
+  }
+}

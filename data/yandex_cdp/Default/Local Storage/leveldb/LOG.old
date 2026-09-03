@@ -1,0 +1,4 @@
+2026/08/28-10:30:27.612 6604 File C:\Users\ACC-2\AppData\Local\Yandex\YandexBrowser\User Data\Default\Local Storage\leveldb is locked for recovering successfully
+2026/08/28-10:30:27.622 6604 Reusing MANIFEST C:\Users\ACC-2\AppData\Local\Yandex\YandexBrowser\User Data\Default\Local Storage\leveldb/MANIFEST-000001
+2026/08/28-10:30:27.623 6604 Recovering log #3887
+2026/08/28-10:30:27.625 6604 Reusing old log C:\Users\ACC-2\AppData\Local\Yandex\YandexBrowser\User Data\Default\Local Storage\leveldb/003887.log 

@@ -1,0 +1,4 @@
+2026/08/28-10:41:07.631 14fc File C:\Users\ACC-2\amocrm-analytics\data\yandex_cdp\Default\ClientCertificates is locked for recovering successfully
+2026/08/28-10:41:07.631 14fc Deletion DBImpl for C:\Users\ACC-2\amocrm-analytics\data\yandex_cdp\Default\ClientCertificates, waiting for background work finished
+2026/08/28-10:41:07.631 14fc Deletion DBImpl for C:\Users\ACC-2\amocrm-analytics\data\yandex_cdp\Default\ClientCertificates, background work finished
+2026/08/28-10:41:07.631 14fc File C:\Users\ACC-2\amocrm-analytics\data\yandex_cdp\Default\ClientCertificates unlocked successfully

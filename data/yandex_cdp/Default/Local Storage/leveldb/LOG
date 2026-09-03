@@ -1,0 +1,4 @@
+2026/08/28-10:41:07.691 2710 File C:\Users\ACC-2\amocrm-analytics\data\yandex_cdp\Default\Local Storage\leveldb is locked for recovering successfully
+2026/08/28-10:41:07.706 2710 Reusing MANIFEST C:\Users\ACC-2\amocrm-analytics\data\yandex_cdp\Default\Local Storage\leveldb/MANIFEST-000001
+2026/08/28-10:41:07.709 2710 Recovering log #3887
+2026/08/28-10:41:07.711 2710 Reusing old log C:\Users\ACC-2\amocrm-analytics\data\yandex_cdp\Default\Local Storage\leveldb/003887.log 

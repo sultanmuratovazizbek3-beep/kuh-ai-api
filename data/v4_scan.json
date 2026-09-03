@@ -1,0 +1,22 @@
+[
+  {
+    "tag": "DIV",
+    "text": "На введенный адрес будет отправлен хук при отключении интеграции",
+    "cls": "public-integration-create__redirect-url",
+    "x": 915,
+    "y": 218,
+    "w": 1080,
+    "h": 60,
+    "path": "doc"
+  },
+  {
+    "tag": "SPAN",
+    "text": "На введенный адрес будет отправлен хук при отключении интеграции",
+    "cls": "public-integration-create__redirect-url-text",
+    "x": 920,
+    "y": 231,
+    "w": 1071,
+    "h": 17,
+    "path": "doc"
+  }
+]

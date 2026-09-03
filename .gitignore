@@ -1,0 +1,20 @@
+﻿.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.pyc
+*.log
+.DS_Store
+data/_ycookies/
+data/**/Cookies
+data/**/Local State
+*.db
+build/
+build_payload/
+dist/
+release/
+_backup_before_rollback_20260825/
+.gradle/
+*.apk
+public/API_PUBLIC_URL.txt

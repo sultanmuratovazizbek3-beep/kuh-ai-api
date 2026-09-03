@@ -1,0 +1,4 @@
+2026/08/28-10:41:07.855 20ac File C:\Users\ACC-2\amocrm-analytics\data\yandex_cdp\Default\AliceChatHistory\dialogs is locked for recovering successfully
+2026/08/28-10:41:07.855 20ac Deletion DBImpl for C:\Users\ACC-2\amocrm-analytics\data\yandex_cdp\Default\AliceChatHistory\dialogs, waiting for background work finished
+2026/08/28-10:41:07.855 20ac Deletion DBImpl for C:\Users\ACC-2\amocrm-analytics\data\yandex_cdp\Default\AliceChatHistory\dialogs, background work finished
+2026/08/28-10:41:07.856 20ac File C:\Users\ACC-2\amocrm-analytics\data\yandex_cdp\Default\AliceChatHistory\dialogs unlocked successfully
