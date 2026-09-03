@@ -6,10 +6,10 @@ __pycache__/
 *.pyc
 *.log
 .DS_Store
-data/_ycookies/
-data/**/Cookies
-data/**/Local State
-*.db
+data/
+!data/.gitkeep
+bin/
+*.exe
 build/
 build_payload/
 dist/
@@ -18,3 +18,5 @@ _backup_before_rollback_20260825/
 .gradle/
 *.apk
 public/API_PUBLIC_URL.txt
+*.db
+CRMAIDesk.spec
