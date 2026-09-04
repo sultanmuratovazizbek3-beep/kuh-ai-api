@@ -2,8 +2,9 @@
 __pycache__
 *.pyc
 .git
-data/_ycookies
-data/*.db
+data
+bin
+*.exe
 _backup_before_rollback_20260825
 build
 build_payload

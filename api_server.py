@@ -10,6 +10,8 @@ Telegram / messengers are not used here.
 from __future__ import annotations
 
 import logging
+import os
+import threading
 import time
 from pathlib import Path
 from typing import Any
@@ -48,6 +50,13 @@ app.add_middleware(
 WIDGET_DIR = BASE_DIR / "widget"
 PUBLIC_DIR = BASE_DIR / "public"
 DESKTOP_UI_DIR = BASE_DIR / "desktop"
+_collector_lock = threading.Lock()
+_collector_state: dict[str, Any] = {
+    "enabled": False,
+    "last_ok": 0,
+    "last_error": "",
+    "running": False,
+}
 
 
 class AnalyzeBody(BaseModel):
@@ -96,11 +105,56 @@ def _check_api_token(
         raise HTTPException(status_code=401, detail="Invalid API token")
 
 
+def _cloud_collector_enabled() -> bool:
+    return os.getenv("ENABLE_CLOUD_COLLECTOR", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+        "on",
+    )
+
+
+def _run_cloud_collect_once() -> None:
+    from collector import Collector
+
+    with _collector_lock:
+        _collector_state["running"] = True
+    try:
+        Collector().run_once(lookback_hours=6)
+        with _collector_lock:
+            _collector_state["last_ok"] = int(time.time())
+            _collector_state["last_error"] = ""
+    except Exception as exc:
+        logger.exception("cloud collector failed")
+        with _collector_lock:
+            _collector_state["last_error"] = str(exc)[:300]
+    finally:
+        with _collector_lock:
+            _collector_state["running"] = False
+
+
+def _start_cloud_collector() -> None:
+    interval = max(60, int(os.getenv("CLOUD_COLLECT_INTERVAL", "180")))
+
+    def loop() -> None:
+        time.sleep(8)
+        while True:
+            _run_cloud_collect_once()
+            time.sleep(interval)
+
+    threading.Thread(target=loop, name="cloud-collector", daemon=True).start()
+    with _collector_lock:
+        _collector_state["enabled"] = True
+    logger.info("Cloud collector started, interval=%ss", interval)
+
+
 @app.on_event("startup")
 def _startup() -> None:
     init_db()
     PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
     logger.info("API started")
+    if _cloud_collector_enabled():
+        _start_cloud_collector()
 
 
 @app.get("/health")
@@ -108,15 +162,12 @@ def health() -> dict[str, Any]:
     missing = validate_config()
     worker = False
     try:
-        from pathlib import Path
-        import os as _os
-
         pid_path = (
-            Path(_os.environ.get("LOCALAPPDATA") or Path.home() / "AppData" / "Local")
+            Path(os.environ.get("LOCALAPPDATA") or Path.home() / "AppData" / "Local")
             / "CRMAIDesk"
             / "worker.pid"
         )
-        if pid_path.exists():
+        if os.name == "nt" and pid_path.exists():
             pid = int(pid_path.read_text(encoding="utf-8").strip())
             import ctypes
 
@@ -126,11 +177,16 @@ def health() -> dict[str, Any]:
                 worker = True
     except Exception:
         worker = False
+    with _collector_lock:
+        collector = dict(_collector_state)
+    if collector.get("enabled"):
+        worker = worker or bool(collector.get("last_ok") or collector.get("running"))
     return {
         "status": "ok" if not missing else "degraded",
         "missing_config": missing,
         "ts": int(time.time()),
         "worker": worker,
+        "collector": collector,
         "write_amo_notes": True,
     }
 

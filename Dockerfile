@@ -4,7 +4,12 @@ WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    API_HOST=0.0.0.0
+    API_HOST=0.0.0.0 \
+    DATA_DIR=/var/data \
+    ENABLE_CLOUD_COLLECTOR=1 \
+    TIMEZONE=Asia/Tashkent
+
+RUN mkdir -p /var/data
 
 COPY requirements-cloud.txt .
 RUN pip install --no-cache-dir -r requirements-cloud.txt

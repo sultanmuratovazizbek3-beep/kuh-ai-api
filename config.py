@@ -20,8 +20,12 @@ def _base_dir() -> Path:
 
 
 BASE_DIR = _base_dir()
-# User data for profiles / db when installed
-_APP_DATA = Path(os.environ.get("LOCALAPPDATA") or Path.home() / "AppData" / "Local") / "CRMAIDesk"
+# Cloud (Render): DATA_DIR=/var/data. Windows Desk: LOCALAPPDATA\CRMAIDesk.
+_DATA_DIR_ENV = (os.getenv("DATA_DIR") or "").strip()
+if os.name == "nt" or getattr(sys, "frozen", False):
+    _APP_DATA = Path(os.environ.get("LOCALAPPDATA") or Path.home() / "AppData" / "Local") / "CRMAIDesk"
+else:
+    _APP_DATA = Path(_DATA_DIR_ENV) if _DATA_DIR_ENV else (BASE_DIR / "data")
 _APP_DATA.mkdir(parents=True, exist_ok=True)
 load_dotenv(BASE_DIR / ".env")
 load_dotenv(_APP_DATA / ".env")
@@ -76,9 +80,13 @@ WEEKLY_REPORT_HOUR = int(os.getenv("WEEKLY_REPORT_HOUR", "10"))
 MONTHLY_REPORT_DAY = int(os.getenv("MONTHLY_REPORT_DAY", "1"))
 MONTHLY_REPORT_HOUR = int(os.getenv("MONTHLY_REPORT_HOUR", "10"))
 
-# Writable paths always under AppData when frozen
-_DATA_ROOT = _APP_DATA if getattr(sys, "frozen", False) else BASE_DIR
-DB_PATH = _DATA_ROOT / "data" / "analytics.db"
+# Writable paths: DATA_DIR on cloud, AppData when frozen, else project/data
+if _DATA_DIR_ENV:
+    _DATA_ROOT = Path(_DATA_DIR_ENV)
+    DB_PATH = _DATA_ROOT / "analytics.db"
+else:
+    _DATA_ROOT = _APP_DATA if getattr(sys, "frozen", False) else BASE_DIR
+    DB_PATH = _DATA_ROOT / "data" / "analytics.db"
 REPORTS_DIR = Path.home() / "Desktop" / "AmoCRM-AI-Reports"
 if getattr(sys, "frozen", False):
     REPORTS_DIR = Path.home() / "Desktop" / "CRM-AI-Reports"

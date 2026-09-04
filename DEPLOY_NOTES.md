@@ -1,7 +1,7 @@
-# KUH AI API — Render Hobby (черновик)
+# KUH AI API — Render Hobby
 
-Статус синхрона: `data/kuh_sync_status.json`  
-Деплой **не** запускать, пока Азизбек не скажет «Делай Render».
+Живой URL: `https://kuh-ai-api.onrender.com`  
+Табель и API больше не зависят от этого компьютера.
 
 ## Scope
 - Cloud: только FastAPI `api_server:app` (assistant / widget / заметки).
@@ -16,13 +16,10 @@
 - `.gitignore` — `.env`, cookies, venv
 - `.dockerignore` — `.env`, cookies, venv, тяжёлые папки
 
-## Когда скажут «Делай Render»
-1. `git init` (если ещё нет), убедиться что `.env` не в индексе.
-2. GitHub repo + push (Public Git URL ок для Render).
-3. Blueprint / сервис из `render.yaml`, env из локального `.env` только в Dashboard (не в чат).
-4. Проверка: `GET https://<service>.onrender.com/health`
-5. Прописать `api_base` в extension options + widget.
-6. ПК: watchdog как backup localhost; cloudflared quick tunnel не основной путь.
+## Проверка
+1. `GET https://kuh-ai-api.onrender.com/health` — `status=ok`, `missing_config=[]`.
+2. Виджет Табель: `api_base=https://kuh-ai-api.onrender.com`.
+3. ПК больше не нужен. Watchdog/cloudflared — только запасной путь.
 
 ## Cold start
-Hobby free засыпает ~15 мин без трафика. Первый запрос может занять ~1 минуту.
+Hobby free засыпает ~15 мин без трафика. Keep-alive: `.github/workflows/keep-alive.yml` каждые 10 мин. Первый запрос после сна может занять ~1 минуту.

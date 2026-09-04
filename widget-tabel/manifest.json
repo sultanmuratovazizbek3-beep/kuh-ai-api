@@ -3,7 +3,7 @@
     "name": "widget.name",
     "description": "widget.description",
     "short_description": "widget.short_description",
-    "version": "1.2.2",
+    "version": "1.4.5",
     "interface_version": 2,
     "init_once": true,
     "locale": [
@@ -17,8 +17,15 @@
   },
   "locations": [
     "everywhere",
-    "settings"
+    "settings",
+    "widget_page"
   ],
+  "left_menu": {
+    "kuh_tabel": {
+      "title": "widget.name",
+      "icon": "images/tabel.svg"
+    }
+  },
   "settings": {
     "api_base": {
       "name": "settings.api_base",

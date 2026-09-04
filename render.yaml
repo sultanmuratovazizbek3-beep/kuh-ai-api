@@ -31,6 +31,10 @@ services:
         sync: false
       - key: TIMEZONE
         value: Asia/Tashkent
+      - key: DATA_DIR
+        value: /var/data
+      - key: ENABLE_CLOUD_COLLECTOR
+        value: "1"
       - key: WRITE_AMO_CALL_NOTES
         value: "1"
       - key: STT_USE_UZ_HF
