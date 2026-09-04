@@ -14,8 +14,13 @@ define(["jquery"], function ($) {
     var collapsedGroups = {};
     var qSearch = "";
     var qStatus = "";
+    var qGroup = "all";
     var qSort = "name";
-    var EMBEDDED_CSS = ".kuh-tabel-menu-item {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  cursor: pointer;\n  font-size: 14px;\n  color: #313942;\n  border-radius: 6px;\n  user-select: none;\n}\n.kuh-tabel-menu-item:hover {\n  background: #f2f4f7;\n}\n\n.kuh-tabel-fab {\n  position: fixed;\n  left: 72px;\n  bottom: 16px;\n  z-index: 12000;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 10px;\n  border: 0;\n  border-radius: 16px;\n  background: #313942;\n  color: #fff;\n  font-size: 12px;\n  font-weight: 600;\n  cursor: pointer;\n  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.28);\n}\n.kuh-tabel-fab:hover { background: #1f2730; }\n.kuh-tabel-fab-dot {\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  background: #7ed321;\n}\n\n.kuh-tabel-page {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"PT Sans\", sans-serif;\n  color: #313942;\n  background: #fff;\n  min-height: calc(100vh - 80px);\n  padding: 8px 8px 24px;\n}\n.kuh-tabel-page .kuh-tabel-modal {\n  width: 100%;\n  max-height: none;\n  box-shadow: none;\n  border-radius: 0;\n}\n\n.kuh-tabel-overlay {\n  position: fixed;\n  inset: 0;\n  z-index: 13000;\n  background: rgba(20, 28, 40, 0.45);\n  display: flex;\n  align-items: flex-start;\n  justify-content: center;\n  padding: 48px 16px 24px;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"PT Sans\", sans-serif;\n  color: #313942;\n}\n.kuh-tabel-modal {\n  width: min(1140px, 100%);\n  max-height: calc(100vh - 48px);\n  background: #fff;\n  border-radius: 10px;\n  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.28);\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n}\n.kuh-tabel-head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 14px 18px 12px;\n  border-bottom: 1px solid #e8eaed;\n}\n.kuh-tabel-title {\n  font-size: 18px;\n  font-weight: 700;\n  letter-spacing: 0.01em;\n}\n.kuh-tabel-close {\n  width: 32px;\n  height: 32px;\n  border: 0;\n  background: transparent;\n  border-radius: 6px;\n  font-size: 22px;\n  line-height: 1;\n  cursor: pointer;\n  color: #8b95a1;\n}\n.kuh-tabel-close:hover { background: #f2f4f7; color: #313942; }\n\n.kuh-tabel-me {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 14px 18px 10px;\n}\n.kuh-tabel-avatar {\n  position: relative;\n  width: 44px;\n  height: 44px;\n  border-radius: 50%;\n  background: #dbe4f0;\n  color: #3d4a5c;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-weight: 700;\n  font-size: 14px;\n  flex-shrink: 0;\n  overflow: hidden;\n  text-transform: uppercase;\n}\n.kuh-tabel-avatar img {\n  width: 100%;\n  height: 100%;\n  object-fit: cover;\n}\n.kuh-tabel-dot {\n  position: absolute;\n  right: -1px;\n  bottom: -1px;\n  width: 12px;\n  height: 12px;\n  border-radius: 50%;\n  background: #c5ccd6;\n  border: 2px solid #fff;\n}\n.kuh-tabel-dot.on { background: #2ecc71; }\n.kuh-tabel-me-main { min-width: 0; flex: 1; }\n.kuh-tabel-name {\n  font-weight: 700;\n  font-size: 15px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.kuh-tabel-meta {\n  font-size: 12px;\n  color: #8b95a1;\n  margin-top: 2px;\n}\n.kuh-tabel-me-right {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  flex-shrink: 0;\n}\n.kuh-tabel-leads {\n  font-size: 12px;\n  color: #5c6773;\n  background: #f4f6f8;\n  border-radius: 12px;\n  padding: 4px 8px;\n  white-space: nowrap;\n}\n\n.kuh-tabel-summary {\n  display: grid;\n  grid-template-columns: repeat(6, minmax(0, 1fr));\n  gap: 8px;\n  padding: 0 18px 10px;\n}\n.kuh-tabel-kpi {\n  background: #f4f6f8;\n  border-radius: 8px;\n  padding: 8px 10px;\n  min-width: 0;\n}\n.kuh-tabel-kpi b {\n  display: block;\n  font-size: 16px;\n  font-weight: 700;\n  color: #1f2933;\n  line-height: 1.2;\n}\n.kuh-tabel-kpi span {\n  font-size: 11px;\n  color: #8b95a1;\n}\n.kuh-tabel-kpi.on b { color: #159947; }\n.kuh-tabel-kpi.warn b { color: #d97706; }\n\n.kuh-tabel-toolbar {\n  display: flex;\n  gap: 8px;\n  padding: 4px 18px 12px;\n  flex-wrap: wrap;\n}\n.kuh-tabel-search,\n.kuh-tabel-filter,\n.kuh-tabel-select {\n  height: 34px;\n  border: 1px solid #d5d8de;\n  border-radius: 6px;\n  padding: 0 10px;\n  font-size: 13px;\n  background: #fff;\n  color: #313942;\n  outline: none;\n}\n.kuh-tabel-search:focus,\n.kuh-tabel-filter:focus,\n.kuh-tabel-select:focus {\n  border-color: #4c8bf5;\n  box-shadow: 0 0 0 3px rgba(76, 139, 245, 0.15);\n}\n.kuh-tabel-search { flex: 1; min-width: 160px; }\n.kuh-tabel-filter { min-width: 160px; }\n\n.kuh-tabel-body {\n  overflow: auto;\n  padding: 0 10px 16px;\n  min-height: 220px;\n}\n.kuh-tabel-group {\n  margin: 10px 8px 4px;\n  font-size: 12px;\n  font-weight: 700;\n  color: #8b95a1;\n  text-transform: uppercase;\n  letter-spacing: 0.04em;\n  cursor: pointer;\n  user-select: none;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n.kuh-tabel-group:hover { color: #5c6773; }\n.kuh-tabel-card {\n  border: 1px solid transparent;\n  border-radius: 10px;\n  margin: 0 4px 4px;\n}\n.kuh-tabel-card.open {\n  border-color: #d9e4f5;\n  background: #fbfcff;\n  margin-bottom: 8px;\n}\n.kuh-tabel-row {\n  display: grid;\n  grid-template-columns: 44px minmax(150px, 1.1fr) 92px minmax(200px, 1.5fr) 138px 28px;\n  gap: 10px;\n  align-items: center;\n  padding: 8px 8px;\n  border-radius: 8px;\n  cursor: pointer;\n}\n.kuh-tabel-row:hover { background: #f7f8fa; }\n.kuh-tabel-row.is-me { background: #f3f7ff; }\n.kuh-tabel-user-cell { min-width: 0; }\n.kuh-tabel-hours-cell {\n  font-size: 13px;\n  font-weight: 700;\n  color: #313942;\n  white-space: nowrap;\n}\n.kuh-tabel-hours-cell small {\n  display: block;\n  font-size: 10px;\n  font-weight: 500;\n  color: #8b95a1;\n}\n.kuh-tabel-chevron {\n  width: 28px;\n  height: 28px;\n  border: 0;\n  background: transparent;\n  color: #8b95a1;\n  font-size: 16px;\n  cursor: pointer;\n  border-radius: 6px;\n}\n.kuh-tabel-chevron:hover { background: #eef2f6; color: #313942; }\n.kuh-tabel-email {\n  font-size: 12px;\n  color: #8b95a1;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.kuh-tabel-empty {\n  padding: 40px 16px;\n  text-align: center;\n  color: #8b95a1;\n}\n\n.kuh-tabel-bar-wrap { min-width: 0; }\n.kuh-tabel-bar {\n  position: relative;\n  height: 12px;\n  background: #eef1f6;\n  border-radius: 6px;\n  overflow: hidden;\n}\n.kuh-tabel-seg {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  background: #7ed321;\n  border-radius: 2px;\n}\n.kuh-tabel-hours {\n  display: flex;\n  justify-content: space-between;\n  font-size: 10px;\n  color: #b0b7c1;\n  margin-top: 3px;\n  padding: 0 1px;\n}\n.kuh-tabel-expand {\n  padding: 4px 12px 14px 54px;\n}\n.kuh-tabel-stats {\n  display: grid;\n  grid-template-columns: repeat(6, minmax(0, 1fr));\n  gap: 6px;\n  margin-bottom: 10px;\n}\n.kuh-tabel-stat {\n  background: #fff;\n  border: 1px solid #e8eaed;\n  border-radius: 8px;\n  padding: 7px 8px;\n}\n.kuh-tabel-stat b {\n  display: block;\n  font-size: 14px;\n  line-height: 1.2;\n}\n.kuh-tabel-stat span {\n  font-size: 10px;\n  color: #8b95a1;\n}\n.kuh-tabel-dayline {\n  display: grid;\n  grid-template-columns: 72px 1fr 52px;\n  gap: 8px;\n  align-items: center;\n  margin-bottom: 6px;\n}\n.kuh-tabel-day-label {\n  font-size: 11px;\n  color: #8b95a1;\n}\n.kuh-tabel-day-h {\n  font-size: 11px;\n  font-weight: 700;\n  text-align: right;\n  color: #5c6773;\n}\n.kuh-tabel-copy {\n  border: 0;\n  background: transparent;\n  color: #4c8bf5;\n  font-size: 12px;\n  cursor: pointer;\n  padding: 0;\n}\n.kuh-tabel-copy:hover { text-decoration: underline; }\n.kuh-tabel-contacts {\n  display: flex;\n  gap: 12px;\n  flex-wrap: wrap;\n  font-size: 12px;\n  color: #5c6773;\n  margin-top: 8px;\n}\n\n.kuh-tabel-badge {\n  display: inline-flex;\n  align-items: center;\n  height: 22px;\n  padding: 0 8px;\n  border-radius: 11px;\n  font-size: 11px;\n  font-weight: 600;\n  background: #eef1f6;\n  color: #5c6773;\n  white-space: nowrap;\n}\n.kuh-tabel-foot {\n  border-top: 1px solid #e8eaed;\n  padding: 10px 18px 14px;\n  display: flex;\n  gap: 8px;\n  align-items: center;\n  flex-wrap: wrap;\n}\n.kuh-tabel-hint {\n  margin-left: auto;\n  font-size: 11px;\n  color: #8b95a1;\n}\n.kuh-tabel-add {\n  height: 32px;\n  padding: 0 10px;\n  border: 0;\n  border-radius: 6px;\n  background: #4c8bf5;\n  color: #fff;\n  font-size: 12px;\n  font-weight: 600;\n  cursor: pointer;\n}\n.kuh-tabel-add:hover { background: #3b7de3; }\n.kuh-tabel-ghost {\n  height: 32px;\n  padding: 0 10px;\n  border: 1px solid #d5d8de;\n  border-radius: 6px;\n  background: #fff;\n  font-size: 12px;\n  cursor: pointer;\n}\n.kuh-tabel-loading {\n  padding: 28px;\n  text-align: center;\n  color: #8b95a1;\n}\n.kuh-tabel-err { color: #e74c3c; font-size: 12px; padding: 0 18px 8px; }\n\n.kuh-acl {\n  margin: 8px 0 16px;\n  background: #fff;\n  border: 1px solid #e6eaef;\n  border-radius: 12px;\n  overflow: hidden;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;\n  color: #313942;\n}\n.kuh-acl-head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  padding: 14px 16px;\n  background: linear-gradient(180deg, #f7fafc 0%, #fff 100%);\n  border-bottom: 1px solid #eef1f5;\n}\n.kuh-acl-head h3 {\n  margin: 0;\n  font-size: 15px;\n  font-weight: 700;\n}\n.kuh-acl-head p {\n  margin: 4px 0 0;\n  font-size: 12px;\n  color: #8b95a1;\n}\n.kuh-acl-count {\n  font-size: 12px;\n  color: #5c6773;\n  background: #f4f6f8;\n  border-radius: 12px;\n  padding: 4px 10px;\n  white-space: nowrap;\n}\n.kuh-acl-master {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 12px 16px;\n  background: #f4fbf6;\n  border-bottom: 1px solid #e8f5ec;\n}\n.kuh-acl-master b { font-size: 13px; }\n.kuh-acl-search {\n  margin: 10px 16px 6px;\n  width: calc(100% - 32px);\n  height: 34px;\n  border: 1px solid #d5d8de;\n  border-radius: 8px;\n  padding: 0 12px;\n  font-size: 13px;\n  box-sizing: border-box;\n}\n.kuh-acl-list { max-height: 360px; overflow: auto; padding: 4px 8px 12px; }\n.kuh-acl-g {\n  font-size: 11px;\n  font-weight: 700;\n  color: #8b95a1;\n  text-transform: uppercase;\n  letter-spacing: .04em;\n  padding: 10px 8px 4px;\n}\n.kuh-acl-row {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding: 8px;\n  border-radius: 10px;\n}\n.kuh-acl-row:hover { background: #f7f8fa; }\n.kuh-acl-row.is-off { opacity: .55; }\n.kuh-acl-name { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; }\n.kuh-acl-name small {\n  display: block;\n  font-weight: 500;\n  color: #8b95a1;\n  font-size: 11px;\n}\n.kuh-sw {\n  position: relative;\n  width: 44px;\n  height: 24px;\n  flex-shrink: 0;\n}\n.kuh-sw input {\n  opacity: 0;\n  width: 0;\n  height: 0;\n  position: absolute;\n}\n.kuh-sw i {\n  position: absolute;\n  inset: 0;\n  background: #c5ccd6;\n  border-radius: 12px;\n  transition: background .2s;\n  cursor: pointer;\n}\n.kuh-sw i:before {\n  content: \"\";\n  position: absolute;\n  height: 18px;\n  width: 18px;\n  left: 3px;\n  top: 3px;\n  background: #fff;\n  border-radius: 50%;\n  box-shadow: 0 1px 3px rgba(15,23,42,.2);\n  transition: transform .2s;\n}\n.kuh-sw input:checked + i { background: #22c55e; }\n.kuh-sw input:checked + i:before { transform: translateX(20px); }\n.kuh-sw input:disabled + i { opacity: .7; cursor: default; }\n\n@media (max-width: 920px) {\n  .kuh-tabel-summary,\n  .kuh-tabel-stats {\n    grid-template-columns: repeat(3, minmax(0, 1fr));\n  }\n  .kuh-tabel-row {\n    grid-template-columns: 44px 1fr 28px;\n  }\n  .kuh-tabel-hours-cell,\n  .kuh-tabel-bar-wrap,\n  .kuh-tabel-row > .kuh-tabel-select {\n    grid-column: 2;\n  }\n  .kuh-tabel-expand { padding-left: 8px; }\n}\n\n\n/* Left rail item next to amo\u041c\u0430\u0440\u043a\u0435\u0442 / \u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 */\n.kuh-tabel-sidebar {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: 4px;\n  width: 64px;\n  padding: 10px 4px 8px;\n  margin: 0 auto;\n  cursor: pointer;\n  user-select: none;\n  color: #c5c9ce;\n  box-sizing: border-box;\n}\n.kuh-tabel-sidebar:hover { color: #fff; }\n.kuh-tabel-sidebar-icon {\n  width: 28px;\n  height: 28px;\n  border-radius: 50%;\n  border: 1.5px solid #8b939c;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  position: relative;\n  box-sizing: border-box;\n}\n.kuh-tabel-sidebar-dot {\n  width: 10px;\n  height: 10px;\n  border-radius: 50%;\n  background: #7ed321;\n  box-shadow: 0 0 0 2px rgba(126, 211, 33, 0.25);\n}\n.kuh-tabel-sidebar-label {\n  font-size: 10px;\n  line-height: 1.1;\n  font-weight: 600;\n  text-align: center;\n  max-width: 64px;\n}\n.kuh-tabel-sidebar--dock {\n  position: fixed;\n  left: 0;\n  bottom: 88px;\n  z-index: 12000;\n  width: 68px;\n}\n\n\n/* critical containment */\n.kuh-tabel-avatar,\n.kuh-tabel-avatar img {\n  max-width: 56px !important;\n  max-height: 56px !important;\n}\n.kuh-tabel-overlay {\n  isolation: isolate;\n  overflow: auto;\n}\n.kuh-tabel-overlay img {\n  max-width: 96px !important;\n  max-height: 96px !important;\n}\n"; // <TABEL_CSS>
+    var qPeriod = "today";
+    var qFrom = "";
+    var qTo = "";
+    var filterOpen = false;
+    var EMBEDDED_CSS = ".kuh-tabel-menu-item {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  cursor: pointer;\n  font-size: 14px;\n  color: #313942;\n  border-radius: 6px;\n  user-select: none;\n}\n.kuh-tabel-menu-item:hover {\n  background: #f2f4f7;\n}\n\n.kuh-tabel-fab {\n  position: fixed;\n  left: 72px;\n  bottom: 16px;\n  z-index: 12000;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 10px;\n  border: 0;\n  border-radius: 16px;\n  background: #313942;\n  color: #fff;\n  font-size: 12px;\n  font-weight: 600;\n  cursor: pointer;\n  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.28);\n}\n.kuh-tabel-fab:hover { background: #1f2730; }\n.kuh-tabel-fab-dot {\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  background: #7ed321;\n}\n\n.kuh-tabel-page {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"PT Sans\", sans-serif;\n  color: #313942;\n  background: #fff;\n  min-height: calc(100vh - 80px);\n  padding: 8px 8px 24px;\n}\n.kuh-tabel-page .kuh-tabel-modal {\n  width: 100%;\n  max-height: none;\n  box-shadow: none;\n  border-radius: 0;\n}\n\n.kuh-tabel-overlay {\n  position: fixed;\n  inset: 0;\n  z-index: 13000;\n  background: rgba(20, 28, 40, 0.45);\n  display: flex;\n  align-items: flex-start;\n  justify-content: center;\n  padding: 48px 16px 24px;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"PT Sans\", sans-serif;\n  color: #313942;\n}\n.kuh-tabel-modal {\n  width: min(1140px, 100%);\n  max-height: calc(100vh - 48px);\n  background: #fff;\n  border-radius: 10px;\n  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.28);\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n}\n.kuh-tabel-head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 14px 18px 12px;\n  border-bottom: 1px solid #e8eaed;\n}\n.kuh-tabel-title {\n  font-size: 18px;\n  font-weight: 700;\n  letter-spacing: 0.01em;\n}\n.kuh-tabel-close {\n  width: 32px;\n  height: 32px;\n  border: 0;\n  background: transparent;\n  border-radius: 6px;\n  font-size: 22px;\n  line-height: 1;\n  cursor: pointer;\n  color: #8b95a1;\n}\n.kuh-tabel-close:hover { background: #f2f4f7; color: #313942; }\n\n.kuh-tabel-me {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 14px 18px 10px;\n}\n.kuh-tabel-avatar {\n  position: relative;\n  width: 44px;\n  height: 44px;\n  border-radius: 50%;\n  background: #dbe4f0;\n  color: #3d4a5c;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-weight: 700;\n  font-size: 14px;\n  flex-shrink: 0;\n  overflow: hidden;\n  text-transform: uppercase;\n}\n.kuh-tabel-avatar img {\n  width: 100%;\n  height: 100%;\n  object-fit: cover;\n}\n.kuh-tabel-dot {\n  position: absolute;\n  right: -1px;\n  bottom: -1px;\n  width: 12px;\n  height: 12px;\n  border-radius: 50%;\n  background: #c5ccd6;\n  border: 2px solid #fff;\n}\n.kuh-tabel-dot.on { background: #2ecc71; }\n.kuh-tabel-me-main { min-width: 0; flex: 1; }\n.kuh-tabel-name {\n  font-weight: 700;\n  font-size: 15px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.kuh-tabel-meta {\n  font-size: 12px;\n  color: #8b95a1;\n  margin-top: 2px;\n}\n.kuh-tabel-me-right {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  flex-shrink: 0;\n}\n.kuh-tabel-leads {\n  font-size: 12px;\n  color: #5c6773;\n  background: #f4f6f8;\n  border-radius: 12px;\n  padding: 4px 8px;\n  white-space: nowrap;\n}\n\n.kuh-tabel-summary {\n  display: grid;\n  grid-template-columns: repeat(6, minmax(0, 1fr));\n  gap: 8px;\n  padding: 0 18px 10px;\n}\n.kuh-tabel-kpi {\n  background: #f4f6f8;\n  border-radius: 8px;\n  padding: 8px 10px;\n  min-width: 0;\n}\n.kuh-tabel-kpi b {\n  display: block;\n  font-size: 16px;\n  font-weight: 700;\n  color: #1f2933;\n  line-height: 1.2;\n}\n.kuh-tabel-kpi span {\n  font-size: 11px;\n  color: #8b95a1;\n}\n.kuh-tabel-kpi.on b { color: #159947; }\n.kuh-tabel-kpi.warn b { color: #d97706; }\n\n.kuh-tabel-toolbar {\n  display: flex;\n  gap: 8px;\n  padding: 4px 18px 12px;\n  flex-wrap: wrap;\n}\n.kuh-tabel-search,\n.kuh-tabel-filter,\n.kuh-tabel-select {\n  height: 34px;\n  border: 1px solid #d5d8de;\n  border-radius: 6px;\n  padding: 0 10px;\n  font-size: 13px;\n  background: #fff;\n  color: #313942;\n  outline: none;\n}\n.kuh-tabel-search:focus,\n.kuh-tabel-filter:focus,\n.kuh-tabel-select:focus {\n  border-color: #4c8bf5;\n  box-shadow: 0 0 0 3px rgba(76, 139, 245, 0.15);\n}\n.kuh-tabel-search { flex: 1; min-width: 160px; }\n.kuh-tabel-filter { min-width: 148px; }\n.kuh-tabel-periods {\n  display: flex;\n  gap: 6px;\n  padding: 0 18px 10px;\n  flex-wrap: wrap;\n  align-items: center;\n}\n.kuh-tabel-period {\n  height: 30px;\n  padding: 0 12px;\n  border: 1px solid #d5d8de;\n  border-radius: 15px;\n  background: #fff;\n  font-size: 12px;\n  font-weight: 600;\n  color: #5c6773;\n  cursor: pointer;\n}\n.kuh-tabel-period:hover { background: #f7f8fa; }\n.kuh-tabel-period.is-on {\n  background: #313942;\n  border-color: #313942;\n  color: #fff;\n}\n.kuh-tabel-dates {\n  display: none;\n  gap: 6px;\n  align-items: center;\n}\n.kuh-tabel-dates.open { display: flex; }\n.kuh-tabel-dates input[type=\"date\"] {\n  height: 30px;\n  border: 1px solid #d5d8de;\n  border-radius: 6px;\n  padding: 0 8px;\n  font-size: 12px;\n}\n.kuh-tabel-filter-toggle {\n  height: 34px;\n  padding: 0 12px;\n  border: 1px solid #d5d8de;\n  border-radius: 6px;\n  background: #fff;\n  font-size: 13px;\n  cursor: pointer;\n  color: #313942;\n  white-space: nowrap;\n}\n.kuh-tabel-filter-toggle:hover { background: #f7f8fa; }\n.kuh-tabel-filter-toggle.is-on {\n  background: #eef4ff;\n  border-color: #4c8bf5;\n  color: #2b6cd6;\n  font-weight: 600;\n}\n.kuh-tabel-filter-panel {\n  display: none;\n  margin: 0 18px 12px;\n  padding: 12px;\n  border: 1px solid #e6eaef;\n  border-radius: 10px;\n  background: #f8fafc;\n  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));\n  gap: 8px;\n  align-items: end;\n}\n.kuh-tabel-filter-panel.open { display: grid; }\n.kuh-tabel-filter-panel label {\n  display: block;\n  font-size: 11px;\n  font-weight: 700;\n  color: #8b95a1;\n  text-transform: uppercase;\n  letter-spacing: .04em;\n  margin-bottom: 4px;\n}\n.kuh-tabel-filter-panel .kuh-tabel-filter,\n.kuh-tabel-filter-panel .kuh-tabel-search {\n  width: 100%;\n  box-sizing: border-box;\n}\n.kuh-tabel-filter-actions {\n  display: flex;\n  gap: 8px;\n  align-items: center;\n}\n.kuh-tabel-chip {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  height: 22px;\n  padding: 0 8px;\n  border-radius: 11px;\n  font-size: 11px;\n  background: #eef4ff;\n  color: #2b6cd6;\n}\n\n.kuh-tabel-body {\n  overflow: auto;\n  padding: 0 10px 16px;\n  min-height: 220px;\n}\n.kuh-tabel-group {\n  margin: 10px 8px 4px;\n  font-size: 12px;\n  font-weight: 700;\n  color: #8b95a1;\n  text-transform: uppercase;\n  letter-spacing: 0.04em;\n  cursor: pointer;\n  user-select: none;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n.kuh-tabel-group:hover { color: #5c6773; }\n.kuh-tabel-card {\n  border: 1px solid transparent;\n  border-radius: 10px;\n  margin: 0 4px 4px;\n}\n.kuh-tabel-card.open {\n  border-color: #d9e4f5;\n  background: #fbfcff;\n  margin-bottom: 8px;\n}\n.kuh-tabel-row {\n  display: grid;\n  grid-template-columns: 44px minmax(150px, 1.1fr) 92px minmax(200px, 1.5fr) 138px 28px;\n  gap: 10px;\n  align-items: center;\n  padding: 8px 8px;\n  border-radius: 8px;\n  cursor: pointer;\n}\n.kuh-tabel-row:hover { background: #f7f8fa; }\n.kuh-tabel-row.is-me { background: #f3f7ff; }\n.kuh-tabel-user-cell { min-width: 0; }\n.kuh-tabel-hours-cell {\n  font-size: 13px;\n  font-weight: 700;\n  color: #313942;\n  white-space: nowrap;\n}\n.kuh-tabel-hours-cell small {\n  display: block;\n  font-size: 10px;\n  font-weight: 500;\n  color: #8b95a1;\n}\n.kuh-tabel-chevron {\n  width: 28px;\n  height: 28px;\n  border: 0;\n  background: transparent;\n  color: #8b95a1;\n  font-size: 16px;\n  cursor: pointer;\n  border-radius: 6px;\n}\n.kuh-tabel-chevron:hover { background: #eef2f6; color: #313942; }\n.kuh-tabel-email {\n  font-size: 12px;\n  color: #8b95a1;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.kuh-tabel-empty {\n  padding: 40px 16px;\n  text-align: center;\n  color: #8b95a1;\n}\n\n.kuh-tabel-bar-wrap { min-width: 0; }\n.kuh-tabel-bar {\n  position: relative;\n  height: 12px;\n  background: #eef1f6;\n  border-radius: 6px;\n  overflow: hidden;\n}\n.kuh-tabel-seg {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  background: #7ed321;\n  border-radius: 2px;\n}\n.kuh-tabel-hours {\n  display: flex;\n  justify-content: space-between;\n  font-size: 10px;\n  color: #b0b7c1;\n  margin-top: 3px;\n  padding: 0 1px;\n}\n.kuh-tabel-expand {\n  padding: 4px 12px 14px 54px;\n}\n.kuh-tabel-stats {\n  display: grid;\n  grid-template-columns: repeat(6, minmax(0, 1fr));\n  gap: 6px;\n  margin-bottom: 10px;\n}\n.kuh-tabel-stat {\n  background: #fff;\n  border: 1px solid #e8eaed;\n  border-radius: 8px;\n  padding: 7px 8px;\n}\n.kuh-tabel-stat b {\n  display: block;\n  font-size: 14px;\n  line-height: 1.2;\n}\n.kuh-tabel-stat span {\n  font-size: 10px;\n  color: #8b95a1;\n}\n.kuh-tabel-dayline {\n  display: grid;\n  grid-template-columns: 72px 1fr 52px;\n  gap: 8px;\n  align-items: center;\n  margin-bottom: 6px;\n}\n.kuh-tabel-day-label {\n  font-size: 11px;\n  color: #8b95a1;\n}\n.kuh-tabel-day-h {\n  font-size: 11px;\n  font-weight: 700;\n  text-align: right;\n  color: #5c6773;\n}\n.kuh-tabel-copy {\n  border: 0;\n  background: transparent;\n  color: #4c8bf5;\n  font-size: 12px;\n  cursor: pointer;\n  padding: 0;\n}\n.kuh-tabel-copy:hover { text-decoration: underline; }\n.kuh-tabel-contacts {\n  display: flex;\n  gap: 12px;\n  flex-wrap: wrap;\n  font-size: 12px;\n  color: #5c6773;\n  margin-top: 8px;\n}\n\n.kuh-tabel-badge {\n  display: inline-flex;\n  align-items: center;\n  height: 22px;\n  padding: 0 8px;\n  border-radius: 11px;\n  font-size: 11px;\n  font-weight: 600;\n  background: #eef1f6;\n  color: #5c6773;\n  white-space: nowrap;\n}\n.kuh-tabel-foot {\n  border-top: 1px solid #e8eaed;\n  padding: 10px 18px 14px;\n  display: flex;\n  gap: 8px;\n  align-items: center;\n  flex-wrap: wrap;\n}\n.kuh-tabel-hint {\n  margin-left: auto;\n  font-size: 11px;\n  color: #8b95a1;\n}\n.kuh-tabel-add {\n  height: 32px;\n  padding: 0 10px;\n  border: 0;\n  border-radius: 6px;\n  background: #4c8bf5;\n  color: #fff;\n  font-size: 12px;\n  font-weight: 600;\n  cursor: pointer;\n}\n.kuh-tabel-add:hover { background: #3b7de3; }\n.kuh-tabel-ghost {\n  height: 32px;\n  padding: 0 10px;\n  border: 1px solid #d5d8de;\n  border-radius: 6px;\n  background: #fff;\n  font-size: 12px;\n  cursor: pointer;\n}\n.kuh-tabel-loading {\n  padding: 28px;\n  text-align: center;\n  color: #8b95a1;\n}\n.kuh-tabel-err { color: #e74c3c; font-size: 12px; padding: 0 18px 8px; }\n\n.kuh-acl {\n  margin: 8px 0 16px;\n  background: #fff;\n  border: 1px solid #e6eaef;\n  border-radius: 12px;\n  overflow: hidden;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;\n  color: #313942;\n}\n.kuh-acl-head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  padding: 14px 16px;\n  background: linear-gradient(180deg, #f7fafc 0%, #fff 100%);\n  border-bottom: 1px solid #eef1f5;\n}\n.kuh-acl-head h3 {\n  margin: 0;\n  font-size: 15px;\n  font-weight: 700;\n}\n.kuh-acl-head p {\n  margin: 4px 0 0;\n  font-size: 12px;\n  color: #8b95a1;\n}\n.kuh-acl-count {\n  font-size: 12px;\n  color: #5c6773;\n  background: #f4f6f8;\n  border-radius: 12px;\n  padding: 4px 10px;\n  white-space: nowrap;\n}\n.kuh-acl-master {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 12px 16px;\n  background: #f4fbf6;\n  border-bottom: 1px solid #e8f5ec;\n}\n.kuh-acl-master b { font-size: 13px; }\n.kuh-acl-search {\n  margin: 10px 16px 6px;\n  width: calc(100% - 32px);\n  height: 34px;\n  border: 1px solid #d5d8de;\n  border-radius: 8px;\n  padding: 0 12px;\n  font-size: 13px;\n  box-sizing: border-box;\n}\n.kuh-acl-list { max-height: 360px; overflow: auto; padding: 4px 8px 12px; }\n.kuh-acl-g {\n  font-size: 11px;\n  font-weight: 700;\n  color: #8b95a1;\n  text-transform: uppercase;\n  letter-spacing: .04em;\n  padding: 10px 8px 4px;\n}\n.kuh-acl-row {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding: 8px;\n  border-radius: 10px;\n}\n.kuh-acl-row:hover { background: #f7f8fa; }\n.kuh-acl-row.is-off { opacity: .55; }\n.kuh-acl-name { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; }\n.kuh-acl-name small {\n  display: block;\n  font-weight: 500;\n  color: #8b95a1;\n  font-size: 11px;\n}\n.kuh-sw {\n  position: relative;\n  width: 44px;\n  height: 24px;\n  flex-shrink: 0;\n}\n.kuh-sw input {\n  opacity: 0;\n  width: 0;\n  height: 0;\n  position: absolute;\n}\n.kuh-sw i {\n  position: absolute;\n  inset: 0;\n  background: #c5ccd6;\n  border-radius: 12px;\n  transition: background .2s;\n  cursor: pointer;\n}\n.kuh-sw i:before {\n  content: \"\";\n  position: absolute;\n  height: 18px;\n  width: 18px;\n  left: 3px;\n  top: 3px;\n  background: #fff;\n  border-radius: 50%;\n  box-shadow: 0 1px 3px rgba(15,23,42,.2);\n  transition: transform .2s;\n}\n.kuh-sw input:checked + i { background: #22c55e; }\n.kuh-sw input:checked + i:before { transform: translateX(20px); }\n.kuh-sw input:disabled + i { opacity: .7; cursor: default; }\n\n@media (max-width: 920px) {\n  .kuh-tabel-summary,\n  .kuh-tabel-stats {\n    grid-template-columns: repeat(3, minmax(0, 1fr));\n  }\n  .kuh-tabel-row {\n    grid-template-columns: 44px 1fr 28px;\n  }\n  .kuh-tabel-hours-cell,\n  .kuh-tabel-bar-wrap,\n  .kuh-tabel-row > .kuh-tabel-select {\n    grid-column: 2;\n  }\n  .kuh-tabel-expand { padding-left: 8px; }\n}\n\n\n/* Left rail item next to amo\u041c\u0430\u0440\u043a\u0435\u0442 / \u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 */\n.kuh-tabel-sidebar {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: 4px;\n  width: 64px;\n  padding: 10px 4px 8px;\n  margin: 0 auto;\n  cursor: pointer;\n  user-select: none;\n  color: #c5c9ce;\n  box-sizing: border-box;\n}\n.kuh-tabel-sidebar:hover { color: #fff; }\n.kuh-tabel-sidebar-icon {\n  width: 28px;\n  height: 28px;\n  border-radius: 50%;\n  border: 1.5px solid #8b939c;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  position: relative;\n  box-sizing: border-box;\n}\n.kuh-tabel-sidebar-dot {\n  width: 10px;\n  height: 10px;\n  border-radius: 50%;\n  background: #7ed321;\n  box-shadow: 0 0 0 2px rgba(126, 211, 33, 0.25);\n}\n.kuh-tabel-sidebar-label {\n  font-size: 10px;\n  line-height: 1.1;\n  font-weight: 600;\n  text-align: center;\n  max-width: 64px;\n}\n.kuh-tabel-sidebar--dock {\n  position: fixed;\n  left: 0;\n  bottom: 88px;\n  z-index: 12000;\n  width: 68px;\n}\n\n\n/* critical containment */\n.kuh-tabel-avatar,\n.kuh-tabel-avatar img {\n  max-width: 56px !important;\n  max-height: 56px !important;\n}\n.kuh-tabel-overlay {\n  isolation: isolate;\n  overflow: auto;\n}\n.kuh-tabel-overlay img {\n  max-width: 96px !important;\n  max-height: 96px !important;\n}\n"; // <TABEL_CSS>
 
     function settings() {
       return self.get_settings() || {};
@@ -58,8 +63,7 @@ define(["jquery"], function ($) {
       return r.is_admin === true || r.admin === true || r.is_admin === "Y";
     }
 
-    function allowedUserIds() {
-      var raw = settings().allowed_users;
+    function parseIdList(raw) {
       var ids = [];
       function push(v) {
         var n = parseInt(v, 10);
@@ -90,6 +94,52 @@ define(["jquery"], function ($) {
         });
       }
       return ids;
+    }
+
+    function allowedUserIds() {
+      return parseIdList(settings().allowed_users);
+    }
+
+    function listUserIds() {
+      return parseIdList(settings().list_users);
+    }
+
+    function loadUiFilter() {
+      try {
+        var f = JSON.parse(localStorage.getItem("kuh_tabel_ui_filter") || "{}");
+        if (typeof f.search === "string") qSearch = f.search;
+        if (f.status) qStatus = f.status;
+        if (f.group) qGroup = String(f.group);
+        if (f.sort) qSort = f.sort;
+        if (f.period) qPeriod = f.period;
+        if (typeof f.from === "string") qFrom = f.from;
+        if (typeof f.to === "string") qTo = f.to;
+      } catch (e) {}
+    }
+
+    function saveUiFilter() {
+      try {
+        localStorage.setItem(
+          "kuh_tabel_ui_filter",
+          JSON.stringify({
+            search: qSearch,
+            status: qStatus || "all",
+            group: qGroup || "all",
+            sort: qSort || "name",
+            period: qPeriod || "today",
+            from: qFrom || "",
+            to: qTo || "",
+          })
+        );
+      } catch (e2) {}
+    }
+
+    function filterActiveCount() {
+      var n = 0;
+      if ((qSearch || "").trim()) n += 1;
+      if (qStatus && qStatus !== "all") n += 1;
+      if (qGroup && qGroup !== "all") n += 1;
+      return n;
     }
 
     function userHasAccess() {
@@ -200,7 +250,7 @@ define(["jquery"], function ($) {
       var list = all[key] || [];
       var b = Math.floor(Date.now() / 1000 / 300) * 300;
       if (list.indexOf(b) === -1) list.push(b);
-      var cut = Math.floor(Date.now() / 1000) - 14 * 86400;
+      var cut = Math.floor(Date.now() / 1000) - 62 * 86400;
       all[key] = list.filter(function (x) {
         return x >= cut;
       });
@@ -215,6 +265,90 @@ define(["jquery"], function ($) {
         if (x >= start && x < end) n += 1;
       });
       return Math.round(((n * 5) / 60) * 100) / 100;
+    }
+
+    function pad2(n) {
+      return (n < 10 ? "0" : "") + n;
+    }
+
+    function ymd(d) {
+      return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+    }
+
+    function parseYmd(s) {
+      var p = String(s || "").split("-");
+      if (p.length !== 3) return null;
+      var d = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+      d.setHours(0, 0, 0, 0);
+      return isNaN(d.getTime()) ? null : d;
+    }
+
+    function periodRange() {
+      var now = new Date();
+      var start = new Date(now);
+      start.setHours(0, 0, 0, 0);
+      var end = new Date(start);
+      end.setDate(end.getDate() + 1);
+      var code = qPeriod || "today";
+      if (code === "yesterday") {
+        end = new Date(start);
+        start.setDate(start.getDate() - 1);
+      } else if (code === "week") {
+        var dow = (start.getDay() + 6) % 7;
+        start.setDate(start.getDate() - dow);
+      } else if (code === "month") {
+        start.setDate(1);
+      } else if (code === "last_month") {
+        start.setDate(1);
+        end = new Date(start);
+        start.setMonth(start.getMonth() - 1);
+      } else if (code === "custom") {
+        var a = parseYmd(qFrom);
+        var b = parseYmd(qTo);
+        if (a && b) {
+          start = a;
+          end = new Date(b);
+          end.setDate(end.getDate() + 1);
+        }
+      }
+      if (end.getTime() - start.getTime() > 62 * 86400000) {
+        start = new Date(end.getTime() - 62 * 86400000);
+      }
+      return {
+        start: start,
+        end: end,
+        startTs: Math.floor(start.getTime() / 1000),
+        endTs: Math.floor(end.getTime() / 1000),
+        startMs: start.getTime(),
+        endMs: end.getTime(),
+      };
+    }
+
+    function periodTitle() {
+      if (qPeriod === "week") return "за неделю";
+      if (qPeriod === "month") return "за месяц";
+      if (qPeriod === "last_month") return "за прошлый месяц";
+      if (qPeriod === "yesterday") return "вчера";
+      if (qPeriod === "custom") return "за период";
+      return "сегодня";
+    }
+
+    function hoursOf(user) {
+      if (!user) return 0;
+      var r = periodRange();
+      if (user.buckets && user.buckets.length) {
+        return hoursFromBuckets(user.buckets, r.startTs, r.endTs);
+      }
+      if (user.hours_period != null && qPeriod !== "today") return user.hours_period || 0;
+      if (qPeriod === "week") return user.hours_week || 0;
+      return user.hours_today || 0;
+    }
+
+    function workOf(user) {
+      if (!user) return {};
+      if (user.period && qPeriod !== "today") return user.period;
+      if (qPeriod === "week") return user.week || user.period || {};
+      return user.today || user.period || {};
     }
 
     function defaultCatalog() {
@@ -657,29 +791,55 @@ define(["jquery"], function ($) {
       );
     }
 
+    function dayLabelMs(ms) {
+      var today = startOfToday();
+      var diff = Math.round((today - ms) / 86400000);
+      if (diff === 0) return "Сегодня";
+      if (diff === 1) return "Вчера";
+      return new Date(ms).toLocaleDateString("ru-RU", {
+        weekday: "short",
+        day: "2-digit",
+        month: "2-digit",
+      });
+    }
+
+    function expandDayStarts() {
+      var r = periodRange();
+      var n = Math.round((r.endMs - r.startMs) / 86400000);
+      if (qPeriod === "today") n = 7;
+      n = Math.min(Math.max(n, 1), 62);
+      var out = [];
+      var i;
+      for (i = 0; i < n; i++) {
+        var start =
+          qPeriod === "today"
+            ? startOfToday() - i * 86400000
+            : r.endMs - (i + 1) * 86400000;
+        out.push(start);
+      }
+      return out;
+    }
+
     function expandHtml(user) {
       if (!expanded[user.id]) return "";
-      var t = user.today || {};
+      var t = workOf(user);
       var w = user.week || {};
       var callDur = fmtCallDur(t.call_sec);
       var quality =
         t.quality != null ? t.quality : w.quality != null ? w.quality : "—";
-      var rows = [];
-      var i;
-      for (i = 0; i < 7; i++) {
-        var start = startOfToday() - i * 86400000;
+      var rows = expandDayStarts().map(function (start) {
         var h = hoursForDay(user.buckets, start);
-        rows.push(
+        return (
           '<div class="kuh-tabel-dayline"><div class="kuh-tabel-day-label">' +
-            dayLabel(i) +
-            "</div><div>" +
-            barHtml(user.buckets, start) +
-            hoursHtml() +
-            '</div><div class="kuh-tabel-day-h">' +
-            fmtHours(h) +
-            "</div></div>"
+          dayLabelMs(start) +
+          "</div><div>" +
+          barHtml(user.buckets, start) +
+          hoursHtml() +
+          '</div><div class="kuh-tabel-day-h">' +
+          fmtHours(h) +
+          "</div></div>"
         );
-      }
+      });
       var contacts =
         '<div class="kuh-tabel-contacts">' +
         (user.email
@@ -697,19 +857,19 @@ define(["jquery"], function ($) {
       return (
         '<div class="kuh-tabel-expand">' +
         '<div class="kuh-tabel-stats">' +
-        statBox(fmtHours(user.hours_today), "сегодня в CRM") +
+        statBox(fmtHours(hoursOf(user)), "в CRM " + periodTitle()) +
         statBox(fmtHours(user.hours_week), "за 7 дней") +
         statBox(fmtTime(user.first_active_today), "первый заход") +
         statBox(fmtTime(user.last_active_today), "последняя активность") +
         statBox(
           (t.calls || 0) + (callDur ? " · " + callDur : ""),
-          "звонки сегодня"
+          "звонки " + periodTitle()
         ) +
         statBox(quality, "качество диалогов") +
-        statBox(t.chats || 0, "чаты сегодня") +
-        statBox(t.notes || 0, "заметки сегодня") +
+        statBox(t.chats || 0, "чаты " + periodTitle()) +
+        statBox(t.notes || 0, "заметки " + periodTitle()) +
         statBox(t.leads_created || 0, "создано сделок") +
-        statBox(t.leads_won || 0, "выиграно сегодня") +
+        statBox(t.leads_won || 0, "выиграно " + periodTitle()) +
         statBox(t.leads_lost || 0, "проиграно") +
         statBox(user.leads || 0, "открытых сделок") +
         "</div>" +
@@ -721,6 +881,15 @@ define(["jquery"], function ($) {
       );
     }
 
+    function catalogUsers() {
+      var users = (state && state.users) || [];
+      var vis = listUserIds();
+      if (!vis.length) return users;
+      return users.filter(function (u) {
+        return vis.indexOf(u.id) !== -1;
+      });
+    }
+
     function filterUsers(users) {
       var q = qSearch.trim().toLowerCase();
       return (users || []).filter(function (u) {
@@ -730,12 +899,17 @@ define(["jquery"], function ($) {
             " " +
             (u.email || "") +
             " " +
-            (u.role || "")
+            (u.role || "") +
+            " " +
+            (u.group_name || "")
           ).toLowerCase();
           if (blob.indexOf(q) === -1) return false;
         }
+        if (qGroup && qGroup !== "all" && String(u.group_id || 0) !== String(qGroup)) {
+          return false;
+        }
         if (qStatus === "online") return !!u.online;
-        if (qStatus === "idle") return !u.hours_today;
+        if (qStatus === "idle") return !hoursOf(u);
         if (qStatus && qStatus !== "all") return u.status === qStatus;
         return true;
       });
@@ -745,7 +919,7 @@ define(["jquery"], function ($) {
       var list = users.slice();
       list.sort(function (a, b) {
         if (qSort === "hours") {
-          return (b.hours_today || 0) - (a.hours_today || 0);
+          return hoursOf(b) - hoursOf(a);
         }
         if (qSort === "week") {
           return (b.hours_week || 0) - (a.hours_week || 0);
@@ -806,9 +980,10 @@ define(["jquery"], function ($) {
         (user.role ? " · " + esc(user.role) : "") +
         "</div></div>" +
         '<div class="kuh-tabel-hours-cell">' +
-        fmtHours(user.hours_today) +
-        "<small>неделя " +
-        fmtHours(user.hours_week) +
+        fmtHours(hoursOf(user)) +
+        "<small>" +
+        periodTitle() +
+        (qPeriod === "today" ? " · неделя " + fmtHours(user.hours_week) : "") +
         "</small></div>" +
         '<div class="kuh-tabel-bar-wrap">' +
         barHtml(user.buckets, today) +
@@ -834,7 +1009,9 @@ define(["jquery"], function ($) {
         ">Онлайн</option>" +
         '<option value="idle"' +
         (qStatus === "idle" ? " selected" : "") +
-        ">Без активности сегодня</option>" +
+        ">Без активности " +
+        periodTitle() +
+        "</option>" +
         list
           .map(function (s) {
             return (
@@ -851,10 +1028,32 @@ define(["jquery"], function ($) {
       );
     }
 
+    function groupOptionsHtml() {
+      var seen = {};
+      var opts =
+        '<option value="all"' +
+        (!qGroup || qGroup === "all" ? " selected" : "") +
+        ">Все отделы</option>";
+      catalogUsers().forEach(function (u) {
+        var id = String(u.group_id || 0);
+        if (seen[id]) return;
+        seen[id] = true;
+        opts +=
+          '<option value="' +
+          esc(id) +
+          '"' +
+          (String(qGroup) === id ? " selected" : "") +
+          ">" +
+          esc(u.group_name || "Без группы") +
+          "</option>";
+      });
+      return opts;
+    }
+
     function sortOptionsHtml() {
       var opts = [
         ["name", "По имени"],
-        ["hours", "По часам сегодня"],
+        ["hours", "По часам за период"],
         ["week", "По часам за неделю"],
         ["online", "Сначала онлайн"],
         ["leads", "По числу сделок"],
@@ -874,8 +1073,32 @@ define(["jquery"], function ($) {
         .join("");
     }
 
+    function summaryFrom(users) {
+      users = users || [];
+      return {
+        total: users.length,
+        online: users.filter(function (u) {
+          return u.online;
+        }).length,
+        idle_today: users.filter(function (u) {
+          return !hoursOf(u);
+        }).length,
+        hours_today: users.reduce(function (s, u) {
+          return s + hoursOf(u);
+        }, 0),
+        calls_today: users.reduce(function (s, u) {
+          var w = workOf(u);
+          return s + (w.calls || 0);
+        }, 0),
+        leads_created_today: users.reduce(function (s, u) {
+          var w = workOf(u);
+          return s + (w.leads_created || 0);
+        }, 0),
+      };
+    }
+
     function summaryHtml() {
-      var s = (state && state.summary) || {};
+      var s = summaryFrom(filterUsers(catalogUsers()));
       return (
         '<div class="kuh-tabel-summary">' +
         '<div class="kuh-tabel-kpi"><b>' +
@@ -886,16 +1109,24 @@ define(["jquery"], function ($) {
         "</b><span>онлайн сейчас</span></div>" +
         '<div class="kuh-tabel-kpi warn"><b>' +
         (s.idle_today || 0) +
-        "</b><span>без активности</span></div>" +
+        "</b><span>без активности " +
+        periodTitle() +
+        "</span></div>" +
         '<div class="kuh-tabel-kpi"><b>' +
         fmtHours(s.hours_today) +
-        "</b><span>часов команды сегодня</span></div>" +
+        "</b><span>часов команды " +
+        periodTitle() +
+        "</span></div>" +
         '<div class="kuh-tabel-kpi"><b>' +
         (s.calls_today || 0) +
-        "</b><span>звонков сегодня</span></div>" +
+        "</b><span>звонков " +
+        periodTitle() +
+        "</span></div>" +
         '<div class="kuh-tabel-kpi"><b>' +
         (s.leads_created_today || 0) +
-        "</b><span>новых сделок</span></div>" +
+        "</b><span>новых сделок " +
+        periodTitle() +
+        "</span></div>" +
         "</div>"
       );
     }
@@ -905,9 +1136,15 @@ define(["jquery"], function ($) {
         return '<div class="kuh-tabel-loading">Загрузка сотрудников…</div>';
       }
       var meId = parseInt((currentUser() || {}).id, 10);
-      var users = sortUsers(filterUsers(state.users || []));
+      var users = sortUsers(filterUsers(catalogUsers()));
       if (!users.length) {
-        return '<div class="kuh-tabel-empty">Никого не найдено</div>';
+        return (
+          '<div class="kuh-tabel-empty">' +
+          (filterActiveCount() || listUserIds().length
+            ? "Никого не найдено. Сбросьте фильтр или откройте настройки виджета."
+            : "Никого не найдено") +
+          "</div>"
+        );
       }
       var groups = groupUsers(users);
       return groups
@@ -960,8 +1197,10 @@ define(["jquery"], function ($) {
         esc(displayName(me)) +
         '</div><div class="kuh-tabel-meta">' +
         esc(me.email || "") +
-        " · сегодня " +
-        fmtHours(me.hours_today) +
+        " · " +
+        periodTitle() +
+        " " +
+        fmtHours(hoursOf(me)) +
         " · неделя " +
         fmtHours(me.hours_week) +
         "</div></div>" +
@@ -975,7 +1214,7 @@ define(["jquery"], function ($) {
 
     function adminFoot() {
       var hint =
-        "Клик по сотруднику — карточка: часы, звонки, сделки и 7 дней. Наведи на зелёный кусок — время.";
+        "Период сверху: сегодня / неделя / месяц. Клик по сотруднику — дни периода, звонки и сделки.";
       if (!isAdminUser()) {
         return (
           '<div class="kuh-tabel-foot"><span class="kuh-tabel-hint">' +
@@ -1020,11 +1259,30 @@ define(["jquery"], function ($) {
         '<div id="kuh-tabel-me-slot"></div>' +
         '<div id="kuh-tabel-summary-slot"></div>' +
         '<div class="kuh-tabel-toolbar">' +
-        '<input class="kuh-tabel-search" id="kuh-tabel-search" placeholder="Найти сотрудника, email, роль">' +
-        '<select class="kuh-tabel-filter" id="kuh-tabel-filter"></select>' +
+        '<input class="kuh-tabel-search" id="kuh-tabel-search" placeholder="Найти сотрудника, email, роль, отдел">' +
+        '<button type="button" class="kuh-tabel-filter-toggle" id="kuh-tabel-filter-toggle">Фильтр</button>' +
         '<select class="kuh-tabel-filter" id="kuh-tabel-sort"></select>' +
         '<button type="button" class="kuh-tabel-ghost" id="kuh-tabel-expand-all">Развернуть всех</button>' +
         "</div>" +
+        '<div class="kuh-tabel-periods" id="kuh-tabel-periods">' +
+        '<button type="button" class="kuh-tabel-period" data-period="today">Сегодня</button>' +
+        '<button type="button" class="kuh-tabel-period" data-period="week">Неделя</button>' +
+        '<button type="button" class="kuh-tabel-period" data-period="month">Месяц</button>' +
+        '<button type="button" class="kuh-tabel-period" data-period="last_month">Прошлый месяц</button>' +
+        '<button type="button" class="kuh-tabel-period" data-period="custom">Свои даты</button>' +
+        '<span class="kuh-tabel-dates" id="kuh-tabel-dates">' +
+        '<input type="date" id="kuh-tabel-from">' +
+        '<input type="date" id="kuh-tabel-to">' +
+        "</span></div>" +
+        '<div class="kuh-tabel-filter-panel" id="kuh-tabel-filter-panel">' +
+        "<div><label>Отдел</label>" +
+        '<select class="kuh-tabel-filter" id="kuh-tabel-group"></select></div>' +
+        "<div><label>Статус</label>" +
+        '<select class="kuh-tabel-filter" id="kuh-tabel-filter"></select></div>' +
+        '<div class="kuh-tabel-filter-actions">' +
+        '<button type="button" class="kuh-tabel-add" id="kuh-tabel-filter-apply">Установить</button>' +
+        '<button type="button" class="kuh-tabel-ghost" id="kuh-tabel-filter-reset">Сбросить</button>' +
+        "</div></div>" +
         '<div class="kuh-tabel-err" id="kuh-tabel-err"></div>' +
         '<div class="kuh-tabel-body" id="kuh-tabel-body"></div>' +
         '<div id="kuh-tabel-foot-slot"></div>' +
@@ -1054,10 +1312,25 @@ define(["jquery"], function ($) {
       $("#kuh-tabel-me-slot").html(state ? meBlock() : "");
       $("#kuh-tabel-summary-slot").html(state ? summaryHtml() : "");
       $("#kuh-tabel-filter").html(filterOptionsHtml());
+      $("#kuh-tabel-group").html(groupOptionsHtml());
       $("#kuh-tabel-sort").html(sortOptionsHtml());
       $("#kuh-tabel-search").val(qSearch);
       $("#kuh-tabel-filter").val(qStatus || "all");
+      $("#kuh-tabel-group").val(qGroup || "all");
       $("#kuh-tabel-sort").val(qSort || "name");
+      $(".kuh-tabel-period").removeClass("is-on");
+      $('.kuh-tabel-period[data-period="' + (qPeriod || "today") + '"]').addClass("is-on");
+      $("#kuh-tabel-dates").toggleClass("open", qPeriod === "custom");
+      if (qPeriod === "custom") {
+        var pr = periodRange();
+        $("#kuh-tabel-from").val(qFrom || ymd(pr.start));
+        $("#kuh-tabel-to").val(qTo || ymd(new Date(pr.endMs - 86400000)));
+      }
+      var n = filterActiveCount();
+      $("#kuh-tabel-filter-toggle")
+        .toggleClass("is-on", n > 0 || filterOpen)
+        .text(n ? "Фильтр · " + n : "Фильтр");
+      $("#kuh-tabel-filter-panel").toggleClass("open", filterOpen);
       $("#kuh-tabel-body").html(renderBody());
       $("#kuh-tabel-foot-slot").html(adminFoot());
     }
@@ -1066,7 +1339,17 @@ define(["jquery"], function ($) {
       state = buildLocalState();
       paint();
       var uid = parseInt((currentUser() || {}).id, 10) || 0;
-      return api("/api/v1/tabel/state?user_id=" + uid)
+      var r = periodRange();
+      var q =
+        "/api/v1/tabel/state?user_id=" +
+        uid +
+        "&period=" +
+        encodeURIComponent(qPeriod || "today") +
+        "&from_ts=" +
+        r.startTs +
+        "&to_ts=" +
+        r.endTs;
+      return api(q)
         .done(function (data) {
           mergeApiState(data);
           paint();
@@ -1114,18 +1397,68 @@ define(["jquery"], function ($) {
         })
         .on("input.kuhtabel", "#kuh-tabel-search", function () {
           qSearch = $(this).val() || "";
+          saveUiFilter();
           $("#kuh-tabel-body").html(renderBody());
+          $("#kuh-tabel-summary-slot").html(state ? summaryHtml() : "");
+          var n = filterActiveCount();
+          $("#kuh-tabel-filter-toggle")
+            .toggleClass("is-on", n > 0 || filterOpen)
+            .text(n ? "Фильтр · " + n : "Фильтр");
+        })
+        .on("click.kuhtabel", "#kuh-tabel-filter-toggle", function () {
+          filterOpen = !filterOpen;
+          paint();
         })
         .on("change.kuhtabel", "#kuh-tabel-filter", function () {
           qStatus = $(this).val() || "all";
-          $("#kuh-tabel-body").html(renderBody());
+          saveUiFilter();
+          paint();
+        })
+        .on("change.kuhtabel", "#kuh-tabel-group", function () {
+          qGroup = $(this).val() || "all";
+          saveUiFilter();
+          paint();
         })
         .on("change.kuhtabel", "#kuh-tabel-sort", function () {
           qSort = $(this).val() || "name";
-          $("#kuh-tabel-body").html(renderBody());
+          saveUiFilter();
+          paint();
+        })
+        .on("click.kuhtabel", "#kuh-tabel-filter-apply", function () {
+          qGroup = $("#kuh-tabel-group").val() || "all";
+          qStatus = $("#kuh-tabel-filter").val() || "all";
+          saveUiFilter();
+          filterOpen = false;
+          paint();
+        })
+        .on("click.kuhtabel", "#kuh-tabel-filter-reset", function () {
+          qSearch = "";
+          qStatus = "all";
+          qGroup = "all";
+          qSort = "name";
+          saveUiFilter();
+          paint();
+        })
+        .on("click.kuhtabel", ".kuh-tabel-period", function () {
+          qPeriod = $(this).attr("data-period") || "today";
+          if (qPeriod === "custom" && (!qFrom || !qTo)) {
+            var r = periodRange();
+            var to = new Date(r.endMs - 86400000);
+            qFrom = ymd(r.start);
+            qTo = ymd(to);
+          }
+          saveUiFilter();
+          loadState();
+        })
+        .on("change.kuhtabel", "#kuh-tabel-from, #kuh-tabel-to", function () {
+          qFrom = $("#kuh-tabel-from").val() || "";
+          qTo = $("#kuh-tabel-to").val() || "";
+          qPeriod = "custom";
+          saveUiFilter();
+          loadState();
         })
         .on("click.kuhtabel", "#kuh-tabel-expand-all", function () {
-          var users = (state && state.users) || [];
+          var users = catalogUsers();
           var allOpen = users.length && users.every(function (u) {
             return expanded[u.id];
           });
@@ -1342,6 +1675,7 @@ define(["jquery"], function ($) {
         return;
       }
       started = true;
+      loadUiFilter();
       try {
         $("#kuh-tabel-fab, #kuh-tabel-menu-item").remove();
       } catch (e) {}
@@ -1373,43 +1707,55 @@ define(["jquery"], function ($) {
       setTimeout(injectSidebarItem, 4000);
     }
 
-    function allowedInput() {
+    function settingsFieldInput(name) {
       var code = "";
       try {
         code = (settings().widget_code || "").toString();
       } catch (e) {}
-      var $inp = $('input[name="allowed_users"], textarea[name="allowed_users"]');
+      var $inp = $('input[name="' + name + '"], textarea[name="' + name + '"]');
       if (code) {
-        var $byId = $("#" + code + "_allowed_users");
+        var $byId = $("#" + code + "_" + name);
         if ($byId.length) $inp = $inp.add($byId);
       }
       return $inp.first();
     }
 
-    function hideNativeAllowedField() {
-      var $inp = $(
-        'input[name="allowed_users"], textarea[name="allowed_users"]'
-      );
-      $inp.each(function () {
-        var $el = $(this);
-        $el.css({ position: "absolute", left: "-9999px", height: 0, opacity: 0 });
-        $el
-          .closest(
-            ".widget_settings_block__item_field, .widget_settings_block__item, .widget_settings_block, tr, .form-group, .item"
-          )
-          .find("label")
-          .filter(function () {
-            return /пользовател|allowed/i.test($(this).text());
-          })
-          .hide();
+    function allowedInput() {
+      return settingsFieldInput("allowed_users");
+    }
+
+    function hideNativeSettingFields() {
+      ["allowed_users", "list_users"].forEach(function (name) {
+        var $inp = $('input[name="' + name + '"], textarea[name="' + name + '"]');
+        $inp.each(function () {
+          var $el = $(this);
+          $el.css({ position: "absolute", left: "-9999px", height: 0, opacity: 0 });
+          $el
+            .closest(
+              ".widget_settings_block__item_field, .widget_settings_block__item, .widget_settings_block, tr, .form-group, .item"
+            )
+            .find("label")
+            .filter(function () {
+              return /пользовател|allowed|списк|фильтр|list_users/i.test($(this).text());
+            })
+            .hide();
+        });
       });
     }
 
-    function writeAllowedUsers(val) {
-      var $inp = allowedInput();
+    function writeSettingField(name, val) {
+      var $inp = settingsFieldInput(name);
       if ($inp.length) {
         $inp.val(val).trigger("change").trigger("input");
       }
+    }
+
+    function writeAllowedUsers(val) {
+      writeSettingField("allowed_users", val);
+    }
+
+    function writeListUsers(val) {
+      writeSettingField("list_users", val);
     }
 
     function settingsUsers() {
@@ -1507,9 +1853,122 @@ define(["jquery"], function ($) {
       writeAllowedUsers(all ? "" : ids.join(","));
     }
 
+    function listPanelHtml() {
+      var users = settingsUsers();
+      var selected = listUserIds();
+      var allOn = !selected.length;
+      var groups = {};
+      var order = [];
+      users.forEach(function (u) {
+        var key = String(u.group_id || 0);
+        if (!groups[key]) {
+          groups[key] = { name: u.group_name || "Без группы", users: [] };
+          order.push(key);
+        }
+        groups[key].users.push(u);
+      });
+      var onCount = allOn
+        ? users.length
+        : users.filter(function (u) {
+            return selected.indexOf(u.id) !== -1;
+          }).length;
+      var rows = order
+        .map(function (key) {
+          var gUsers = groups[key].users;
+          var gOn =
+            allOn ||
+            gUsers.every(function (u) {
+              return selected.indexOf(u.id) !== -1;
+            });
+          return (
+            '<div class="kuh-acl-g">' +
+            esc(groups[key].name) +
+            " · " +
+            gUsers.length +
+            ' <label class="kuh-sw" style="display:inline-block;vertical-align:middle;margin-left:8px"><input type="checkbox" class="kuh-list-group" data-group="' +
+            esc(key) +
+            '"' +
+            (gOn ? " checked" : "") +
+            (allOn ? " disabled" : "") +
+            "><i></i></label></div>" +
+            gUsers
+              .map(function (u) {
+                var on = allOn || selected.indexOf(u.id) !== -1;
+                return (
+                  '<div class="kuh-acl-row' +
+                  (on ? "" : " is-off") +
+                  '" data-list-row="' +
+                  u.id +
+                  '" data-group="' +
+                  esc(key) +
+                  '">' +
+                  avatarHtml(u) +
+                  '<div class="kuh-acl-name">' +
+                  esc(u.name) +
+                  "<small>" +
+                  esc(u.email || "") +
+                  "</small></div>" +
+                  '<label class="kuh-sw"><input type="checkbox" class="kuh-list-one" data-user="' +
+                  u.id +
+                  '"' +
+                  (on ? " checked" : "") +
+                  (allOn ? " disabled" : "") +
+                  "><i></i></label></div>"
+                );
+              })
+              .join("")
+          );
+        })
+        .join("");
+      return (
+        '<div class="kuh-acl" id="kuh-tabel-list">' +
+        '<div class="kuh-acl-head"><div><h3>Фильтр списка</h3>' +
+        "<p>Кого видно в окне табеля. Выключите отдел или человека — они пропадут из списка у всех. Пусто = все.</p></div>" +
+        '<span class="kuh-acl-count" id="kuh-list-count">В списке ' +
+        onCount +
+        " из " +
+        users.length +
+        "</span></div>" +
+        '<div class="kuh-acl-master"><div><b>Все сотрудники</b><div class="kuh-tabel-meta">Показывать полный список</div></div>' +
+        '<label class="kuh-sw"><input type="checkbox" id="kuh-list-all"' +
+        (allOn ? " checked" : "") +
+        "><i></i></label></div>" +
+        '<input class="kuh-acl-search" id="kuh-list-search" placeholder="Найти сотрудника или отдел">' +
+        '<div class="kuh-acl-list" id="kuh-list-list">' +
+        (rows || '<div class="kuh-tabel-empty">Нет сотрудников в аккаунте</div>') +
+        "</div></div>"
+      );
+    }
+
+    function syncListFromUi() {
+      var all = $("#kuh-list-all").is(":checked");
+      var ids = [];
+      $(".kuh-list-one").each(function () {
+        var on = all || $(this).is(":checked");
+        var id = parseInt($(this).attr("data-user"), 10);
+        $(this).prop("disabled", all);
+        $(this).prop("checked", on);
+        $(this).closest(".kuh-acl-row").toggleClass("is-off", !on);
+        if (on && id) ids.push(id);
+      });
+      $(".kuh-list-group").each(function () {
+        var g = $(this).attr("data-group");
+        var ons = $('.kuh-list-one').filter(function () {
+          return $(this).closest("[data-group]").attr("data-group") === g;
+        });
+        var every = ons.length && ons.toArray().every(function (el) {
+          return $(el).is(":checked");
+        });
+        $(this).prop("disabled", all).prop("checked", all || every);
+      });
+      var n = $(".kuh-list-one").length;
+      $("#kuh-list-count").text("В списке " + (all ? n : ids.length) + " из " + n);
+      writeListUsers(all ? "" : ids.join(","));
+    }
+
     function mountSettingsPanel() {
       injectCss();
-      hideNativeAllowedField();
+      hideNativeSettingFields();
       var $fields = $("#widget_settings__fields");
       if (!$fields.length) {
         $fields = $(".widget_settings_block__fields, .widget_settings_block").first();
@@ -1517,6 +1976,9 @@ define(["jquery"], function ($) {
       if (!$fields.length) return false;
       if (!$("#kuh-tabel-acl").length) {
         $fields.prepend(aclPanelHtml());
+      }
+      if (!$("#kuh-tabel-list").length) {
+        $("#kuh-tabel-acl").after(listPanelHtml());
       }
       $(document)
         .off(".kuhacl")
@@ -1532,8 +1994,27 @@ define(["jquery"], function ($) {
             var t = ($(this).text() || "").toLowerCase();
             $(this).toggle(!q || t.indexOf(q) !== -1);
           });
+        })
+        .on("change.kuhacl", "#kuh-list-all, .kuh-list-one, .kuh-list-group", function () {
+          if (this.id === "kuh-list-all" && $(this).is(":checked")) {
+            $(".kuh-list-one, .kuh-list-group").prop("checked", true);
+          }
+          if ($(this).hasClass("kuh-list-group")) {
+            var g = $(this).attr("data-group");
+            var on = $(this).is(":checked");
+            $('.kuh-acl-row[data-group="' + g + '"] .kuh-list-one').prop("checked", on);
+          }
+          syncListFromUi();
+        })
+        .on("input.kuhacl", "#kuh-list-search", function () {
+          var q = ($(this).val() || "").toLowerCase();
+          $("#kuh-list-list .kuh-acl-row").each(function () {
+            var t = ($(this).text() || "").toLowerCase();
+            $(this).toggle(!q || t.indexOf(q) !== -1);
+          });
         });
       syncAclFromUi();
+      syncListFromUi();
       return true;
     }
 
@@ -1580,6 +2061,7 @@ define(["jquery"], function ($) {
       onSave: function () {
         try {
           syncAclFromUi();
+          syncListFromUi();
         } catch (e) {}
         return true;
       },

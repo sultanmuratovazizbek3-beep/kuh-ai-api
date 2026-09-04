@@ -41,10 +41,25 @@
       <div class="kuh-tabel-kpi"><b>9</b><span>новых сделок</span></div>
     </div>
     <div class="kuh-tabel-toolbar">
-      <input class="kuh-tabel-search" placeholder="Найти сотрудника, email, роль">
-      <select class="kuh-tabel-filter"><option>Все статусы</option><option>Онлайн</option><option>Без активности сегодня</option></select>
-      <select class="kuh-tabel-filter"><option>По имени</option><option>По часам сегодня</option></select>
+      <input class="kuh-tabel-search" placeholder="Найти сотрудника, email, роль, отдел">
+      <button type="button" class="kuh-tabel-filter-toggle is-on">Фильтр · 1</button>
+      <select class="kuh-tabel-filter"><option>По имени</option><option>По часам за период</option></select>
       <button type="button" class="kuh-tabel-ghost">Развернуть всех</button>
+    </div>
+    <div class="kuh-tabel-periods">
+      <button type="button" class="kuh-tabel-period">Сегодня</button>
+      <button type="button" class="kuh-tabel-period is-on">Неделя</button>
+      <button type="button" class="kuh-tabel-period">Месяц</button>
+      <button type="button" class="kuh-tabel-period">Прошлый месяц</button>
+      <button type="button" class="kuh-tabel-period">Свои даты</button>
+    </div>
+    <div class="kuh-tabel-filter-panel open">
+      <div><label>Отдел</label><select class="kuh-tabel-filter"><option>Все отделы</option><option selected>Отдел продаж</option></select></div>
+      <div><label>Статус</label><select class="kuh-tabel-filter"><option>Все статусы</option><option>Онлайн</option></select></div>
+      <div class="kuh-tabel-filter-actions">
+        <button type="button" class="kuh-tabel-add">Установить</button>
+        <button type="button" class="kuh-tabel-ghost">Сбросить</button>
+      </div>
     </div>
     <div class="kuh-tabel-body">
       <div class="kuh-tabel-group">▾ Отдел продаж · 3</div>

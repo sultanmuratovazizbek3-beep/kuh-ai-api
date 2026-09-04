@@ -1381,11 +1381,21 @@ class TabelStatusCatalogBody(BaseModel):
 
 
 @app.get("/api/v1/tabel/state")
-def tabel_state(user_id: int | None = None) -> dict[str, Any]:
+def tabel_state(
+    user_id: int | None = None,
+    period: str = "today",
+    from_ts: int | None = None,
+    to_ts: int | None = None,
+) -> dict[str, Any]:
     from tabel_service import build_state
 
     try:
-        return build_state(me_id=user_id)
+        return build_state(
+            me_id=user_id,
+            period=period,
+            from_ts=from_ts,
+            to_ts=to_ts,
+        )
     except Exception as exc:
         logger.exception("tabel_state failed")
         raise HTTPException(status_code=500, detail=str(exc)) from exc

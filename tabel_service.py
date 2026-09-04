@@ -14,7 +14,8 @@ from storage import db, init_db, get_meta, set_meta
 logger = logging.getLogger(__name__)
 
 ONLINE_TTL_SEC = 120
-ACTIVITY_KEEP_DAYS = 14
+ACTIVITY_KEEP_DAYS = 62
+MAX_PERIOD_DAYS = 62
 BUCKET_SEC = 300
 LEAD_CACHE_TTL = 600
 USERS_CACHE_TTL = 60
@@ -45,6 +46,45 @@ def day_bounds(days_ago: int = 0, days: int = 1) -> tuple[int, int]:
     )
     end = start + timedelta(days=days)
     return int(start.timestamp()), int(end.timestamp())
+
+
+def period_bounds(
+    period: str | None = None,
+    from_ts: int | None = None,
+    to_ts: int | None = None,
+) -> tuple[int, int, str]:
+    tz = _tz()
+    now = datetime.now(tz)
+    today0 = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    tomorrow = today0 + timedelta(days=1)
+    code = (period or "today").strip().lower()
+
+    if from_ts and to_ts:
+        start = int(from_ts)
+        end = int(to_ts)
+        if end <= start:
+            end = start + 86400
+        if end - start > MAX_PERIOD_DAYS * 86400:
+            start = end - MAX_PERIOD_DAYS * 86400
+        return start, end, "custom"
+
+    if code == "yesterday":
+        return (
+            int((today0 - timedelta(days=1)).timestamp()),
+            int(today0.timestamp()),
+            "yesterday",
+        )
+    if code in ("week", "7d"):
+        start = today0 - timedelta(days=today0.weekday())
+        return int(start.timestamp()), int(tomorrow.timestamp()), "week"
+    if code in ("month", "30d"):
+        start = today0.replace(day=1)
+        return int(start.timestamp()), int(tomorrow.timestamp()), "month"
+    if code == "last_month":
+        first = today0.replace(day=1)
+        prev = (first - timedelta(days=1)).replace(day=1)
+        return int(prev.timestamp()), int(first.timestamp()), "last_month"
+    return int(today0.timestamp()), int(tomorrow.timestamp()), "today"
 
 
 def _hours_in_range(buckets: list[int], start: int, end: int) -> float:
@@ -486,7 +526,12 @@ def _load_directory(client: Any) -> tuple[list[dict[str, Any]], dict[int, str]]:
     return users, group_names
 
 
-def build_state(me_id: int | None = None) -> dict[str, Any]:
+def build_state(
+    me_id: int | None = None,
+    period: str | None = "today",
+    from_ts: int | None = None,
+    to_ts: int | None = None,
+) -> dict[str, Any]:
     ensure_tables()
     from amocrm_client import AmoCRMClient
 
@@ -500,8 +545,10 @@ def build_state(me_id: int | None = None) -> dict[str, Any]:
     now = int(time.time())
     today_start, today_end = day_bounds(0, 1)
     week_start, _week_end = day_bounds(6, 7)
+    p_start, p_end, p_code = period_bounds(period, from_ts, to_ts)
     work_today = _work_stats(today_start, today_end)
     work_week = _work_stats(week_start, today_end)
+    work_period = _work_stats(p_start, p_end)
 
     active_users = [u for u in users if _is_active_user(u)]
     ids = []
@@ -523,7 +570,7 @@ def build_state(me_id: int | None = None) -> dict[str, Any]:
             gname = group_names.get(gid) or ""
         online = (now - int(seen.get(uid) or 0)) <= ONLINE_TTL_SEC
         buckets = activity.get(uid) or []
-        first_ts, last_ts = _first_last(buckets, today_start, today_end)
+        first_ts, last_ts = _first_last(buckets, p_start, p_end)
         packed.append(
             {
                 "id": uid,
@@ -542,10 +589,12 @@ def build_state(me_id: int | None = None) -> dict[str, Any]:
                 "buckets": buckets,
                 "hours_today": _hours_in_range(buckets, today_start, today_end),
                 "hours_week": _hours_in_range(buckets, week_start, today_end),
+                "hours_period": _hours_in_range(buckets, p_start, p_end),
                 "first_active_today": first_ts,
                 "last_active_today": last_ts,
                 "today": work_today.get(uid) or _blank_work(),
                 "week": work_week.get(uid) or _blank_work(),
+                "period": work_period.get(uid) or _blank_work(),
             }
         )
 
@@ -566,14 +615,15 @@ def build_state(me_id: int | None = None) -> dict[str, Any]:
     summary = {
         "total": len(packed),
         "online": sum(1 for x in packed if x.get("online")),
-        "idle_today": sum(1 for x in packed if not x.get("hours_today")),
+        "idle_today": sum(1 for x in packed if not x.get("hours_period")),
         "hours_today": round(sum(float(x.get("hours_today") or 0) for x in packed), 1),
         "hours_week": round(sum(float(x.get("hours_week") or 0) for x in packed), 1),
+        "hours_period": round(sum(float(x.get("hours_period") or 0) for x in packed), 1),
         "vacation": sum(1 for x in packed if x.get("status") == "vacation"),
         "remote": sum(1 for x in packed if x.get("status") == "remote"),
-        "calls_today": sum(int((x.get("today") or {}).get("calls") or 0) for x in packed),
+        "calls_today": sum(int((x.get("period") or {}).get("calls") or 0) for x in packed),
         "leads_created_today": sum(
-            int((x.get("today") or {}).get("leads_created") or 0) for x in packed
+            int((x.get("period") or {}).get("leads_created") or 0) for x in packed
         ),
     }
 
@@ -583,6 +633,9 @@ def build_state(me_id: int | None = None) -> dict[str, Any]:
         "tz": "Asia/Tashkent",
         "day_start": today_start,
         "week_start": week_start,
+        "period": p_code,
+        "period_start": p_start,
+        "period_end": p_end,
         "online_ttl": ONLINE_TTL_SEC,
         "bucket_sec": BUCKET_SEC,
         "statuses": catalog,

@@ -3,7 +3,7 @@
     "name": "widget.name",
     "description": "widget.description",
     "short_description": "widget.short_description",
-    "version": "1.4.5",
+    "version": "1.4.7",
     "interface_version": 2,
     "init_once": true,
     "locale": [
@@ -39,6 +39,11 @@
     },
     "allowed_users": {
       "name": "settings.allowed_users",
+      "type": "text",
+      "required": false
+    },
+    "list_users": {
+      "name": "settings.list_users",
       "type": "text",
       "required": false
     }
