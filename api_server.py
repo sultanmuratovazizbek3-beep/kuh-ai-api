@@ -1367,6 +1367,7 @@ def root_redirect():
 class TabelHeartbeatBody(BaseModel):
     user_id: int
     active: bool = False
+    buckets: list[int] = Field(default_factory=list)
 
 
 class TabelStatusBody(BaseModel):
@@ -1378,6 +1379,29 @@ class TabelStatusBody(BaseModel):
 class TabelStatusCatalogBody(BaseModel):
     name: str = Field(..., min_length=1)
     color: str = "#6b7280"
+
+
+class TabelAclBody(BaseModel):
+    allowed_users: str | None = None
+    list_users: str | None = None
+
+
+@app.get("/api/v1/tabel/acl")
+def tabel_acl_get() -> dict[str, Any]:
+    from tabel_service import load_tabel_acl
+
+    return {"ok": True, **load_tabel_acl()}
+
+
+@app.post("/api/v1/tabel/acl")
+def tabel_acl_set(body: TabelAclBody) -> dict[str, Any]:
+    from tabel_service import save_tabel_acl
+
+    saved = save_tabel_acl(
+        allowed_users=body.allowed_users,
+        list_users=body.list_users,
+    )
+    return {"ok": True, **saved}
 
 
 @app.get("/api/v1/tabel/state")
@@ -1406,7 +1430,11 @@ def tabel_heartbeat(body: TabelHeartbeatBody) -> dict[str, Any]:
     from tabel_service import heartbeat
 
     try:
-        return heartbeat(user_id=int(body.user_id), active=bool(body.active))
+        return heartbeat(
+            user_id=int(body.user_id),
+            active=bool(body.active),
+            buckets=list(body.buckets or []),
+        )
     except Exception as exc:
         logger.exception("tabel_heartbeat failed")
         raise HTTPException(status_code=500, detail=str(exc)) from exc

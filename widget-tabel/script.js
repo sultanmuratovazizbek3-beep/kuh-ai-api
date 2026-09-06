@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Табель — сотрудники, статусы, онлайн, часы и детальная карточка.
  */
 define(["jquery"], function ($) {
@@ -20,7 +20,8 @@ define(["jquery"], function ($) {
     var qFrom = "";
     var qTo = "";
     var filterOpen = false;
-    var EMBEDDED_CSS = ".kuh-tabel-menu-item {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  cursor: pointer;\n  font-size: 14px;\n  color: #313942;\n  border-radius: 6px;\n  user-select: none;\n}\n.kuh-tabel-menu-item:hover {\n  background: #f2f4f7;\n}\n\n.kuh-tabel-fab {\n  position: fixed;\n  left: 72px;\n  bottom: 16px;\n  z-index: 12000;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 10px;\n  border: 0;\n  border-radius: 16px;\n  background: #313942;\n  color: #fff;\n  font-size: 12px;\n  font-weight: 600;\n  cursor: pointer;\n  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.28);\n}\n.kuh-tabel-fab:hover { background: #1f2730; }\n.kuh-tabel-fab-dot {\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  background: #7ed321;\n}\n\n.kuh-tabel-page {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"PT Sans\", sans-serif;\n  color: #313942;\n  background: #fff;\n  min-height: calc(100vh - 80px);\n  padding: 8px 8px 24px;\n}\n.kuh-tabel-page .kuh-tabel-modal {\n  width: 100%;\n  max-height: none;\n  box-shadow: none;\n  border-radius: 0;\n}\n\n.kuh-tabel-overlay {\n  position: fixed;\n  inset: 0;\n  z-index: 13000;\n  background: rgba(20, 28, 40, 0.45);\n  display: flex;\n  align-items: flex-start;\n  justify-content: center;\n  padding: 48px 16px 24px;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"PT Sans\", sans-serif;\n  color: #313942;\n}\n.kuh-tabel-modal {\n  width: min(1140px, 100%);\n  max-height: calc(100vh - 48px);\n  background: #fff;\n  border-radius: 10px;\n  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.28);\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n}\n.kuh-tabel-head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 14px 18px 12px;\n  border-bottom: 1px solid #e8eaed;\n}\n.kuh-tabel-title {\n  font-size: 18px;\n  font-weight: 700;\n  letter-spacing: 0.01em;\n}\n.kuh-tabel-close {\n  width: 32px;\n  height: 32px;\n  border: 0;\n  background: transparent;\n  border-radius: 6px;\n  font-size: 22px;\n  line-height: 1;\n  cursor: pointer;\n  color: #8b95a1;\n}\n.kuh-tabel-close:hover { background: #f2f4f7; color: #313942; }\n\n.kuh-tabel-me {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 14px 18px 10px;\n}\n.kuh-tabel-avatar {\n  position: relative;\n  width: 44px;\n  height: 44px;\n  border-radius: 50%;\n  background: #dbe4f0;\n  color: #3d4a5c;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-weight: 700;\n  font-size: 14px;\n  flex-shrink: 0;\n  overflow: hidden;\n  text-transform: uppercase;\n}\n.kuh-tabel-avatar img {\n  width: 100%;\n  height: 100%;\n  object-fit: cover;\n}\n.kuh-tabel-dot {\n  position: absolute;\n  right: -1px;\n  bottom: -1px;\n  width: 12px;\n  height: 12px;\n  border-radius: 50%;\n  background: #c5ccd6;\n  border: 2px solid #fff;\n}\n.kuh-tabel-dot.on { background: #2ecc71; }\n.kuh-tabel-me-main { min-width: 0; flex: 1; }\n.kuh-tabel-name {\n  font-weight: 700;\n  font-size: 15px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.kuh-tabel-meta {\n  font-size: 12px;\n  color: #8b95a1;\n  margin-top: 2px;\n}\n.kuh-tabel-me-right {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  flex-shrink: 0;\n}\n.kuh-tabel-leads {\n  font-size: 12px;\n  color: #5c6773;\n  background: #f4f6f8;\n  border-radius: 12px;\n  padding: 4px 8px;\n  white-space: nowrap;\n}\n\n.kuh-tabel-summary {\n  display: grid;\n  grid-template-columns: repeat(6, minmax(0, 1fr));\n  gap: 8px;\n  padding: 0 18px 10px;\n}\n.kuh-tabel-kpi {\n  background: #f4f6f8;\n  border-radius: 8px;\n  padding: 8px 10px;\n  min-width: 0;\n}\n.kuh-tabel-kpi b {\n  display: block;\n  font-size: 16px;\n  font-weight: 700;\n  color: #1f2933;\n  line-height: 1.2;\n}\n.kuh-tabel-kpi span {\n  font-size: 11px;\n  color: #8b95a1;\n}\n.kuh-tabel-kpi.on b { color: #159947; }\n.kuh-tabel-kpi.warn b { color: #d97706; }\n\n.kuh-tabel-toolbar {\n  display: flex;\n  gap: 8px;\n  padding: 4px 18px 12px;\n  flex-wrap: wrap;\n}\n.kuh-tabel-search,\n.kuh-tabel-filter,\n.kuh-tabel-select {\n  height: 34px;\n  border: 1px solid #d5d8de;\n  border-radius: 6px;\n  padding: 0 10px;\n  font-size: 13px;\n  background: #fff;\n  color: #313942;\n  outline: none;\n}\n.kuh-tabel-search:focus,\n.kuh-tabel-filter:focus,\n.kuh-tabel-select:focus {\n  border-color: #4c8bf5;\n  box-shadow: 0 0 0 3px rgba(76, 139, 245, 0.15);\n}\n.kuh-tabel-search { flex: 1; min-width: 160px; }\n.kuh-tabel-filter { min-width: 148px; }\n.kuh-tabel-periods {\n  display: flex;\n  gap: 6px;\n  padding: 0 18px 10px;\n  flex-wrap: wrap;\n  align-items: center;\n}\n.kuh-tabel-period {\n  height: 30px;\n  padding: 0 12px;\n  border: 1px solid #d5d8de;\n  border-radius: 15px;\n  background: #fff;\n  font-size: 12px;\n  font-weight: 600;\n  color: #5c6773;\n  cursor: pointer;\n}\n.kuh-tabel-period:hover { background: #f7f8fa; }\n.kuh-tabel-period.is-on {\n  background: #313942;\n  border-color: #313942;\n  color: #fff;\n}\n.kuh-tabel-dates {\n  display: none;\n  gap: 6px;\n  align-items: center;\n}\n.kuh-tabel-dates.open { display: flex; }\n.kuh-tabel-dates input[type=\"date\"] {\n  height: 30px;\n  border: 1px solid #d5d8de;\n  border-radius: 6px;\n  padding: 0 8px;\n  font-size: 12px;\n}\n.kuh-tabel-filter-toggle {\n  height: 34px;\n  padding: 0 12px;\n  border: 1px solid #d5d8de;\n  border-radius: 6px;\n  background: #fff;\n  font-size: 13px;\n  cursor: pointer;\n  color: #313942;\n  white-space: nowrap;\n}\n.kuh-tabel-filter-toggle:hover { background: #f7f8fa; }\n.kuh-tabel-filter-toggle.is-on {\n  background: #eef4ff;\n  border-color: #4c8bf5;\n  color: #2b6cd6;\n  font-weight: 600;\n}\n.kuh-tabel-filter-panel {\n  display: none;\n  margin: 0 18px 12px;\n  padding: 12px;\n  border: 1px solid #e6eaef;\n  border-radius: 10px;\n  background: #f8fafc;\n  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));\n  gap: 8px;\n  align-items: end;\n}\n.kuh-tabel-filter-panel.open { display: grid; }\n.kuh-tabel-filter-panel label {\n  display: block;\n  font-size: 11px;\n  font-weight: 700;\n  color: #8b95a1;\n  text-transform: uppercase;\n  letter-spacing: .04em;\n  margin-bottom: 4px;\n}\n.kuh-tabel-filter-panel .kuh-tabel-filter,\n.kuh-tabel-filter-panel .kuh-tabel-search {\n  width: 100%;\n  box-sizing: border-box;\n}\n.kuh-tabel-filter-actions {\n  display: flex;\n  gap: 8px;\n  align-items: center;\n}\n.kuh-tabel-chip {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  height: 22px;\n  padding: 0 8px;\n  border-radius: 11px;\n  font-size: 11px;\n  background: #eef4ff;\n  color: #2b6cd6;\n}\n\n.kuh-tabel-body {\n  overflow: auto;\n  padding: 0 10px 16px;\n  min-height: 220px;\n}\n.kuh-tabel-group {\n  margin: 10px 8px 4px;\n  font-size: 12px;\n  font-weight: 700;\n  color: #8b95a1;\n  text-transform: uppercase;\n  letter-spacing: 0.04em;\n  cursor: pointer;\n  user-select: none;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n.kuh-tabel-group:hover { color: #5c6773; }\n.kuh-tabel-card {\n  border: 1px solid transparent;\n  border-radius: 10px;\n  margin: 0 4px 4px;\n}\n.kuh-tabel-card.open {\n  border-color: #d9e4f5;\n  background: #fbfcff;\n  margin-bottom: 8px;\n}\n.kuh-tabel-row {\n  display: grid;\n  grid-template-columns: 44px minmax(150px, 1.1fr) 92px minmax(200px, 1.5fr) 138px 28px;\n  gap: 10px;\n  align-items: center;\n  padding: 8px 8px;\n  border-radius: 8px;\n  cursor: pointer;\n}\n.kuh-tabel-row:hover { background: #f7f8fa; }\n.kuh-tabel-row.is-me { background: #f3f7ff; }\n.kuh-tabel-user-cell { min-width: 0; }\n.kuh-tabel-hours-cell {\n  font-size: 13px;\n  font-weight: 700;\n  color: #313942;\n  white-space: nowrap;\n}\n.kuh-tabel-hours-cell small {\n  display: block;\n  font-size: 10px;\n  font-weight: 500;\n  color: #8b95a1;\n}\n.kuh-tabel-chevron {\n  width: 28px;\n  height: 28px;\n  border: 0;\n  background: transparent;\n  color: #8b95a1;\n  font-size: 16px;\n  cursor: pointer;\n  border-radius: 6px;\n}\n.kuh-tabel-chevron:hover { background: #eef2f6; color: #313942; }\n.kuh-tabel-email {\n  font-size: 12px;\n  color: #8b95a1;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.kuh-tabel-empty {\n  padding: 40px 16px;\n  text-align: center;\n  color: #8b95a1;\n}\n\n.kuh-tabel-bar-wrap { min-width: 0; }\n.kuh-tabel-bar {\n  position: relative;\n  height: 12px;\n  background: #eef1f6;\n  border-radius: 6px;\n  overflow: hidden;\n}\n.kuh-tabel-seg {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  background: #7ed321;\n  border-radius: 2px;\n}\n.kuh-tabel-hours {\n  display: flex;\n  justify-content: space-between;\n  font-size: 10px;\n  color: #b0b7c1;\n  margin-top: 3px;\n  padding: 0 1px;\n}\n.kuh-tabel-expand {\n  padding: 4px 12px 14px 54px;\n}\n.kuh-tabel-stats {\n  display: grid;\n  grid-template-columns: repeat(6, minmax(0, 1fr));\n  gap: 6px;\n  margin-bottom: 10px;\n}\n.kuh-tabel-stat {\n  background: #fff;\n  border: 1px solid #e8eaed;\n  border-radius: 8px;\n  padding: 7px 8px;\n}\n.kuh-tabel-stat b {\n  display: block;\n  font-size: 14px;\n  line-height: 1.2;\n}\n.kuh-tabel-stat span {\n  font-size: 10px;\n  color: #8b95a1;\n}\n.kuh-tabel-dayline {\n  display: grid;\n  grid-template-columns: 72px 1fr 52px;\n  gap: 8px;\n  align-items: center;\n  margin-bottom: 6px;\n}\n.kuh-tabel-day-label {\n  font-size: 11px;\n  color: #8b95a1;\n}\n.kuh-tabel-day-h {\n  font-size: 11px;\n  font-weight: 700;\n  text-align: right;\n  color: #5c6773;\n}\n.kuh-tabel-copy {\n  border: 0;\n  background: transparent;\n  color: #4c8bf5;\n  font-size: 12px;\n  cursor: pointer;\n  padding: 0;\n}\n.kuh-tabel-copy:hover { text-decoration: underline; }\n.kuh-tabel-contacts {\n  display: flex;\n  gap: 12px;\n  flex-wrap: wrap;\n  font-size: 12px;\n  color: #5c6773;\n  margin-top: 8px;\n}\n\n.kuh-tabel-badge {\n  display: inline-flex;\n  align-items: center;\n  height: 22px;\n  padding: 0 8px;\n  border-radius: 11px;\n  font-size: 11px;\n  font-weight: 600;\n  background: #eef1f6;\n  color: #5c6773;\n  white-space: nowrap;\n}\n.kuh-tabel-foot {\n  border-top: 1px solid #e8eaed;\n  padding: 10px 18px 14px;\n  display: flex;\n  gap: 8px;\n  align-items: center;\n  flex-wrap: wrap;\n}\n.kuh-tabel-hint {\n  margin-left: auto;\n  font-size: 11px;\n  color: #8b95a1;\n}\n.kuh-tabel-add {\n  height: 32px;\n  padding: 0 10px;\n  border: 0;\n  border-radius: 6px;\n  background: #4c8bf5;\n  color: #fff;\n  font-size: 12px;\n  font-weight: 600;\n  cursor: pointer;\n}\n.kuh-tabel-add:hover { background: #3b7de3; }\n.kuh-tabel-ghost {\n  height: 32px;\n  padding: 0 10px;\n  border: 1px solid #d5d8de;\n  border-radius: 6px;\n  background: #fff;\n  font-size: 12px;\n  cursor: pointer;\n}\n.kuh-tabel-loading {\n  padding: 28px;\n  text-align: center;\n  color: #8b95a1;\n}\n.kuh-tabel-err { color: #e74c3c; font-size: 12px; padding: 0 18px 8px; }\n\n.kuh-acl {\n  margin: 8px 0 16px;\n  background: #fff;\n  border: 1px solid #e6eaef;\n  border-radius: 12px;\n  overflow: hidden;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;\n  color: #313942;\n}\n.kuh-acl-head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  padding: 14px 16px;\n  background: linear-gradient(180deg, #f7fafc 0%, #fff 100%);\n  border-bottom: 1px solid #eef1f5;\n}\n.kuh-acl-head h3 {\n  margin: 0;\n  font-size: 15px;\n  font-weight: 700;\n}\n.kuh-acl-head p {\n  margin: 4px 0 0;\n  font-size: 12px;\n  color: #8b95a1;\n}\n.kuh-acl-count {\n  font-size: 12px;\n  color: #5c6773;\n  background: #f4f6f8;\n  border-radius: 12px;\n  padding: 4px 10px;\n  white-space: nowrap;\n}\n.kuh-acl-master {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 12px 16px;\n  background: #f4fbf6;\n  border-bottom: 1px solid #e8f5ec;\n}\n.kuh-acl-master b { font-size: 13px; }\n.kuh-acl-search {\n  margin: 10px 16px 6px;\n  width: calc(100% - 32px);\n  height: 34px;\n  border: 1px solid #d5d8de;\n  border-radius: 8px;\n  padding: 0 12px;\n  font-size: 13px;\n  box-sizing: border-box;\n}\n.kuh-acl-list { max-height: 360px; overflow: auto; padding: 4px 8px 12px; }\n.kuh-acl-g {\n  font-size: 11px;\n  font-weight: 700;\n  color: #8b95a1;\n  text-transform: uppercase;\n  letter-spacing: .04em;\n  padding: 10px 8px 4px;\n}\n.kuh-acl-row {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding: 8px;\n  border-radius: 10px;\n}\n.kuh-acl-row:hover { background: #f7f8fa; }\n.kuh-acl-row.is-off { opacity: .55; }\n.kuh-acl-name { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; }\n.kuh-acl-name small {\n  display: block;\n  font-weight: 500;\n  color: #8b95a1;\n  font-size: 11px;\n}\n.kuh-sw {\n  position: relative;\n  width: 44px;\n  height: 24px;\n  flex-shrink: 0;\n}\n.kuh-sw input {\n  opacity: 0;\n  width: 0;\n  height: 0;\n  position: absolute;\n}\n.kuh-sw i {\n  position: absolute;\n  inset: 0;\n  background: #c5ccd6;\n  border-radius: 12px;\n  transition: background .2s;\n  cursor: pointer;\n}\n.kuh-sw i:before {\n  content: \"\";\n  position: absolute;\n  height: 18px;\n  width: 18px;\n  left: 3px;\n  top: 3px;\n  background: #fff;\n  border-radius: 50%;\n  box-shadow: 0 1px 3px rgba(15,23,42,.2);\n  transition: transform .2s;\n}\n.kuh-sw input:checked + i { background: #22c55e; }\n.kuh-sw input:checked + i:before { transform: translateX(20px); }\n.kuh-sw input:disabled + i { opacity: .7; cursor: default; }\n\n@media (max-width: 920px) {\n  .kuh-tabel-summary,\n  .kuh-tabel-stats {\n    grid-template-columns: repeat(3, minmax(0, 1fr));\n  }\n  .kuh-tabel-row {\n    grid-template-columns: 44px 1fr 28px;\n  }\n  .kuh-tabel-hours-cell,\n  .kuh-tabel-bar-wrap,\n  .kuh-tabel-row > .kuh-tabel-select {\n    grid-column: 2;\n  }\n  .kuh-tabel-expand { padding-left: 8px; }\n}\n\n\n/* Left rail item next to amo\u041c\u0430\u0440\u043a\u0435\u0442 / \u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 */\n.kuh-tabel-sidebar {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: 4px;\n  width: 64px;\n  padding: 10px 4px 8px;\n  margin: 0 auto;\n  cursor: pointer;\n  user-select: none;\n  color: #c5c9ce;\n  box-sizing: border-box;\n}\n.kuh-tabel-sidebar:hover { color: #fff; }\n.kuh-tabel-sidebar-icon {\n  width: 28px;\n  height: 28px;\n  border-radius: 50%;\n  border: 1.5px solid #8b939c;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  position: relative;\n  box-sizing: border-box;\n}\n.kuh-tabel-sidebar-dot {\n  width: 10px;\n  height: 10px;\n  border-radius: 50%;\n  background: #7ed321;\n  box-shadow: 0 0 0 2px rgba(126, 211, 33, 0.25);\n}\n.kuh-tabel-sidebar-label {\n  font-size: 10px;\n  line-height: 1.1;\n  font-weight: 600;\n  text-align: center;\n  max-width: 64px;\n}\n.kuh-tabel-sidebar--dock {\n  position: fixed;\n  left: 0;\n  bottom: 88px;\n  z-index: 12000;\n  width: 68px;\n}\n\n\n/* critical containment */\n.kuh-tabel-avatar,\n.kuh-tabel-avatar img {\n  max-width: 56px !important;\n  max-height: 56px !important;\n}\n.kuh-tabel-overlay {\n  isolation: isolate;\n  overflow: auto;\n}\n.kuh-tabel-overlay img {\n  max-width: 96px !important;\n  max-height: 96px !important;\n}\n"; // <TABEL_CSS>
+    var aclCache = { allowed: null, list: null, loaded: false };
+    var EMBEDDED_CSS = ".kuh-tabel-menu-item {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  cursor: pointer;\n  font-size: 14px;\n  color: #313942;\n  border-radius: 6px;\n  user-select: none;\n}\n.kuh-tabel-menu-item:hover {\n  background: #f2f4f7;\n}\n\n.kuh-tabel-fab {\n  position: fixed;\n  left: 72px;\n  bottom: 16px;\n  z-index: 12000;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 10px;\n  border: 0;\n  border-radius: 16px;\n  background: #313942;\n  color: #fff;\n  font-size: 12px;\n  font-weight: 600;\n  cursor: pointer;\n  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.28);\n}\n.kuh-tabel-fab:hover { background: #1f2730; }\n.kuh-tabel-fab-dot {\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  background: #7ed321;\n}\n\n.kuh-tabel-page {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"PT Sans\", sans-serif;\n  color: #313942;\n  background: #fff;\n  min-height: calc(100vh - 80px);\n  padding: 8px 8px 24px;\n}\n.kuh-tabel-page .kuh-tabel-modal {\n  width: 100%;\n  max-height: none;\n  box-shadow: none;\n  border-radius: 0;\n}\n\n.kuh-tabel-overlay {\n  position: fixed;\n  inset: 0;\n  z-index: 13000;\n  background: rgba(20, 28, 40, 0.45);\n  display: flex;\n  align-items: flex-start;\n  justify-content: center;\n  padding: 48px 16px 24px;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"PT Sans\", sans-serif;\n  color: #313942;\n}\n.kuh-tabel-modal {\n  width: min(1140px, 100%);\n  max-height: calc(100vh - 48px);\n  background: #fff;\n  border-radius: 10px;\n  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.28);\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n}\n.kuh-tabel-head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 14px 18px 12px;\n  border-bottom: 1px solid #e8eaed;\n}\n.kuh-tabel-title {\n  font-size: 18px;\n  font-weight: 700;\n  letter-spacing: 0.01em;\n}\n.kuh-tabel-close {\n  width: 32px;\n  height: 32px;\n  border: 0;\n  background: transparent;\n  border-radius: 6px;\n  font-size: 22px;\n  line-height: 1;\n  cursor: pointer;\n  color: #8b95a1;\n}\n.kuh-tabel-close:hover { background: #f2f4f7; color: #313942; }\n\n.kuh-tabel-me {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 14px 18px 10px;\n}\n.kuh-tabel-avatar {\n  position: relative;\n  width: 44px;\n  height: 44px;\n  border-radius: 50%;\n  background: #dbe4f0;\n  color: #3d4a5c;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-weight: 700;\n  font-size: 14px;\n  flex-shrink: 0;\n  overflow: hidden;\n  text-transform: uppercase;\n}\n.kuh-tabel-avatar img {\n  width: 100%;\n  height: 100%;\n  object-fit: cover;\n}\n.kuh-tabel-dot {\n  position: absolute;\n  right: -1px;\n  bottom: -1px;\n  width: 12px;\n  height: 12px;\n  border-radius: 50%;\n  background: #c5ccd6;\n  border: 2px solid #fff;\n}\n.kuh-tabel-dot.on { background: #2ecc71; }\n.kuh-tabel-me-main { min-width: 0; flex: 1; }\n.kuh-tabel-name {\n  font-weight: 700;\n  font-size: 15px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.kuh-tabel-meta {\n  font-size: 12px;\n  color: #8b95a1;\n  margin-top: 2px;\n}\n.kuh-tabel-me-right {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  flex-shrink: 0;\n}\n.kuh-tabel-leads {\n  font-size: 12px;\n  color: #5c6773;\n  background: #f4f6f8;\n  border-radius: 12px;\n  padding: 4px 8px;\n  white-space: nowrap;\n}\n\n.kuh-tabel-summary {\n  display: grid;\n  grid-template-columns: repeat(6, minmax(0, 1fr));\n  gap: 8px;\n  padding: 0 18px 10px;\n}\n.kuh-tabel-kpi {\n  background: #f4f6f8;\n  border-radius: 8px;\n  padding: 8px 10px;\n  min-width: 0;\n}\n.kuh-tabel-kpi b {\n  display: block;\n  font-size: 16px;\n  font-weight: 700;\n  color: #1f2933;\n  line-height: 1.2;\n}\n.kuh-tabel-kpi span {\n  font-size: 11px;\n  color: #8b95a1;\n}\n.kuh-tabel-kpi.on b { color: #159947; }\n.kuh-tabel-kpi.warn b { color: #d97706; }\n\n.kuh-tabel-toolbar {\n  display: flex;\n  gap: 8px;\n  padding: 4px 18px 12px;\n  flex-wrap: wrap;\n}\n.kuh-tabel-search,\n.kuh-tabel-filter,\n.kuh-tabel-select {\n  height: 34px;\n  border: 1px solid #d5d8de;\n  border-radius: 6px;\n  padding: 0 10px;\n  font-size: 13px;\n  background: #fff;\n  color: #313942;\n  outline: none;\n}\n.kuh-tabel-search:focus,\n.kuh-tabel-filter:focus,\n.kuh-tabel-select:focus {\n  border-color: #4c8bf5;\n  box-shadow: 0 0 0 3px rgba(76, 139, 245, 0.15);\n}\n.kuh-tabel-search { flex: 1; min-width: 160px; }\n.kuh-tabel-filter { min-width: 148px; }\n.kuh-tabel-periods {\n  display: flex;\n  gap: 6px;\n  padding: 0 18px 10px;\n  flex-wrap: wrap;\n  align-items: center;\n}\n.kuh-tabel-period {\n  height: 30px;\n  padding: 0 12px;\n  border: 1px solid #d5d8de;\n  border-radius: 15px;\n  background: #fff;\n  font-size: 12px;\n  font-weight: 600;\n  color: #5c6773;\n  cursor: pointer;\n}\n.kuh-tabel-period:hover { background: #f7f8fa; }\n.kuh-tabel-period.is-on {\n  background: #313942;\n  border-color: #313942;\n  color: #fff;\n}\n.kuh-tabel-dates {\n  display: none;\n  gap: 6px;\n  align-items: center;\n}\n.kuh-tabel-dates.open { display: flex; }\n.kuh-tabel-dates input[type=\"date\"] {\n  height: 30px;\n  border: 1px solid #d5d8de;\n  border-radius: 6px;\n  padding: 0 8px;\n  font-size: 12px;\n}\n.kuh-tabel-filter-toggle {\n  height: 34px;\n  padding: 0 12px;\n  border: 1px solid #d5d8de;\n  border-radius: 6px;\n  background: #fff;\n  font-size: 13px;\n  cursor: pointer;\n  color: #313942;\n  white-space: nowrap;\n}\n.kuh-tabel-filter-toggle:hover { background: #f7f8fa; }\n.kuh-tabel-filter-toggle.is-on {\n  background: #eef4ff;\n  border-color: #4c8bf5;\n  color: #2b6cd6;\n  font-weight: 600;\n}\n.kuh-tabel-filter-panel {\n  display: none;\n  margin: 0 18px 12px;\n  padding: 12px;\n  border: 1px solid #e6eaef;\n  border-radius: 10px;\n  background: #f8fafc;\n  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));\n  gap: 8px;\n  align-items: end;\n}\n.kuh-tabel-filter-panel.open { display: grid; }\n.kuh-tabel-filter-panel label {\n  display: block;\n  font-size: 11px;\n  font-weight: 700;\n  color: #8b95a1;\n  text-transform: uppercase;\n  letter-spacing: .04em;\n  margin-bottom: 4px;\n}\n.kuh-tabel-filter-panel .kuh-tabel-filter,\n.kuh-tabel-filter-panel .kuh-tabel-search {\n  width: 100%;\n  box-sizing: border-box;\n}\n.kuh-tabel-filter-actions {\n  display: flex;\n  gap: 8px;\n  align-items: center;\n}\n.kuh-tabel-chip {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  height: 22px;\n  padding: 0 8px;\n  border-radius: 11px;\n  font-size: 11px;\n  background: #eef4ff;\n  color: #2b6cd6;\n}\n\n.kuh-tabel-body {\n  overflow: auto;\n  padding: 0 10px 16px;\n  min-height: 220px;\n}\n.kuh-tabel-group {\n  margin: 10px 8px 4px;\n  font-size: 12px;\n  font-weight: 700;\n  color: #8b95a1;\n  text-transform: uppercase;\n  letter-spacing: 0.04em;\n  cursor: pointer;\n  user-select: none;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n.kuh-tabel-group:hover { color: #5c6773; }\n.kuh-tabel-card {\n  border: 1px solid transparent;\n  border-radius: 10px;\n  margin: 0 4px 4px;\n}\n.kuh-tabel-card.open {\n  border-color: #d9e4f5;\n  background: #fbfcff;\n  margin-bottom: 8px;\n}\n.kuh-tabel-row {\n  display: grid;\n  grid-template-columns: 44px minmax(150px, 1.1fr) 92px minmax(200px, 1.5fr) 138px 28px;\n  gap: 10px;\n  align-items: center;\n  padding: 8px 8px;\n  border-radius: 8px;\n  cursor: pointer;\n}\n.kuh-tabel-row:hover { background: #f7f8fa; }\n.kuh-tabel-row.is-me { background: #f3f7ff; }\n.kuh-tabel-user-cell { min-width: 0; }\n.kuh-tabel-hours-cell {\n  font-size: 13px;\n  font-weight: 700;\n  color: #313942;\n  white-space: nowrap;\n}\n.kuh-tabel-hours-cell small {\n  display: block;\n  font-size: 10px;\n  font-weight: 500;\n  color: #8b95a1;\n}\n.kuh-tabel-chevron {\n  width: 28px;\n  height: 28px;\n  border: 0;\n  background: transparent;\n  color: #8b95a1;\n  font-size: 16px;\n  cursor: pointer;\n  border-radius: 6px;\n}\n.kuh-tabel-chevron:hover { background: #eef2f6; color: #313942; }\n.kuh-tabel-email {\n  font-size: 12px;\n  color: #8b95a1;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.kuh-tabel-empty {\n  padding: 40px 16px;\n  text-align: center;\n  color: #8b95a1;\n}\n\n.kuh-tabel-bar-wrap { min-width: 0; }\n.kuh-tabel-bar {\n  position: relative;\n  height: 12px;\n  background: #eef1f6;\n  border-radius: 6px;\n  overflow: hidden;\n}\n.kuh-tabel-seg {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  background: #7ed321;\n  border-radius: 2px;\n}\n.kuh-tabel-hours {\n  display: flex;\n  justify-content: space-between;\n  font-size: 10px;\n  color: #b0b7c1;\n  margin-top: 3px;\n  padding: 0 1px;\n}\n.kuh-tabel-expand {\n  padding: 4px 12px 14px 54px;\n}\n.kuh-tabel-stats {\n  display: grid;\n  grid-template-columns: repeat(6, minmax(0, 1fr));\n  gap: 6px;\n  margin-bottom: 10px;\n}\n.kuh-tabel-stat {\n  background: #fff;\n  border: 1px solid #e8eaed;\n  border-radius: 8px;\n  padding: 7px 8px;\n}\n.kuh-tabel-stat b {\n  display: block;\n  font-size: 14px;\n  line-height: 1.2;\n}\n.kuh-tabel-stat span {\n  font-size: 10px;\n  color: #8b95a1;\n}\n.kuh-tabel-dayline {\n  display: grid;\n  grid-template-columns: 72px 1fr 52px;\n  gap: 8px;\n  align-items: center;\n  margin-bottom: 6px;\n}\n.kuh-tabel-day-label {\n  font-size: 11px;\n  color: #8b95a1;\n}\n.kuh-tabel-day-h {\n  font-size: 11px;\n  font-weight: 700;\n  text-align: right;\n  color: #5c6773;\n}\n.kuh-tabel-copy {\n  border: 0;\n  background: transparent;\n  color: #4c8bf5;\n  font-size: 12px;\n  cursor: pointer;\n  padding: 0;\n}\n.kuh-tabel-copy:hover { text-decoration: underline; }\n.kuh-tabel-contacts {\n  display: flex;\n  gap: 12px;\n  flex-wrap: wrap;\n  font-size: 12px;\n  color: #5c6773;\n  margin-top: 8px;\n}\n\n.kuh-tabel-badge {\n  display: inline-flex;\n  align-items: center;\n  height: 22px;\n  padding: 0 8px;\n  border-radius: 11px;\n  font-size: 11px;\n  font-weight: 600;\n  background: #eef1f6;\n  color: #5c6773;\n  white-space: nowrap;\n}\n.kuh-tabel-foot {\n  border-top: 1px solid #e8eaed;\n  padding: 10px 18px 14px;\n  display: flex;\n  gap: 8px;\n  align-items: center;\n  flex-wrap: wrap;\n}\n.kuh-tabel-hint {\n  margin-left: auto;\n  font-size: 11px;\n  color: #8b95a1;\n}\n.kuh-tabel-add {\n  height: 32px;\n  padding: 0 10px;\n  border: 0;\n  border-radius: 6px;\n  background: #4c8bf5;\n  color: #fff;\n  font-size: 12px;\n  font-weight: 600;\n  cursor: pointer;\n}\n.kuh-tabel-add:hover { background: #3b7de3; }\n.kuh-tabel-ghost {\n  height: 32px;\n  padding: 0 10px;\n  border: 1px solid #d5d8de;\n  border-radius: 6px;\n  background: #fff;\n  font-size: 12px;\n  cursor: pointer;\n}\n.kuh-tabel-loading {\n  padding: 28px;\n  text-align: center;\n  color: #8b95a1;\n}\n.kuh-tabel-err { color: #e74c3c; font-size: 12px; padding: 0 18px 8px; }\n\n.kuh-acl {\n  margin: 8px 0 16px;\n  background: #fff;\n  border: 1px solid #e6eaef;\n  border-radius: 12px;\n  overflow: hidden;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;\n  color: #313942;\n}\n.kuh-acl-head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  padding: 14px 16px;\n  background: linear-gradient(180deg, #f7fafc 0%, #fff 100%);\n  border-bottom: 1px solid #eef1f5;\n}\n.kuh-acl-head h3 {\n  margin: 0;\n  font-size: 15px;\n  font-weight: 700;\n}\n.kuh-acl-head p {\n  margin: 4px 0 0;\n  font-size: 12px;\n  color: #8b95a1;\n}\n.kuh-acl-count {\n  font-size: 12px;\n  color: #5c6773;\n  background: #f4f6f8;\n  border-radius: 12px;\n  padding: 4px 10px;\n  white-space: nowrap;\n}\n.kuh-acl-master {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 12px 16px;\n  background: #f4fbf6;\n  border-bottom: 1px solid #e8f5ec;\n}\n.kuh-acl-master b { font-size: 13px; }\n.kuh-acl-search {\n  margin: 10px 16px 6px;\n  width: calc(100% - 32px);\n  height: 34px;\n  border: 1px solid #d5d8de;\n  border-radius: 8px;\n  padding: 0 12px;\n  font-size: 13px;\n  box-sizing: border-box;\n}\n.kuh-acl-list { max-height: 360px; overflow: auto; padding: 4px 8px 12px; }\n.kuh-acl-g {\n  font-size: 11px;\n  font-weight: 700;\n  color: #8b95a1;\n  text-transform: uppercase;\n  letter-spacing: .04em;\n  padding: 10px 8px 4px;\n}\n.kuh-acl-row {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding: 8px;\n  border-radius: 10px;\n}\n.kuh-acl-row:hover { background: #f7f8fa; }\n.kuh-acl-row.is-off { opacity: .55; }\n.kuh-acl-name { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; }\n.kuh-acl-name small {\n  display: block;\n  font-weight: 500;\n  color: #8b95a1;\n  font-size: 11px;\n}\n.kuh-sw {\n  position: relative;\n  width: 44px;\n  height: 24px;\n  flex-shrink: 0;\n}\n.kuh-sw input {\n  opacity: 0;\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  inset: 0;\n  margin: 0;\n  cursor: pointer;\n  z-index: 2;\n}\n.kuh-sw i {\n  position: absolute;\n  inset: 0;\n  background: #c5ccd6;\n  border-radius: 12px;\n  transition: background .2s;\n  cursor: pointer;\n}\n.kuh-sw i:before {\n  content: \"\";\n  position: absolute;\n  height: 18px;\n  width: 18px;\n  left: 3px;\n  top: 3px;\n  background: #fff;\n  border-radius: 50%;\n  box-shadow: 0 1px 3px rgba(15,23,42,.2);\n  transition: transform .2s;\n}\n.kuh-sw input:checked + i { background: #22c55e; }\n.kuh-sw input:checked + i:before { transform: translateX(20px); }\n.kuh-sw input:disabled + i { opacity: .7; cursor: default; }\n\n@media (max-width: 920px) {\n  .kuh-tabel-summary,\n  .kuh-tabel-stats {\n    grid-template-columns: repeat(3, minmax(0, 1fr));\n  }\n  .kuh-tabel-row {\n    grid-template-columns: 44px 1fr 28px;\n  }\n  .kuh-tabel-hours-cell,\n  .kuh-tabel-bar-wrap,\n  .kuh-tabel-row > .kuh-tabel-select {\n    grid-column: 2;\n  }\n  .kuh-tabel-expand { padding-left: 8px; }\n}\n\n\n/* Left rail item next to amo\u041c\u0430\u0440\u043a\u0435\u0442 / \u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 */\n.kuh-tabel-sidebar {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: 4px;\n  width: 64px;\n  padding: 10px 4px 8px;\n  margin: 0 auto;\n  cursor: pointer;\n  user-select: none;\n  color: #c5c9ce;\n  box-sizing: border-box;\n}\n.kuh-tabel-sidebar:hover { color: #fff; }\n.kuh-tabel-sidebar-icon {\n  width: 28px;\n  height: 28px;\n  border-radius: 50%;\n  border: 1.5px solid #8b939c;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  position: relative;\n  box-sizing: border-box;\n}\n.kuh-tabel-sidebar-dot {\n  width: 10px;\n  height: 10px;\n  border-radius: 50%;\n  background: #7ed321;\n  box-shadow: 0 0 0 2px rgba(126, 211, 33, 0.25);\n}\n.kuh-tabel-sidebar-label {\n  font-size: 10px;\n  line-height: 1.1;\n  font-weight: 600;\n  text-align: center;\n  max-width: 64px;\n}\n.kuh-tabel-sidebar--dock {\n  position: fixed;\n  left: 0;\n  bottom: 88px;\n  z-index: 12000;\n  width: 68px;\n}\n\n\n/* critical containment */\n.kuh-tabel-avatar,\n.kuh-tabel-avatar img {\n  max-width: 56px !important;\n  max-height: 56px !important;\n}\n.kuh-tabel-overlay {\n  isolation: isolate;\n  overflow: auto;\n}\n.kuh-tabel-overlay img {\n  max-width: 96px !important;\n  max-height: 96px !important;\n}\n"; // <TABEL_CSS>
 
     function settings() {
       return self.get_settings() || {};
@@ -29,7 +30,7 @@ define(["jquery"], function ($) {
     function apiBase() {
       var base = (settings().api_base || "").trim().replace(/\/$/, "");
       if (!base) {
-        base = "https://kuh-ai-api.onrender.com";
+        base = "https://oaks-msie-cite-coral.trycloudflare.com";
       }
       return base;
     }
@@ -96,12 +97,38 @@ define(["jquery"], function ($) {
       return ids;
     }
 
+    function settingRaw(name) {
+      if (aclCache.loaded) {
+        if (name === "allowed_users") {
+          return aclCache.allowed == null ? "" : String(aclCache.allowed);
+        }
+        if (name === "list_users") {
+          return aclCache.list == null ? "" : String(aclCache.list);
+        }
+      }
+      var s = settings() || {};
+      return s[name];
+    }
+
     function allowedUserIds() {
-      return parseIdList(settings().allowed_users);
+      var raw = settingRaw("allowed_users");
+      if (typeof raw === "string" && raw.trim().toLowerCase() === "none") {
+        return [];
+      }
+      return parseIdList(raw);
+    }
+
+    function allowedIsNone() {
+      var raw = settingRaw("allowed_users");
+      return typeof raw === "string" && raw.trim().toLowerCase() === "none";
+    }
+
+    function allowedIsAll() {
+      return !allowedIsNone() && !allowedUserIds().length;
     }
 
     function listUserIds() {
-      return parseIdList(settings().list_users);
+      return parseIdList(settingRaw("list_users"));
     }
 
     function loadUiFilter() {
@@ -143,10 +170,10 @@ define(["jquery"], function ($) {
     }
 
     function userHasAccess() {
-      var ids = allowedUserIds();
-      if (!ids.length) return true;
+      if (allowedIsAll()) return true;
+      if (allowedIsNone()) return false;
       var id = parseInt((currentUser() || {}).id, 10);
-      return ids.indexOf(id) !== -1;
+      return allowedUserIds().indexOf(id) !== -1;
     }
 
     function amoConstant(name) {
@@ -267,60 +294,100 @@ define(["jquery"], function ($) {
       return Math.round(((n * 5) / 60) * 100) / 100;
     }
 
+    function mergeBuckets(a, b) {
+      var s = {};
+      (a || []).concat(b || []).forEach(function (x) {
+        var n = parseInt(x, 10);
+        if (n) s[n] = true;
+      });
+      return Object.keys(s)
+        .map(function (k) {
+          return parseInt(k, 10);
+        })
+        .sort(function (x, y) {
+          return x - y;
+        });
+    }
+
+    var TZ_SEC = 5 * 3600;
+
     function pad2(n) {
       return (n < 10 ? "0" : "") + n;
     }
 
+    function nowTs() {
+      return Math.floor(Date.now() / 1000);
+    }
+
+    function tashkentParts(ts) {
+      var d = new Date((Number(ts) + TZ_SEC) * 1000);
+      return {
+        y: d.getUTCFullYear(),
+        m: d.getUTCMonth(),
+        day: d.getUTCDate(),
+        h: d.getUTCHours(),
+        min: d.getUTCMinutes(),
+        dow: d.getUTCDay(),
+      };
+    }
+
+    function tashkentDayStart(ts) {
+      ts = ts == null ? nowTs() : Number(ts);
+      return Math.floor((ts + TZ_SEC) / 86400) * 86400 - TZ_SEC;
+    }
+
     function ymd(d) {
-      return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+      var ts = d instanceof Date ? Math.floor(d.getTime() / 1000) : d;
+      var p = tashkentParts(ts);
+      return p.y + "-" + pad2(p.m + 1) + "-" + pad2(p.day);
     }
 
     function parseYmd(s) {
       var p = String(s || "").split("-");
       if (p.length !== 3) return null;
-      var d = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
-      d.setHours(0, 0, 0, 0);
-      return isNaN(d.getTime()) ? null : d;
+      var y = parseInt(p[0], 10);
+      var m = parseInt(p[1], 10);
+      var d = parseInt(p[2], 10);
+      if (!y || !m || !d) return null;
+      var ts = Date.UTC(y, m - 1, d) / 1000 - TZ_SEC;
+      return new Date(ts * 1000);
     }
 
     function periodRange() {
-      var now = new Date();
-      var start = new Date(now);
-      start.setHours(0, 0, 0, 0);
-      var end = new Date(start);
-      end.setDate(end.getDate() + 1);
+      var today0 = tashkentDayStart();
+      var start = today0;
+      var end = today0 + 86400;
       var code = qPeriod || "today";
+      var p;
       if (code === "yesterday") {
-        end = new Date(start);
-        start.setDate(start.getDate() - 1);
+        start = today0 - 86400;
+        end = today0;
       } else if (code === "week") {
-        var dow = (start.getDay() + 6) % 7;
-        start.setDate(start.getDate() - dow);
+        p = tashkentParts(today0);
+        start = today0 - ((p.dow + 6) % 7) * 86400;
       } else if (code === "month") {
-        start.setDate(1);
+        p = tashkentParts(today0);
+        start = Date.UTC(p.y, p.m, 1) / 1000 - TZ_SEC;
       } else if (code === "last_month") {
-        start.setDate(1);
-        end = new Date(start);
-        start.setMonth(start.getMonth() - 1);
+        p = tashkentParts(today0);
+        end = Date.UTC(p.y, p.m, 1) / 1000 - TZ_SEC;
+        start = Date.UTC(p.y, p.m - 1, 1) / 1000 - TZ_SEC;
       } else if (code === "custom") {
         var a = parseYmd(qFrom);
         var b = parseYmd(qTo);
         if (a && b) {
-          start = a;
-          end = new Date(b);
-          end.setDate(end.getDate() + 1);
+          start = Math.floor(a.getTime() / 1000);
+          end = Math.floor(b.getTime() / 1000) + 86400;
         }
       }
-      if (end.getTime() - start.getTime() > 62 * 86400000) {
-        start = new Date(end.getTime() - 62 * 86400000);
-      }
+      if (end - start > 62 * 86400) start = end - 62 * 86400;
       return {
-        start: start,
-        end: end,
-        startTs: Math.floor(start.getTime() / 1000),
-        endTs: Math.floor(end.getTime() / 1000),
-        startMs: start.getTime(),
-        endMs: end.getTime(),
+        start: new Date(start * 1000),
+        end: new Date(end * 1000),
+        startTs: start,
+        endTs: end,
+        startMs: start * 1000,
+        endMs: end * 1000,
       };
     }
 
@@ -377,11 +444,9 @@ define(["jquery"], function ($) {
       }
       var onlineMap = amoOnlineMap();
       if (meId) onlineMap[meId] = true;
-      var day0 = new Date();
-      day0.setHours(0, 0, 0, 0);
-      var t0 = Math.floor(day0.getTime() / 1000);
+      var t0 = tashkentDayStart();
       var t1 = t0 + 86400;
-      var w0 = t0 - 6 * 86400;
+      var w0 = t0 - ((tashkentParts(t0).dow + 6) % 7) * 86400;
       var users = [];
       list.forEach(function (m) {
         if (!m) return;
@@ -479,11 +544,22 @@ define(["jquery"], function ($) {
       });
       (remote.users || []).forEach(function (u) {
         var prev = map[u.id] || {};
+        var buckets = mergeBuckets(prev.buckets, u.buckets);
+        var r = periodRange();
         map[u.id] = $.extend({}, prev, u, {
           photo: u.photo || prev.photo,
           name: u.name || prev.name,
           email: u.email || prev.email,
           group_name: u.group_name || prev.group_name,
+          buckets: buckets,
+          hours_period: hoursFromBuckets(buckets, r.startTs, r.endTs),
+          hours_today: hoursFromBuckets(
+            buckets,
+            tashkentDayStart(),
+            tashkentDayStart() + 86400
+          ),
+          last_active: Math.max(u.last_active || 0, prev.last_active || 0),
+          last_seen: Math.max(u.last_seen || 0, prev.last_seen || 0),
           online: !!(u.online || prev.online || amoOn[u.id]),
         });
       });
@@ -497,6 +573,15 @@ define(["jquery"], function ($) {
         statuses: remote.statuses && remote.statuses.length ? remote.statuses : local.statuses,
         summary: remote.summary || local.summary,
       });
+      try {
+        var dump = localBuckets();
+        users.forEach(function (u) {
+          if (u && u.id && u.buckets && u.buckets.length) {
+            dump[String(u.id)] = mergeBuckets(dump[String(u.id)], u.buckets);
+          }
+        });
+        localStorage.setItem("kuh_tabel_buckets", JSON.stringify(dump));
+      } catch (eDump) {}
     }
 
 
@@ -616,8 +701,8 @@ define(["jquery"], function ($) {
 
     function fmtTime(ts) {
       if (!ts) return "—";
-      var d = new Date(ts * 1000);
-      return pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+      var p = tashkentParts(ts);
+      return pad2(p.h) + ":" + pad2(p.min);
     }
 
     function fmtAgo(ts) {
@@ -642,9 +727,8 @@ define(["jquery"], function ($) {
       (buckets || []).forEach(function (ts) {
         var ms = ts * 1000;
         if (ms < dayStart || ms >= dayEnd) return;
-        var d = new Date(ms);
-        var min = d.getHours() * 60 + d.getMinutes();
-        min = Math.floor(min / 5) * 5;
+        var p = tashkentParts(ts);
+        var min = Math.floor((p.h * 60 + p.min) / 5) * 5;
         slots[min] = true;
       });
       var keys = Object.keys(slots)
@@ -706,9 +790,7 @@ define(["jquery"], function ($) {
     }
 
     function startOfToday() {
-      var d = new Date();
-      d.setHours(0, 0, 0, 0);
-      return d.getTime();
+      return tashkentDayStart() * 1000;
     }
 
     function avatarHtml(user, extraClass) {
@@ -792,15 +874,33 @@ define(["jquery"], function ($) {
     }
 
     function dayLabelMs(ms) {
-      var today = startOfToday();
-      var diff = Math.round((today - ms) / 86400000);
+      var start = tashkentDayStart(Math.floor(ms / 1000));
+      var diff = Math.round((tashkentDayStart() - start) / 86400);
       if (diff === 0) return "Сегодня";
       if (diff === 1) return "Вчера";
-      return new Date(ms).toLocaleDateString("ru-RU", {
-        weekday: "short",
-        day: "2-digit",
-        month: "2-digit",
+      var p = tashkentParts(start);
+      var names = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
+      return names[p.dow] + " " + pad2(p.day) + "." + pad2(p.m + 1);
+    }
+
+    function firstInPeriod(user) {
+      var r = periodRange();
+      var hit = (user.buckets || []).filter(function (b) {
+        return b >= r.startTs && b < r.endTs;
       });
+      if (hit.length) return Math.min.apply(null, hit);
+      return user.first_active_today || 0;
+    }
+
+    function lastInPeriod(user) {
+      var r = periodRange();
+      var last = Math.max(user.last_active || 0, user.last_seen || 0);
+      if (last >= r.startTs && last < r.endTs) return last;
+      var hit = (user.buckets || []).filter(function (b) {
+        return b >= r.startTs && b < r.endTs;
+      });
+      if (hit.length) return Math.max.apply(null, hit);
+      return user.last_active_today || 0;
     }
 
     function expandDayStarts() {
@@ -859,8 +959,8 @@ define(["jquery"], function ($) {
         '<div class="kuh-tabel-stats">' +
         statBox(fmtHours(hoursOf(user)), "в CRM " + periodTitle()) +
         statBox(fmtHours(user.hours_week), "за 7 дней") +
-        statBox(fmtTime(user.first_active_today), "первый заход") +
-        statBox(fmtTime(user.last_active_today), "последняя активность") +
+        statBox(fmtTime(firstInPeriod(user)), "первый заход") +
+        statBox(fmtTime(lastInPeriod(user)), "последняя активность") +
         statBox(
           (t.calls || 0) + (callDur ? " · " + callDur : ""),
           "звонки " + periodTitle()
@@ -1214,7 +1314,7 @@ define(["jquery"], function ($) {
 
     function adminFoot() {
       var hint =
-        "Период сверху: сегодня / неделя / месяц. Клик по сотруднику — дни периода, звонки и сделки.";
+        "Время — Ташкент. Часы считаются по кликам в amo каждые 5 минут, не по открытому окну.";
       if (!isAdminUser()) {
         return (
           '<div class="kuh-tabel-foot"><span class="kuh-tabel-hint">' +
@@ -1651,17 +1751,21 @@ define(["jquery"], function ($) {
       function mark() {
         lastInputAt = Date.now();
       }
-      $(document).on("mousedown.kuhtabelact keydown.kuhtabelact", mark);
-      lastInputAt = Date.now();
+      $(document).on(
+        "mousedown.kuhtabelact click.kuhtabelact keydown.kuhtabelact keyup.kuhtabelact",
+        mark
+      );
+      lastInputAt = 0;
       function ping() {
         if (!userHasAccess()) return;
         var uid = parseInt((currentUser() || {}).id, 10);
         if (!uid) return;
-        var active = Date.now() - lastInputAt < 5 * 60 * 1000;
+        var active = lastInputAt && Date.now() - lastInputAt < 5 * 60 * 1000;
         if (active) saveLocalBucket(uid);
+        var hist = (localBuckets()[String(uid)] || []).slice(-5000);
         api("/api/v1/tabel/heartbeat", {
           method: "POST",
-          body: { user_id: uid, active: active },
+          body: { user_id: uid, active: !!active, buckets: hist },
         }).fail(function () {});
       }
       ping();
@@ -1671,7 +1775,7 @@ define(["jquery"], function ($) {
 
     function startOnce() {
       if (started) {
-        injectSidebarItem();
+        applyAccessChrome();
         return;
       }
       started = true;
@@ -1680,10 +1784,8 @@ define(["jquery"], function ($) {
         $("#kuh-tabel-fab, #kuh-tabel-menu-item").remove();
       } catch (e) {}
       injectCss();
-      if (!userHasAccess()) return;
       bindModal();
-      injectSidebarItem();
-      startTracker();
+      refreshAclThenChrome();
       $(document)
         .off("click.kuhtabelopen")
         .on(
@@ -1697,14 +1799,13 @@ define(["jquery"], function ($) {
         );
       if (!observer) {
         observer = new MutationObserver(function () {
-          injectSidebarItem();
+          applyAccessChrome();
         });
         observer.observe(document.body, { childList: true, subtree: true });
       }
-      /* retry a few times — left rail mounts async */
-      setTimeout(injectSidebarItem, 500);
-      setTimeout(injectSidebarItem, 1500);
-      setTimeout(injectSidebarItem, 4000);
+      setTimeout(applyAccessChrome, 500);
+      setTimeout(applyAccessChrome, 1500);
+      setTimeout(applyAccessChrome, 4000);
     }
 
     function settingsFieldInput(name) {
@@ -1744,10 +1845,117 @@ define(["jquery"], function ($) {
     }
 
     function writeSettingField(name, val) {
-      var $inp = settingsFieldInput(name);
+      val = val == null ? "" : String(val);
+      var $inp = $(
+        'input[name="' + name + '"], textarea[name="' + name + '"]'
+      );
+      if (!$inp.length) {
+        var $fields = $(
+          "#widget_settings__fields, .widget_settings_block__fields, .widget_settings_block"
+        ).first();
+        if ($fields.length) {
+          $inp = $('<input type="hidden" name="' + name + '">');
+          $fields.append($inp);
+        }
+      }
       if ($inp.length) {
         $inp.val(val).trigger("change").trigger("input");
       }
+      try {
+        if (typeof self.set_settings === "function") {
+          var patch = {};
+          patch[name] = val;
+          self.set_settings(patch);
+        }
+      } catch (e) {}
+    }
+
+    function persistAllowed(val) {
+      aclCache.allowed = val;
+      aclCache.loaded = true;
+      writeAllowedUsers(val);
+      api("/api/v1/tabel/acl", {
+        method: "POST",
+        body: { allowed_users: val },
+      }).fail(function () {});
+    }
+
+    function hideOfficialTabelMenu() {
+      var code = "";
+      try {
+        code = String((settings().widget_code || "")).replace(/[^\w\-]/g, "");
+      } catch (e0) {}
+      var keys = ["kuh_tabel", "kuh-tabel"];
+      if (code) keys.push(code);
+      keys.forEach(function (k) {
+        $(
+          'a[href*="' +
+            k +
+            '"], [class*="' +
+            k +
+            '"], [data-code="' +
+            k +
+            '"], [data-id*="' +
+            k +
+            '"]'
+        ).each(function () {
+          var $el = $(this);
+          var blob =
+            (($el.attr("href") || "") + " " + ($el.text() || "")).toLowerCase();
+          if (/settings|amo-market|amomarket|интеграц/.test(blob)) return;
+          var $box = $el.closest(
+            'li, .aside__list-item, .nav__menu__item, [class*="menu__item"], [class*="left-menu"], [class*="LeftMenu"], [class*="sidebar__item"]'
+          );
+          ($box.length ? $box : $el).hide();
+        });
+      });
+      $(
+        '#left_menu, .left-menu, aside, [class*="sidebar"], [class*="LeftMenu"], [class*="nav__menu"], [class*="aside"]'
+      )
+        .find("a, button, li, span, div")
+        .each(function () {
+          var t = ($(this).text() || "").replace(/\s+/g, " ").trim();
+          if (t !== "Табель") return;
+          var $box = $(this).closest('li, a, [class*="item"]');
+          ($box.length ? $box : $(this)).hide();
+        });
+    }
+
+    function applyAccessChrome() {
+      if (userHasAccess()) {
+        injectSidebarItem();
+        startTracker();
+        return;
+      }
+      $("#kuh-tabel-sidebar, #kuh-tabel-fab, #kuh-tabel-overlay, #kuh-tabel-page-root").remove();
+      hideOfficialTabelMenu();
+    }
+
+    function refreshAclThenChrome() {
+      applyAccessChrome();
+      api("/api/v1/tabel/acl")
+        .done(function (data) {
+          if (!data || !data.ok) {
+            applyAccessChrome();
+            return;
+          }
+          if (data.allowed_users != null && String(data.allowed_users) !== "") {
+            aclCache.allowed = String(data.allowed_users);
+            aclCache.loaded = true;
+          } else {
+            var fromSettings = settings().allowed_users;
+            aclCache.allowed =
+              fromSettings == null || fromSettings === ""
+                ? ""
+                : String(fromSettings);
+            aclCache.loaded = true;
+          }
+          if (data.list_users != null) aclCache.list = String(data.list_users);
+          applyAccessChrome();
+        })
+        .fail(function () {
+          applyAccessChrome();
+        });
     }
 
     function writeAllowedUsers(val) {
@@ -1766,7 +1974,7 @@ define(["jquery"], function ($) {
     function aclPanelHtml() {
       var users = settingsUsers();
       var selected = allowedUserIds();
-      var allOn = !selected.length;
+      var allOn = allowedIsAll();
       var groups = {};
       var order = [];
       users.forEach(function (u) {
@@ -1809,7 +2017,6 @@ define(["jquery"], function ($) {
                   u.id +
                   '"' +
                   (on ? " checked" : "") +
-                  (allOn ? " disabled" : "") +
                   "><i></i></label></div>"
                 );
               })
@@ -1820,7 +2027,7 @@ define(["jquery"], function ($) {
       return (
         '<div class="kuh-acl" id="kuh-tabel-acl">' +
         '<div class="kuh-acl-head"><div><h3>Кто видит табель</h3>' +
-        "<p>Включите ползунок — менеджер увидит кнопку и окно табеля в amoCRM.</p></div>" +
+        "<p>Выключите ползунок у человека — кнопка «Табель» у него пропадёт. После этого нажмите «Сохранить».</p></div>" +
         '<span class="kuh-acl-count" id="kuh-acl-count">Включено ' +
         onCount +
         " из " +
@@ -1840,17 +2047,27 @@ define(["jquery"], function ($) {
     function syncAclFromUi() {
       var all = $("#kuh-acl-all").is(":checked");
       var ids = [];
+      var me = parseInt((currentUser() || {}).id, 10);
+      $(".kuh-acl-one").prop("disabled", false);
       $(".kuh-acl-one").each(function () {
-        var on = all || $(this).is(":checked");
+        if (all) $(this).prop("checked", true);
+        var on = $(this).is(":checked");
         var id = parseInt($(this).attr("data-user"), 10);
-        $(this).prop("disabled", all);
-        $(this).prop("checked", on);
         $(this).closest(".kuh-acl-row").toggleClass("is-off", !on);
         if (on && id) ids.push(id);
       });
       var n = $(".kuh-acl-one").length;
-      $("#kuh-acl-count").text("Включено " + (all ? n : ids.length) + " из " + n);
-      writeAllowedUsers(all ? "" : ids.join(","));
+      var val;
+      if (all) val = "";
+      else if (!ids.length) val = "none";
+      else {
+        if (me && ids.indexOf(me) === -1) ids.push(me);
+        val = ids.join(",");
+      }
+      $("#kuh-acl-count").text(
+        "Включено " + (all ? n : ids.length) + " из " + n
+      );
+      persistAllowed(val);
     }
 
     function listPanelHtml() {
@@ -1982,9 +2199,15 @@ define(["jquery"], function ($) {
       }
       $(document)
         .off(".kuhacl")
-        .on("change.kuhacl", "#kuh-acl-all, .kuh-acl-one", function () {
-          if (this.id === "kuh-acl-all" && $(this).is(":checked")) {
+        .on("change.kuhacl", "#kuh-acl-all", function () {
+          if ($(this).is(":checked")) {
             $(".kuh-acl-one").prop("checked", true);
+          }
+          syncAclFromUi();
+        })
+        .on("change.kuhacl", ".kuh-acl-one", function () {
+          if ($("#kuh-acl-all").is(":checked") && !$(this).is(":checked")) {
+            $("#kuh-acl-all").prop("checked", false);
           }
           syncAclFromUi();
         })
@@ -2041,7 +2264,7 @@ define(["jquery"], function ($) {
         } catch (e2) {}
         if (area === "widget_page") {
           setTimeout(function () {
-            openModal();
+            if (userHasAccess()) openModal();
           }, 80);
         }
         if (area === "settings") {

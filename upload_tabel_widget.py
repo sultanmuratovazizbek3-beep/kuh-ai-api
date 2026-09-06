@@ -80,15 +80,23 @@ def main() -> None:
     for t in TARGETS:
         allowed = ""
         token = ""
+        listed = ""
         try:
             info = client_info(s, t["uuid"])
             settings_now = (info.get("settings") or info.get("widget_settings") or {}) if isinstance(info, dict) else {}
             if isinstance(settings_now, dict):
                 allowed = str(settings_now.get("allowed_users") or "")
                 token = str(settings_now.get("api_token") or "")
+                listed = str(settings_now.get("list_users") or "")
         except Exception:
             pass
-        settings = {"api_base": tunnel, "api_token": token, "allowed_users": allowed}
+        settings = {"api_base": tunnel}
+        if token:
+            settings["api_token"] = token
+        if allowed:
+            settings["allowed_users"] = allowed
+        if listed:
+            settings["list_users"] = listed
         up = upload_widget(s, t["uuid"])
         client = client_info(s, t["uuid"])
         inst = try_install(s, t["code"], settings)

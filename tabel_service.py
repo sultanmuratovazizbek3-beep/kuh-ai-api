@@ -20,6 +20,8 @@ BUCKET_SEC = 300
 LEAD_CACHE_TTL = 600
 USERS_CACHE_TTL = 60
 STATUSES_META = "tabel_statuses"
+ACL_ALLOWED_META = "tabel_acl_allowed"
+ACL_LIST_META = "tabel_acl_list"
 
 DEFAULT_STATUSES: list[dict[str, str]] = [
     {"code": "vacation", "name": "В отпуске", "color": "#f5a623"},
@@ -287,6 +289,26 @@ def save_statuses(items: list[dict[str, str]]) -> list[dict[str, str]]:
     return cleaned
 
 
+def load_tabel_acl() -> dict[str, str]:
+    ensure_tables()
+    return {
+        "allowed_users": get_meta(ACL_ALLOWED_META) or "",
+        "list_users": get_meta(ACL_LIST_META) or "",
+    }
+
+
+def save_tabel_acl(
+    allowed_users: str | None = None,
+    list_users: str | None = None,
+) -> dict[str, str]:
+    ensure_tables()
+    if allowed_users is not None:
+        set_meta(ACL_ALLOWED_META, str(allowed_users))
+    if list_users is not None:
+        set_meta(ACL_LIST_META, str(list_users))
+    return load_tabel_acl()
+
+
 def _slug_code(name: str) -> str:
     digest = hashlib.md5(name.strip().encode("utf-8")).hexdigest()[:8]
     return f"st_{digest}"
@@ -321,10 +343,27 @@ def _bucket_now(ts: int | None = None) -> int:
     return t - (t % BUCKET_SEC)
 
 
-def heartbeat(user_id: int, active: bool) -> dict[str, Any]:
+def heartbeat(
+    user_id: int,
+    active: bool,
+    buckets: list[int] | None = None,
+) -> dict[str, Any]:
     ensure_tables()
     now = int(time.time())
     bucket = _bucket_now(now)
+    cutoff = now - ACTIVITY_KEEP_DAYS * 86400
+    incoming: list[int] = []
+    for raw in buckets or []:
+        try:
+            b = int(raw)
+        except (TypeError, ValueError):
+            continue
+        b = b - (b % BUCKET_SEC)
+        if b >= cutoff:
+            incoming.append(b)
+    if active:
+        incoming.append(bucket)
+    incoming = list(dict.fromkeys(incoming))
     with db() as conn:
         row = conn.execute(
             "SELECT last_active FROM tabel_presence WHERE user_id = ?",
@@ -343,15 +382,14 @@ def heartbeat(user_id: int, active: bool) -> dict[str, Any]:
             """,
             (user_id, now, last_active),
         )
-        if active:
+        for b in incoming:
             conn.execute(
                 """
                 INSERT OR IGNORE INTO tabel_activity(user_id, bucket)
                 VALUES(?, ?)
                 """,
-                (user_id, bucket),
+                (user_id, b),
             )
-        cutoff = now - ACTIVITY_KEEP_DAYS * 86400
         conn.execute("DELETE FROM tabel_activity WHERE bucket < ?", (cutoff,))
     return {
         "ok": True,
@@ -359,6 +397,7 @@ def heartbeat(user_id: int, active: bool) -> dict[str, Any]:
         "online": True,
         "active": bool(active),
         "bucket": bucket,
+        "stored": len(incoming),
     }
 
 
