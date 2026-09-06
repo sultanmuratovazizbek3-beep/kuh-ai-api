@@ -30,7 +30,7 @@ define(["jquery"], function ($) {
     function apiBase() {
       var base = (settings().api_base || "").trim().replace(/\/$/, "");
       if (!base) {
-        base = "https://oaks-msie-cite-coral.trycloudflare.com";
+        base = "https://kuh-ai-api.onrender.com";
       }
       return base;
     }
@@ -78,16 +78,26 @@ define(["jquery"], function ($) {
       if (typeof raw === "object") {
         Object.keys(raw).forEach(function (k) {
           var item = raw[k];
-          if (item === true || item === "1" || item === 1 || item === "true") {
+          if (
+            item === true ||
+            item === "1" ||
+            item === 1 ||
+            item === "true" ||
+            item === "Y" ||
+            item === "y" ||
+            item === "on"
+          ) {
             push(k);
             return;
           }
           if (item && typeof item === "object") {
+            var ch = item.checked;
             if (
-              item.checked === "1" ||
-              item.checked === 1 ||
-              item.checked === true ||
-              item.id
+              ch === "1" ||
+              ch === 1 ||
+              ch === true ||
+              ch === "Y" ||
+              ch === "y"
             ) {
               push(item.id || k);
             }
@@ -1757,7 +1767,6 @@ define(["jquery"], function ($) {
       );
       lastInputAt = 0;
       function ping() {
-        if (!userHasAccess()) return;
         var uid = parseInt((currentUser() || {}).id, 10);
         if (!uid) return;
         var active = lastInputAt && Date.now() - lastInputAt < 5 * 60 * 1000;
@@ -1922,9 +1931,9 @@ define(["jquery"], function ($) {
     }
 
     function applyAccessChrome() {
+      startTracker();
       if (userHasAccess()) {
         injectSidebarItem();
-        startTracker();
         return;
       }
       $("#kuh-tabel-sidebar, #kuh-tabel-fab, #kuh-tabel-overlay, #kuh-tabel-page-root").remove();
