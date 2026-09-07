@@ -730,3 +730,58 @@
   max-width: 96px !important;
   max-height: 96px !important;
 }
+
+/* === HARD CONTAINMENT (kanban-safe) === */
+.kuh-tabel-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 13000 !important;
+  isolation: isolate !important;
+  overflow: auto !important;
+  box-sizing: border-box !important;
+}
+.kuh-tabel-modal {
+  max-width: 100% !important;
+  max-height: calc(100vh - 48px) !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+}
+.kuh-tabel-avatar {
+  width: 44px !important;
+  height: 44px !important;
+  max-width: 44px !important;
+  max-height: 44px !important;
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+.kuh-tabel-avatar img,
+.kuh-tabel-overlay img,
+.kuh-tabel-modal img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 56px !important;
+  max-height: 56px !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+.kuh-tabel-avatar.lg,
+.kuh-tabel-avatar--lg {
+  width: 56px !important;
+  height: 56px !important;
+  max-width: 56px !important;
+  max-height: 56px !important;
+}
+#kuh-tabel-sidebar,
+.kuh-tabel-sidebar {
+  max-width: 72px !important;
+}
+#kuh-tabel-sidebar img {
+  max-width: 28px !important;
+  max-height: 28px !important;
+}
+/* never let widget styles leak to amoCRM kanban cards */
+.pipeline-status__body img:not(.kuh-tabel-avatar img) {
+  /* no-op placeholder — we do not override kanban */
+}

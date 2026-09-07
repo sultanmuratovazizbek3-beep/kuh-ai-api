@@ -572,10 +572,16 @@ def build_state(
     to_ts: int | None = None,
 ) -> dict[str, Any]:
     ensure_tables()
-    from amocrm_client import AmoCRMClient
+    users: list[dict[str, Any]] = []
+    group_names: dict[int, str] = {}
+    try:
+        from amocrm_client import AmoCRMClient
 
-    client = AmoCRMClient()
-    users, group_names = _load_directory(client)
+        client = AmoCRMClient()
+        users, group_names = _load_directory(client)
+    except Exception as exc:
+        logger.warning("amo directory unavailable: %s", exc)
+        client = None
     seen, last_active = _presence_maps()
     statuses = _status_map()
     catalog = load_statuses()
@@ -596,7 +602,12 @@ def build_state(
             ids.append(int(u["id"]))
         except (TypeError, ValueError, KeyError):
             continue
-    lead_counts = _lead_counts(client, ids, me_id)
+    lead_counts: dict[int, int] = {}
+    if client is not None:
+        try:
+            lead_counts = _lead_counts(client, ids, me_id)
+        except Exception as exc:
+            logger.debug("lead counts failed: %s", exc)
 
     packed: list[dict[str, Any]] = []
     for u in active_users:
@@ -621,6 +632,42 @@ def build_state(
                 "group_id": gid or 0,
                 "group_name": gname or ("Без группы" if not gid else f"Группа {gid}"),
                 "online": online,
+                "status": statuses.get(uid) or "",
+                "leads": int(lead_counts.get(uid) or 0),
+                "last_seen": int(seen.get(uid) or 0),
+                "last_active": int(last_active.get(uid) or 0),
+                "buckets": buckets,
+                "hours_today": _hours_in_range(buckets, today_start, today_end),
+                "hours_week": _hours_in_range(buckets, week_start, today_end),
+                "hours_period": _hours_in_range(buckets, p_start, p_end),
+                "first_active_today": first_ts,
+                "last_active_today": last_ts,
+                "today": work_today.get(uid) or _blank_work(),
+                "week": work_week.get(uid) or _blank_work(),
+                "period": work_period.get(uid) or _blank_work(),
+            }
+        )
+
+    have = {int(x["id"]) for x in packed}
+    extra_ids = set(seen) | set(activity) | set(statuses)
+    if me_id:
+        extra_ids.add(int(me_id))
+    for uid in extra_ids:
+        if uid in have:
+            continue
+        buckets = activity.get(uid) or []
+        first_ts, last_ts = _first_last(buckets, p_start, p_end)
+        packed.append(
+            {
+                "id": uid,
+                "name": f"User {uid}",
+                "email": "",
+                "phone": "",
+                "role": "",
+                "is_admin": False,
+                "group_id": 0,
+                "group_name": "Без группы",
+                "online": (now - int(seen.get(uid) or 0)) <= ONLINE_TTL_SEC,
                 "status": statuses.get(uid) or "",
                 "leads": int(lead_counts.get(uid) or 0),
                 "last_seen": int(seen.get(uid) or 0),
