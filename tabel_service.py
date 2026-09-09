@@ -391,6 +391,13 @@ def heartbeat(
                 (user_id, b),
             )
         conn.execute("DELETE FROM tabel_activity WHERE bucket < ?", (cutoff,))
+        week_cut = now - 14 * 86400
+        rows = conn.execute(
+            "SELECT bucket FROM tabel_activity WHERE user_id = ? AND bucket >= ? ORDER BY bucket",
+            (user_id, week_cut),
+        ).fetchall()
+        stored_buckets = [int(r["bucket"]) for r in rows]
+    today_start, today_end = day_bounds(0, 1)
     return {
         "ok": True,
         "user_id": user_id,
@@ -398,6 +405,8 @@ def heartbeat(
         "active": bool(active),
         "bucket": bucket,
         "stored": len(incoming),
+        "buckets": stored_buckets,
+        "hours_today": _hours_in_range(stored_buckets, today_start, today_end),
     }
 
 
@@ -542,7 +551,11 @@ def _load_directory(client: Any) -> tuple[list[dict[str, Any]], dict[int, str]]:
     if now - float(_users_cache.get("at") or 0) < USERS_CACHE_TTL:
         return list(_users_cache["users"]), dict(_users_cache["groups"])
 
-    users = client.get_users(with_embed="role,group", timeout=6)
+    try:
+        users = client.get_users(with_embed="role,group", timeout=6)
+    except Exception as exc:
+        logger.warning("get_users failed: %s", exc)
+        return list(_users_cache.get("users") or []), dict(_users_cache.get("groups") or {})
     groups_list = []
     try:
         groups_list = client.get_user_groups()
@@ -728,4 +741,78 @@ def build_state(
         "users": packed,
         "me": me,
         "summary": summary,
+    }
+
+
+def activity_snapshot(
+    me_id: int | None = None,
+    period: str | None = "today",
+    from_ts: int | None = None,
+    to_ts: int | None = None,
+) -> dict[str, Any]:
+    """Hours from local DB only — never calls amoCRM."""
+    ensure_tables()
+    seen, last_active = _presence_maps()
+    since = int(time.time()) - ACTIVITY_KEEP_DAYS * 86400
+    activity = _activity_since(since)
+    now = int(time.time())
+    today_start, today_end = day_bounds(0, 1)
+    week_start, _week_end = day_bounds(6, 7)
+    p_start, p_end, p_code = period_bounds(period, from_ts, to_ts)
+    packed: list[dict[str, Any]] = []
+    ids = set(activity) | set(seen)
+    if me_id:
+        ids.add(int(me_id))
+    for uid in ids:
+        buckets = activity.get(uid) or []
+        first_ts, last_ts = _first_last(buckets, p_start, p_end)
+        packed.append(
+            {
+                "id": int(uid),
+                "name": f"User {uid}",
+                "email": "",
+                "phone": "",
+                "role": "",
+                "is_admin": False,
+                "group_id": 0,
+                "group_name": "Без группы",
+                "online": (now - int(seen.get(uid) or 0)) <= ONLINE_TTL_SEC,
+                "status": "",
+                "leads": 0,
+                "last_seen": int(seen.get(uid) or 0),
+                "last_active": int(last_active.get(uid) or 0),
+                "buckets": buckets,
+                "hours_today": _hours_in_range(buckets, today_start, today_end),
+                "hours_week": _hours_in_range(buckets, week_start, today_end),
+                "hours_period": _hours_in_range(buckets, p_start, p_end),
+                "first_active_today": first_ts,
+                "last_active_today": last_ts,
+                "today": {},
+                "week": {},
+                "period": {},
+            }
+        )
+    me = next((x for x in packed if me_id and x["id"] == int(me_id)), None)
+    return {
+        "ok": True,
+        "ts": now,
+        "tz": "Asia/Tashkent",
+        "day_start": today_start,
+        "week_start": week_start,
+        "period": p_code,
+        "period_start": p_start,
+        "period_end": p_end,
+        "online_ttl": ONLINE_TTL_SEC,
+        "bucket_sec": BUCKET_SEC,
+        "statuses": load_statuses(),
+        "groups": [{"id": 0, "name": "Без группы"}] if packed else [],
+        "users": packed,
+        "me": me,
+        "summary": {
+            "total": len(packed),
+            "online": sum(1 for x in packed if x.get("online")),
+            "hours_today": round(sum(float(x.get("hours_today") or 0) for x in packed), 1),
+            "hours_week": round(sum(float(x.get("hours_week") or 0) for x in packed), 1),
+            "hours_period": round(sum(float(x.get("hours_period") or 0) for x in packed), 1),
+        },
     }

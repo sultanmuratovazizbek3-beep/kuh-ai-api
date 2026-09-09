@@ -1421,8 +1421,32 @@ def tabel_state(
             to_ts=to_ts,
         )
     except Exception as exc:
-        logger.exception("tabel_state failed")
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        logger.exception("tabel_state failed, falling back to activity snapshot")
+        from tabel_service import activity_snapshot
+
+        return activity_snapshot(
+            me_id=user_id,
+            period=period,
+            from_ts=from_ts,
+            to_ts=to_ts,
+        )
+
+
+@app.get("/api/v1/tabel/activity")
+def tabel_activity(
+    user_id: int | None = None,
+    period: str = "today",
+    from_ts: int | None = None,
+    to_ts: int | None = None,
+) -> dict[str, Any]:
+    from tabel_service import activity_snapshot
+
+    return activity_snapshot(
+        me_id=user_id,
+        period=period,
+        from_ts=from_ts,
+        to_ts=to_ts,
+    )
 
 
 @app.post("/api/v1/tabel/heartbeat")
