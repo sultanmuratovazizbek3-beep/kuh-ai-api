@@ -1368,6 +1368,7 @@ class TabelHeartbeatBody(BaseModel):
     user_id: int
     active: bool = False
     buckets: list[int] = Field(default_factory=list)
+    online_ids: list[int] = Field(default_factory=list)
 
 
 class TabelStatusBody(BaseModel):
@@ -1458,6 +1459,7 @@ def tabel_heartbeat(body: TabelHeartbeatBody) -> dict[str, Any]:
             user_id=int(body.user_id),
             active=bool(body.active),
             buckets=list(body.buckets or []),
+            online_ids=list(body.online_ids or []),
         )
     except Exception as exc:
         logger.exception("tabel_heartbeat failed")

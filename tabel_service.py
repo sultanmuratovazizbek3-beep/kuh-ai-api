@@ -347,6 +347,7 @@ def heartbeat(
     user_id: int,
     active: bool,
     buckets: list[int] | None = None,
+    online_ids: list[int] | None = None,
 ) -> dict[str, Any]:
     ensure_tables()
     now = int(time.time())
@@ -390,6 +391,33 @@ def heartbeat(
                 """,
                 (user_id, b),
             )
+        if active:
+            peer_ids: list[int] = []
+            for raw in online_ids or []:
+                try:
+                    oid = int(raw)
+                except (TypeError, ValueError):
+                    continue
+                if oid and oid not in peer_ids:
+                    peer_ids.append(oid)
+            for oid in peer_ids[:200]:
+                conn.execute(
+                    """
+                    INSERT INTO tabel_presence(user_id, last_seen, last_active)
+                    VALUES(?, ?, ?)
+                    ON CONFLICT(user_id) DO UPDATE SET
+                        last_seen = excluded.last_seen,
+                        last_active = excluded.last_active
+                    """,
+                    (oid, now, now),
+                )
+                conn.execute(
+                    """
+                    INSERT OR IGNORE INTO tabel_activity(user_id, bucket)
+                    VALUES(?, ?)
+                    """,
+                    (oid, bucket),
+                )
         conn.execute("DELETE FROM tabel_activity WHERE bucket < ?", (cutoff,))
         week_cut = now - 14 * 86400
         rows = conn.execute(
