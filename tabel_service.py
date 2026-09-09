@@ -542,7 +542,7 @@ def _load_directory(client: Any) -> tuple[list[dict[str, Any]], dict[int, str]]:
     if now - float(_users_cache.get("at") or 0) < USERS_CACHE_TTL:
         return list(_users_cache["users"]), dict(_users_cache["groups"])
 
-    users = client.get_users(with_embed="role,group")
+    users = client.get_users(with_embed="role,group", timeout=6)
     groups_list = []
     try:
         groups_list = client.get_user_groups()
@@ -603,11 +603,10 @@ def build_state(
         except (TypeError, ValueError, KeyError):
             continue
     lead_counts: dict[int, int] = {}
-    if client is not None:
-        try:
-            lead_counts = _lead_counts(client, ids, me_id)
-        except Exception as exc:
-            logger.debug("lead counts failed: %s", exc)
+    try:
+        lead_counts = _lead_counts_from_snapshots()
+    except Exception as exc:
+        logger.debug("lead counts failed: %s", exc)
 
     packed: list[dict[str, Any]] = []
     for u in active_users:

@@ -107,6 +107,7 @@ class AmoCRMClient:
         *,
         json: Any | None = None,
         params: dict[str, Any] | None = None,
+        timeout: int = 60,
     ) -> Any:
         token = self._token()
         response = requests.request(
@@ -118,7 +119,7 @@ class AmoCRMClient:
             },
             json=json,
             params=params,
-            timeout=60,
+            timeout=timeout,
         )
         if response.status_code == 204:
             return None
@@ -140,7 +141,7 @@ class AmoCRMClient:
     def get_account(self) -> dict[str, Any]:
         return self._request("GET", "/api/v4/account") or {}
 
-    def get_users(self, with_embed: str = "role,group") -> list[dict[str, Any]]:
+    def get_users(self, with_embed: str = "role,group", timeout: int = 60) -> list[dict[str, Any]]:
         users: list[dict[str, Any]] = []
         page = 1
         while True:
@@ -148,6 +149,7 @@ class AmoCRMClient:
                 "GET",
                 "/api/v4/users",
                 params={"page": page, "limit": 250, "with": with_embed},
+                timeout=timeout,
             )
             if not data:
                 break
