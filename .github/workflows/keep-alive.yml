@@ -8,10 +8,76 @@ on:
 jobs:
   ping:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
     steps:
       - name: Wake Render API
         run: |
           set -e
           curl -fsS --retry 3 --retry-delay 15 --max-time 90 \
             https://kuh-ai-api.onrender.com/health
+
+      - name: Keep amo login on Render
+        env:
+          AMO_WEB_REFRESH_TOKEN: ${{ secrets.AMO_WEB_REFRESH_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          python3 << 'PY'
+          import json, os, subprocess, urllib.request
+
+          rt = (os.environ.get("AMO_WEB_REFRESH_TOKEN") or "").strip()
+          if not rt:
+              print("skip: no AMO_WEB_REFRESH_TOKEN")
+              raise SystemExit(0)
+
+          req = urllib.request.Request(
+              "https://kuhhospital.amocrm.ru/oauth2/access_token",
+              data=json.dumps({
+                  "grant_type": "refresh_token",
+                  "refresh_token": rt,
+                  "client_id": "7b490f18-2be5-4a55-a74e-1963c9641b98",
+              }).encode(),
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+          with urllib.request.urlopen(req, timeout=30) as resp:
+              payload = json.loads(resp.read().decode())
+          token = payload["access_token"]
+          new_rt = payload.get("refresh_token") or rt
+          print("amo refresh ok")
+
+          body = json.dumps({
+              "provider": "amocrm",
+              "label": "kuhhospital",
+              "subdomain": "kuhhospital",
+              "long_lived_token": token,
+              "refresh_token": new_rt,
+              "client_id": "7b490f18-2be5-4a55-a74e-1963c9641b98",
+              "redirect_uri": "https://kuhhospital.amocrm.ru",
+              "set_active": True,
+          }).encode()
+          req2 = urllib.request.Request(
+              "https://kuh-ai-api.onrender.com/api/v1/crm/profiles",
+              data=body,
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+          with urllib.request.urlopen(req2, timeout=30) as resp:
+              print("render profile", resp.status)
+
+          st = urllib.request.urlopen(
+              "https://kuh-ai-api.onrender.com/api/v1/tabel/state?period=today",
+              timeout=40,
+          )
+          print("tabel state", st.status)
+
+          pat = (os.environ.get("GH_PAT") or "").strip()
+          repo = os.environ.get("GITHUB_REPOSITORY") or ""
+          if pat and repo and new_rt and new_rt != rt:
+              env = os.environ.copy()
+              env["GH_TOKEN"] = pat
+              subprocess.check_call(
+                  ["gh", "secret", "set", "AMO_WEB_REFRESH_TOKEN", "--body", new_rt, "-R", repo],
+                  env=env,
+              )
+              print("refresh secret rotated")
+          PY
